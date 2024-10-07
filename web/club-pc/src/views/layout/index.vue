@@ -1,12 +1,16 @@
 <template>
   <el-container class="container">
-    <el-header class="header">Header</el-header>
+    <el-header class="header">
+        <logo></logo>
+    </el-header>
     <el-main class="main">Main</el-main>
     <el-footer class="footer">Footer</el-footer>
   </el-container>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import logo from '@/views/layout/logo.vue'
+</script>
 
 <style scoped lang="scss">
 .container {
