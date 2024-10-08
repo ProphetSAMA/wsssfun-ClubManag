@@ -1,7 +1,7 @@
 <template>
     <div class="logo">
         <img :src="logo" />
-        <div class="title">商丘学院社团信息化平台</div>
+        <div class="title">高校社团信息化平台</div>
     </div>
 </template>
 

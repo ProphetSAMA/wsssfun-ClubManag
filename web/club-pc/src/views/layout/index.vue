@@ -32,10 +32,11 @@ import loginout from '@/views/layout/loginout.vue';
     padding: 0px;
   }
   .main {
-    // background-color: #c0c4cc;
+    padding: 0px 200px 0px 200px
   }
   .footer {
-    // background-color: #2E3031FF;
+    text-align: center;
+    padding: 10px 0px;
   }
 }
 </style>

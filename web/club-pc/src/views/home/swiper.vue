@@ -42,3 +42,9 @@ const setSwiperRef = (swiper: any) => {
 };
 const list = ref([{ url: img1 }, { url: img2 }, { url: img3 }, { url: img4 }, { url: img5 }, { url: img6 }]);
 </script>
+<style scoped lang="scss">
+.mySwiper {
+    margin-top: 20px;
+    
+}
+</style>
