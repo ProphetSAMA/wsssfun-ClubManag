@@ -2,14 +2,24 @@
   <el-container class="container">
     <el-header class="header">
         <logo></logo>
+        <tabs></tabs>
+        <loginout></loginout>
     </el-header>
-    <el-main class="main">Main</el-main>
-    <el-footer class="footer">Footer</el-footer>
+    <el-main class="main">
+      <RouterView />
+    </el-main>
+    <el-footer class="footer">
+      <div class="footer">
+        <p>2024</p>
+      </div>
+    </el-footer>
   </el-container>
 </template>
 
 <script setup lang="ts">
 import logo from '@/views/layout/logo.vue'
+import tabs from '@/views/layout/tabs.vue'
+import loginout from '@/views/layout/loginout.vue';
 </script>
 
 <style scoped lang="scss">
@@ -17,12 +27,15 @@ import logo from '@/views/layout/logo.vue'
   height: 100%;
   .header {
     background-color: #5D6085FF;
+    display: flex;
+    align-items: center;
+    padding: 0px;
   }
   .main {
-    background-color: #c0c4cc;
+    // background-color: #c0c4cc;
   }
   .footer {
-    background-color: #2E3031FF;
+    // background-color: #2E3031FF;
   }
 }
 </style>

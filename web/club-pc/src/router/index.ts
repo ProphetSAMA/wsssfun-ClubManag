@@ -11,8 +11,38 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/home",
         name: "home",
-        component: Layout,
-        meta: { title: "首页" },
+        component: () => import("@/views/home/home.vue"),
+        meta: { title: "首页" }
+      },
+      {
+        path: "/club",
+        name: "club",
+        component: () => import("@/views/club/club.vue"),
+        meta: { title: "社团" },
+      },
+      {
+        path: "/activity",
+        name: "activity",
+        component: () => import("@/views/activity/activity.vue"),
+        meta: { title: "活动" },
+      },
+      {
+        path: "/news",
+        name: "news",
+        component: () => import("@/views/news/news.vue"),
+        meta: { title: "新闻" },
+      },
+      {
+        path: "/notice",
+        name: "notice",
+        component: () => import("@/views/notice/notice.vue"),
+        meta: { title: "公告" },
+      },
+      {
+        path: "/mine",
+        name: "mine",
+        component: () => import("@/views/mine/mine.vue"),
+        meta: { title: "个人中心" },
       }
     ],
   }

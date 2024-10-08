@@ -14,7 +14,6 @@ import logo from '@/assets/logo.png'
     display: flex;
     align-items: center;
     padding-left: 40px;
-    margin-top: 10px;
     img {
         width:40px;
         height:40px;
