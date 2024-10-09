@@ -1,5 +1,27 @@
 import { createApp } from 'vue'
-import './style.css'
+import router from './router'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+import { createPinia } from 'pinia'
+import piniaPersistedstate from 'pinia-plugin-persistedstate';
+
+// 引入Element-Plus
+import ElementPlus from 'element-plus'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import 'element-plus/dist/index.css'
+import * as ElementPlusIcons from '@element-plus/icons-vue'
+
+const app = createApp(App)
+const pinia = createPinia()
+pinia.use(piniaPersistedstate)
+app.use(ElementPlus, {
+    locale: zhCn,
+})
+app.use(pinia)
+app.use(router)
+app.mount('#app')
+
+// 全局注册图标组件
+for (const [key, component] of Object.entries(ElementPlusIcons)) {
+    app.component(key, component)
+}

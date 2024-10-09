@@ -8,7 +8,7 @@
       "pinia-plugin-persist": ["src/types/pinia-plugin-persist.d.ts"]
     }
   },
-  "include": ["src", "vite.config.ts"],
+  "include": ["src", "node_modules/pinia", "vite.config.ts"],
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

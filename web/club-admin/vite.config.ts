@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,8 +13,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      find: '@',
-      replacement: resolve(__dirname, 'src'),
+      '@': resolve(__dirname, 'src'), // 确保这里的 '@' 被正确配置
     },
   },
-})
+});
