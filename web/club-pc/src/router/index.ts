@@ -43,11 +43,30 @@ const routes: Array<RouteRecordRaw> = [
         name: "mine",
         component: () => import("@/views/mine/mine.vue"),
         meta: { title: "个人中心" },
-      }
-    ],
+        children: [
+          {
+            path: "/mine/mycenter",
+            name: "mycenter",
+            component: () => import("@/views/mine/mycenter.vue"),
+            meta: { title: "个人中心" }
+          },
+          {
+            path: "/mine/myclub",
+            name: "myclub",
+            component: () => import("@/views/mine/myclub.vue"),
+            meta: { title: "我的社团" }
+          },
+          {
+            path: "/mine/myactivity",
+            name: "myactivity",
+            component: () => import("@/views/mine/myactivity.vue"),
+            meta: { title: "我的活动" }
+          },
+        ]
+      },
+    ]
   }
 ];
-
 // 创建路由实例
 const router = createRouter({
   history: createWebHistory(),
