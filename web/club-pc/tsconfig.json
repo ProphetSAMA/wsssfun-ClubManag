@@ -2,9 +2,10 @@
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "baseUrl": ".", 
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"] 
+      "@/*": ["src/*"],
+      "pinia-plugin-persist": ["src/types/pinia-plugin-persist.d.ts"]
     }
   },
   "include": ["src", "vite.config.ts"],
@@ -13,5 +14,5 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "exclude": ["node_modules","**/*.spec.ts"]
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

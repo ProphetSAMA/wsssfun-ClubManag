@@ -12,6 +12,8 @@
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.8.4",
     "pinia": "^2.2.4",
+    "pinia-plugin-persist": "^1.0.0",
+    "pinia-plugin-persistedstate": "^4.1.1",
     "swiper": "^11.1.14",
     "vue": "^3.5.10",
     "vue-router": "^4.4.5"

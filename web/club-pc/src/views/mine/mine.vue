@@ -24,12 +24,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { tabsStore } from '@/store/tabs/index'
+const store = tabsStore()
 
-const activeName = ref("/mine/mycenter");
+const activeName = computed(()=>{
+    return store.mineTabs
+})
 const btnClick = (id:string)=>{
-    activeName.value = id;
+    // activeName.value = id;
+    store.mineTabs = id;
 }
 
 // 定义分类数据，存储在响应式变量category中

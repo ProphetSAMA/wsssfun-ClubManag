@@ -4,20 +4,18 @@ export const tabsStore = defineStore('tableStore', {
     // 定义状态
     state: () => {
         return {
-            fatable: 'home',
-            mineTabs: '/mine/mycenter'
+            fatable: 'home', // 当前选中的 tab
+            mineTabs: '/mine/mycenter', // 其他状态
+            activeName: 'home' // 新增状态，默认值为 'home'
         }
     },
-    // 获取state中的数据
-    getters: {
-        getCount(state) {
-            return state.count
-        }
-    },
-    actions: {
-        // 设置值
-        setCount(count: number) {
-            this.count = count;
-        }
+    persist: {
+        enabled: true,
+        strategies: [
+            {
+                storage: localStorage,
+                paths: ['fatable', 'mineTabs', 'activeName'], // 需要持久化的状态
+            }
+        ]
     }
 })
