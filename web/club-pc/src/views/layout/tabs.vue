@@ -12,10 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import { tabsStore } from '@/store/tabs/index'
+const store = tabsStore()
 const router = useRouter();
-const activeName = ref("home");
+const activeName = computed(()=>{
+    return store.mineTabs
+})
 
 const tabs = ref([
   {

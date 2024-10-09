@@ -6,6 +6,7 @@
       <el-card class="box-card" :body-style="{ padding: '5px' }">
         <!-- 分类列表，每个分类项会显示在一个div中 遍历category数据源 使用item.id作为唯一键 -->
         <div
+          @click="btnClick(item.id)"
           class="text item cateitem"
           v-for="item in category"
           :class="{ 'active-item': item.id == activeName }"
@@ -24,24 +25,29 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { tabsStore } from '@/store/tabs/index'
 
-const activeName = ref("mine/mycenter");
+const activeName = ref("/mine/mycenter");
+const btnClick = (id:string)=>{
+    activeName.value = id;
+}
 
 // 定义分类数据，存储在响应式变量category中
 const category = ref([
   {
     name: "个人中心",
-    id: "mine/mycenter",
+    id: "/mine/mycenter",
   },
   {
     name: "我的社团",
-    id: "mine/myclub",
+    id: "/mine/myclub",
   },
   {
     name: "我的活动",
-    id: "mine/myactivity",
+    id: "/mine/myactivity",
   },
 ]);
+
 </script>
 
 <style scoped lang="scss">
