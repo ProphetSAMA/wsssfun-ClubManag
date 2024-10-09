@@ -1,6 +1,8 @@
 <template>
     <el-container class="myContainer">
-      <el-aside class="myAside" width="200px">Aside</el-aside>
+      <el-aside class="myAside" width="230px">
+        <Menu />
+      </el-aside>
       <el-container>
         <el-header class="myHeader">
           <slot name="header">默认头部内容</slot>
@@ -13,6 +15,7 @@
 </template>
 
 <script setup lang="ts">
+import Menu from "@/layout/menu.vue";
 </script>
 
 <style scoped lang="scss">
@@ -20,7 +23,7 @@
   height: 100%;
 
   .myAside {
-    background-color: #1a1a1a;
+    background-color: #0f4980;
     // 添加响应式样式
     @media (max-width: 768px) {
       display: none; // 在小屏幕上隐藏
@@ -28,7 +31,8 @@
   }
 
   .myHeader {
-    background-color: #545c64;
+    background-color: #0f4980;
+    color: white;
   }
 
   .myMain {
