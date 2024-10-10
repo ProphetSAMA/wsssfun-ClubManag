@@ -1,11 +1,11 @@
 <template>
     <el-container class="myContainer">
-      <el-aside class="myAside" width="230px">
+      <el-aside class="myAside" width="auto">
         <Menu />
       </el-aside>
       <el-container>
         <el-header class="myHeader">
-          <slot name="header">默认头部内容</slot>
+          <collapse />
         </el-header>
         <el-main class="myMain">
           <slot>默认主体内容</slot>
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import Menu from "@/layout/menu.vue";
+import collapse from "@/layout/collapse.vue";
 </script>
 
 <style scoped lang="scss">
@@ -31,8 +32,11 @@ import Menu from "@/layout/menu.vue";
   }
 
   .myHeader {
+    display: flex;
+    align-items: center;
     background-color: #0f4980;
     color: white;
+    padding: 0 10px;
   }
 
   .myMain {

@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import MenuLogo from "@/layout/MenuLogo.vue";
-import {ref} from 'vue'
+import { computed } from 'vue'
 import {Avatar, ChatLineSquare, DataAnalysis, Histogram, HomeFilled, Operation, User} from '@element-plus/icons-vue'
+import { useMenuStore } from "@/store/menu";
+
+const store = useMenuStore();
+
+const IsCollapse = computed(() => {
+  return store.getIsCollapse;
+});
 
 // 展开
-const isCollapse = ref(false)
+
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
@@ -18,7 +25,7 @@ const handleClose = (key: string, keyPath: string[]) => {
   <el-menu
       default-active="0"
       class="el-menu-vertical-demo"
-      :collapse="isCollapse"
+      :collapse="IsCollapse"
       @open="handleOpen"
       @close="handleClose"
       active-text-color="#ffd04b"
