@@ -5,10 +5,6 @@ import { ref, watch} from "vue";
 
 const store = useMenuStore();
 
-// const show = computed(() => {
-//   return store.getIsCollapse;
-// });
-
 // 展开 Title延迟出现
 const show = ref(true)
 watch(
@@ -27,7 +23,7 @@ watch(
 
 <template>
 <div class="myLogo">
-  <img class="logo" :src="logo"/>
+  <img class="logo" :src="logo" alt="Logo"/>
   <span v-if="show" class="title">社团管理系统</span>
 </div>
 </template>
