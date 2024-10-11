@@ -10,6 +10,15 @@ const IsCollapse = computed(() => {
   return store.getIsCollapse;
 });
 
+// 展开
+
+const handleOpen = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+const handleClose = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+
 </script>
 
 <template>
@@ -22,50 +31,51 @@ const IsCollapse = computed(() => {
       @close="handleClose"
       active-text-color="#ffd04b"
       background-color="#0f4980"
+      router
   >
-    <el-menu-item index="0">
+    <el-menu-item index="/home">
       <el-icon>
         <HomeFilled/>
       </el-icon>
       <template #title>首页</template>
     </el-menu-item>
-    <el-menu-item index="1">
+    <el-menu-item index="/user">
       <el-icon>
         <User/>
       </el-icon>
       <template #title>用户管理</template>
     </el-menu-item>
-    <el-menu-item index="2">
+    <el-menu-item index="/menu">
       <el-icon>
         <Menu/>
       </el-icon>
       <template #title>菜单管理</template>
     </el-menu-item>
-    <el-menu-item index="3">
+    <el-menu-item index="/category">
       <el-icon>
         <Operation/>
       </el-icon>
       <template #title>社团分类</template>
     </el-menu-item>
-    <el-menu-item index="4">
+    <el-menu-item index="/club">
       <el-icon>
         <Histogram/>
       </el-icon>
       <template #title>社团管理</template>
     </el-menu-item>
-    <el-menu-item index="5">
+    <el-menu-item index="member">
       <el-icon>
         <Avatar/>
       </el-icon>
       <template #title>团员管理</template>
     </el-menu-item>
-    <el-menu-item index="6">
+    <el-menu-item index="activity">
       <el-icon>
         <DataAnalysis/>
       </el-icon>
       <template #title>活动管理</template>
     </el-menu-item>
-    <el-menu-item index="7">
+    <el-menu-item index="/news">
       <el-icon>
         <ChatLineSquare/>
       </el-icon>

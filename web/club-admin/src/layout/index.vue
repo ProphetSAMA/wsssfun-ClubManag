@@ -5,10 +5,11 @@
       </el-aside>
       <el-container>
         <el-header class="myHeader">
-          <collapse />
+          <Collapse />
+          <BreadCrumb />
         </el-header>
         <el-main class="myMain">
-          <slot>默认主体内容</slot>
+          <RouterView />
         </el-main>
       </el-container>
     </el-container>
@@ -16,7 +17,8 @@
 
 <script setup lang="ts">
 import Menu from "@/layout/menu.vue";
-import collapse from "@/layout/collapse.vue";
+import Collapse from "@/layout/Collapse.vue";
+import BreadCrumb from "@/layout/BreadCrumb.vue";
 </script>
 
 <style scoped lang="scss">
