@@ -12,44 +12,22 @@
       </el-form-item>
     </el-form>
     <!-- 新增 -->
-    <SysDialog
-    :title="dialog.title"
-    :visible="dialog.visible"
-    :width="dialog.width"
-    :height="dialog.height"
-    @onClose="onClose"
-    @onConfirm="onConfirm"
-    >
-      <template v-slot:content>
-      </template>
-    </SysDialog>
+  <AddUser ref="addUserRef"/>
   </el-main>
 </template>
 
 <script setup lang="ts">
-import {reactive} from 'vue'
-import useDialog from "@/hooks/useDialog.ts";
-import SysDialog from "@/components/SysDialog.vue";
+import {reactive, ref} from 'vue'
+import useUser from "@/composable/user/useUser.ts";
+import useUserTable from "@/composable/user/useUserTable.ts";
+import AddUser from "@/views/user/AddUser.vue";
 
-const {dialog, onClose, onConfirm, onShow} = useDialog();
+// 新增、编辑、删除
+const {addBtn, editBtn, deleteBtn, addUserRef} = useUser()
+// 表格相关操作
+const {searchParm, searchBtn, resetBtn} = useUserTable()
 
-// 搜索表单绑定数据
-const searchParm = reactive({
-  nickName: '',
-})
 
-// 新增
-const addBtn = () => {
-  onShow()
-}
-// 搜索
-const searchBtn = () => {
-
-}
-// 重置
-const resetBtn = () => {
-  searchParm.nickName = ''
-}
 </script>
 
 <style lang="scss" scoped>
