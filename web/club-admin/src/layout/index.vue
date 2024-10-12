@@ -43,6 +43,7 @@ import BreadCrumb from "@/layout/BreadCrumb.vue";
 
   .myMain {
     background-color: #f0f0f0;
+    padding: 0;
   }
 }
 </style>
