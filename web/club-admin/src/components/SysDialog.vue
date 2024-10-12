@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title="title"
              :model-value="visible"
-             :before-close="onColse"
+             :before-close="onClose"
              append-to-body
              :width="width + 'px'"
              :close-on-click-modal="false"
@@ -11,7 +11,7 @@
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-button type="danger" @click="onclose">取消</el-button>
+        <el-button type="danger" @click="onClose">取消</el-button>
         <el-button type="primary" @click="onConfirm">确定</el-button>
       </div>
     </template>
@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
 
 const emit = defineEmits(['onClose','onConfirm'])
 // 弹框关闭
-const onclose = () => {
+const onClose = () => {
   emit('onClose')
 }
 // 弹框确定

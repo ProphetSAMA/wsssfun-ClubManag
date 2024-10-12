@@ -5,6 +5,8 @@
     <SysDialog
         :title="dialog.title"
         :visible="dialog.visible"
+        :width="dialog.width"
+        :height="dialog.height"
         @onClose="onClose"
         @onConfirm="onConfirm"
     >
