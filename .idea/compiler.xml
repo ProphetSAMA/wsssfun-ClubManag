@@ -6,8 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="itmk-base-web" />
-        <module name="itmk-base-common" />
+        <module name="club-base-common" />
+        <module name="club-base-web" />
       </profile>
     </annotationProcessing>
   </component>
