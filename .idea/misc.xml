@@ -5,6 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/club-api/pom.xml" />
+        <option value="$PROJECT_DIR$/Club-Web/pom.xml" />
       </list>
     </option>
   </component>
