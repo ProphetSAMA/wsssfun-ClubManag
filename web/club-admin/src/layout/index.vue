@@ -1,18 +1,18 @@
 <template>
-    <el-container class="myContainer">
-      <el-aside class="myAside" width="auto">
-        <Menu />
-      </el-aside>
-      <el-container>
-        <el-header class="myHeader">
-          <Collapse />
-          <BreadCrumb />
-        </el-header>
-        <el-main class="myMain">
-          <RouterView />
-        </el-main>
-      </el-container>
+  <el-container class="myContainer">
+    <el-aside class="myAside" width="auto">
+      <Menu/>
+    </el-aside>
+    <el-container>
+      <el-header class="myHeader">
+        <Collapse/>
+        <BreadCrumb/>
+      </el-header>
+      <el-main class="myMain">
+        <RouterView/>
+      </el-main>
     </el-container>
+  </el-container>
 </template>
 
 <script setup lang="ts">

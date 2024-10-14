@@ -5,7 +5,8 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         component: Layout,
-        redirect: '/home', // 重定向到首页
+        // 重定向到首页
+        redirect: '/home',
         children: [
             {
                 path: '/home',

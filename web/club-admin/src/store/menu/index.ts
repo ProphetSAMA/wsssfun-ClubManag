@@ -1,17 +1,20 @@
-import { defineStore } from "pinia";
+import {defineStore} from "pinia";
 
 export const useMenuStore = defineStore('menuStore', {
     state: () => ({
-        isCollapse: false // 初始状态
+        // 初始状态
+        isCollapse: false
     }),
     getters: {
-        getIsCollapse(state) { // 将 state 作为参数传入
-            return state.isCollapse; // 正确访问 isCollapse
+        // 将 state 作为参数传入
+        getIsCollapse(state) {
+            return state.isCollapse;
         }
     },
     actions: {
         setIsCollapse() {
-            this.isCollapse = !this.isCollapse; // 正确切换状态
+            // 正确切换状态
+            this.isCollapse = !this.isCollapse;
         }
     }
 });

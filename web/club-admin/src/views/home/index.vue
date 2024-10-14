@@ -19,28 +19,15 @@
 
 <script setup>
 import SysDialog from "@/components/SysDialog.vue";
-import {reactive} from "vue";
 import useDialog from "@/hooks/useDialog.ts";
 // 获取弹框属性
 const {dialog, onClose, onConfirm} = useDialog()
-
-// // 弹框属性
-// const dialog = reactive({
-//   title: '新增',
-//   visible: false,
-// })
 
 // 按钮点击事件
 const addBtn = () => {
   dialog.visible = true
 };
 
-// const onclose = () => {
-//   dialog.visible = false
-// }
-// const onConfirm = () => {
-//   dialog.visible = false
-// }
 </script>
 
 <style lang="scss" scoped>

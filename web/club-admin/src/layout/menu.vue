@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import MenuLogo from "@/layout/MenuLogo.vue";
-import { computed } from 'vue'
+import {computed} from 'vue'
 import {Avatar, ChatLineSquare, DataAnalysis, Histogram, HomeFilled, Operation, User} from '@element-plus/icons-vue'
-import { useMenuStore } from "@/store/menu";
+import {useMenuStore} from "@/store/menu";
 
 const store = useMenuStore();
 

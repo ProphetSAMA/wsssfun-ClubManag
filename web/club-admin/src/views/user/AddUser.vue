@@ -36,14 +36,14 @@
 
 import useDialog from "@/hooks/useDialog.ts";
 import SysDialog from "@/components/SysDialog.vue";
-import { User } from "@/api/user/UserModel.ts";
-import { reactive, ref } from "vue";
-import { FormInstance } from "element-plus";
+import {User} from "@/api/user/UserModel.ts";
+import {reactive, ref} from "vue";
+import {FormInstance} from "element-plus";
 
 // 表单ref属性
 const addFormRef = ref<FormInstance>();
 // 弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const {dialog, onClose, onConfirm, onShow} = useDialog();
 
 // 表单绑定数据
 const addModel = reactive<User>({
@@ -58,23 +58,23 @@ const addModel = reactive<User>({
 // 表单验证规则
 const rules = reactive({
   nickName: [
-    { required: true, message: '请输入姓名', trigger: 'blur' },
-    { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+    {required: true, message: '请输入姓名', trigger: 'blur'},
+    {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}
   ],
   sex: [
-    { required: true, message: '请选择性别', trigger: 'change' }
+    {required: true, message: '请选择性别', trigger: 'change'}
   ],
   phone: [
-    { required: true, message: '请输入联系方式', trigger: 'blur' },
-    { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
+    {required: true, message: '请输入联系方式', trigger: 'blur'},
+    {pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur'}
   ],
   userName: [
-    { required: true, message: '请输入登录账号', trigger: 'blur' },
-    { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+    {required: true, message: '请输入登录账号', trigger: 'blur'},
+    {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}
   ],
   passWord: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 10, message: '长度在 6 到 10 个字符', trigger: 'blur' }
+    {required: true, message: '请输入密码', trigger: 'blur'},
+    {min: 6, max: 10, message: '长度在 6 到 10 个字符', trigger: 'blur'}
   ]
 });
 

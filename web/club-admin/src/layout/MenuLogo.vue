@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import logo from '@/assets/logo.png'
 import {useMenuStore} from "@/store/menu";
-import { ref, watch} from "vue";
+import {ref, watch} from "vue";
 
 const store = useMenuStore();
 
@@ -9,12 +9,12 @@ const store = useMenuStore();
 const show = ref(true)
 watch(
     () => store.getIsCollapse,
-    (collapse:boolean) => {
-      if(!collapse){
+    (collapse: boolean) => {
+      if (!collapse) {
         setTimeout(() => {
           show.value = !collapse
         }, 300)
-      }else {
+      } else {
         show.value = !collapse
       }
     })
@@ -22,24 +22,26 @@ watch(
 </script>
 
 <template>
-<div class="myLogo">
-  <img class="logo" :src="logo" alt="Logo"/>
-  <span v-if="show" class="title">社团管理系统</span>
-</div>
+  <div class="myLogo">
+    <img class="logo" :src="logo" alt="Logo"/>
+    <span v-if="show" class="title">社团管理系统</span>
+  </div>
 </template>
 
 <style scoped lang="scss">
-.myLogo{
+.myLogo {
   height: 60px;
   background-color: #679ed5;
   color: white;
   display: flex;
   align-items: center;
-  .logo{
+
+  .logo {
     height: 60px;
     width: 64px;
   }
-  .title{
+
+  .title {
     width: 150px;
     height: 50px;
     align-items: center;

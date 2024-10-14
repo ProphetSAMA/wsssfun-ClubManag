@@ -12,12 +12,11 @@
       </el-form-item>
     </el-form>
     <!-- 新增 -->
-  <AddUser ref="addUserRef"/>
+    <AddUser ref="addUserRef"/>
   </el-main>
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
 import useUser from "@/composable/user/useUser.ts";
 import useUserTable from "@/composable/user/useUserTable.ts";
 import AddUser from "@/views/user/AddUser.vue";
