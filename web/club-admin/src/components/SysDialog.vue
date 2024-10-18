@@ -22,7 +22,7 @@
 // 定义弹框属性的数据类型
 interface DialogProps {
   title: string, // 标题
-  visible: boolean, // 控制弹框显示/隐藏
+  visible: boolean, // 控制弹框显示 / 隐藏
   width: number,
   height: number
 }

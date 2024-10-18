@@ -10,7 +10,7 @@ const IsCollapse = computed(() => {
   return store.getIsCollapse;
 });
 
-// 展开
+// 侧边菜单展开 / 收起
 
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
