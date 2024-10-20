@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * ResultVo 返回值的封装
+ * VO类
+ *
  * @author Wsssfun
+ * @date 2024/10/21 02:20
  */
+
 @Data
 @AllArgsConstructor
 public class ResultVo<T> {

@@ -8,10 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Club-Web" />
-        <module name="club-base-common" />
-        <module name="club-base-web" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="club-api" target="1.5" />
+      <module name="club-base-common" target="1.8" />
+      <module name="club-base-web" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
