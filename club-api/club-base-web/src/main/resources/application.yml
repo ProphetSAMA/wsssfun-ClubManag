@@ -8,8 +8,8 @@ spring:
     password: root
     driver-class-name: com.mysql.jdbc.Driver
 mybatis-plus:
-  configuration:
-    log-implementations: org.apache.ibatis.logging.stdout.StdOutImpl
+#  configuration:
+#    log-implementations: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       id-type: auto
