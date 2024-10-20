@@ -15,10 +15,10 @@ public class ResultUtils {
      * @return ResultVo
      */
     public static ResultVo success() {
-        return Vo(null, StatusCode.OK, null);
+        return vo(null, StatusCode.OK, null);
     }
     public static ResultVo success(String msg) {
-        return Vo(msg, StatusCode.OK, null);
+        return vo(msg, StatusCode.OK, null);
     }
 
     /**
@@ -26,12 +26,12 @@ public class ResultUtils {
      * @return ResultVo
      */
     public static ResultVo success(String msg,Object data) {
-        return Vo(msg, StatusCode.OK, data);
+        return vo(msg, StatusCode.OK, data);
     }
     public static ResultVo success(String msg, int code, Object data) {
-        return Vo(msg, code, data);
+        return vo(msg, code, data);
     }
-    public static ResultVo Vo(String msg, int code, Object data) {
+    public static ResultVo vo(String msg, int code, Object data) {
         return new ResultVo(msg, code, data);
     }
 
@@ -40,19 +40,19 @@ public class ResultUtils {
      * @return ResultVo
      */
     public static ResultVo error() {
-        return Vo(null, StatusCode.ERROR, null);
+        return vo(null, StatusCode.ERROR, null);
     }
     public static ResultVo error(String msg) {
-        return Vo(msg, StatusCode.ERROR, null);
+        return vo(msg, StatusCode.ERROR, null);
     }
     public static ResultVo error(String msg, int code) {
-        return Vo(msg, code, null);
+        return vo(msg, code, null);
     }
     public static ResultVo error(String msg, int code, Object data) {
-        return Vo(msg, code, data);
+        return vo(msg, code, data);
     }
     public static ResultVo error(String msg, Object data) {
-        return Vo(msg, StatusCode.ERROR, data);
+        return vo(msg, StatusCode.ERROR, data);
     }
 
 }
