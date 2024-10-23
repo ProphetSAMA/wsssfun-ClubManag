@@ -19,7 +19,7 @@ public class User {
      * 主键ID
      */
     @TableId(value = "user_id")
-    private Long id;
+    private Long userId;
 
     /**
      * 用户名
