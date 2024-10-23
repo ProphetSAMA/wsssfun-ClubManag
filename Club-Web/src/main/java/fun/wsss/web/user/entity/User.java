@@ -8,8 +8,8 @@ import lombok.Data;
 /**
  * 用户实体类
  *
- *  @author Wsssfun
- *  @date 2024/10/22 23:55
+ * @author Wsssfun
+ * @date 2024/10/22 23:55
  */
 @Data
 @TableName("sys_user")
@@ -18,7 +18,7 @@ public class User {
     /**
      * 主键ID
      */
-    @TableId(value = "id")
+    @TableId(value = "user_id")
     private Long id;
 
     /**
@@ -36,7 +36,7 @@ public class User {
     /**
      * 昵称
      */
-    @TableField("nickname")
+    @TableField("nick_name")
     private String nickname;
 
     /**
@@ -62,6 +62,4 @@ public class User {
      */
     @TableField("is_admin")
     private Integer isAdmin;
-}
-
 }
