@@ -10,7 +10,7 @@
     <template v-slot:content>
       <el-form :model="addModel" ref="addFormRef" :rules="rules" label-width="80px" :inline="false" size="default">
         <el-form-item prop="nickName" label="姓名">
-          <el-input v-model="addModel.nickName"></el-input>
+          <el-input v-model="addModel.nickname"></el-input>
         </el-form-item>
         <el-form-item prop="sex" label="性别">
           <el-radio-group v-model="addModel.sex">
@@ -22,10 +22,10 @@
           <el-input v-model="addModel.phone"></el-input>
         </el-form-item>
         <el-form-item prop="userName" label="登录账号">
-          <el-input v-model="addModel.userName"></el-input>
+          <el-input v-model="addModel.username"></el-input>
         </el-form-item>
         <el-form-item prop="passWord" label="密码">
-          <el-input v-model="addModel.passWord"></el-input>
+          <el-input v-model="addModel.password"></el-input>
         </el-form-item>
         <el-form-item prop="status" label="状态">
           <el-radio-group v-model="addModel.status">
@@ -55,17 +55,18 @@ const {dialog, onClose, onConfirm, onShow} = useDialog();
 // 表单绑定数据
 const addModel = reactive<User>({
   userId: '',
-  userName: '',
-  passWord: '',
-  nickName: '',
+  username: '',
+  password: '',
+  nickname: '',
   phone: '',
   sex: 0, // 默认男
-  status: 0 // 默认启用
+  status: 0, // 默认启用
+  isadmin: 0 // 默认为普通用户
 });
 
 // 表单验证规则
 const rules = reactive({
-  nickName: [
+  nickname: [
     {required: true, message: '请输入姓名', trigger: 'blur'},
     {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}
   ],
@@ -76,11 +77,11 @@ const rules = reactive({
     {required: true, message: '请输入联系方式', trigger: 'blur'},
     {pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur'}
   ],
-  userName: [
+  username: [
     {required: true, message: '请输入登录账号', trigger: 'blur'},
     {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}
   ],
-  passWord: [
+  password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
     {min: 6, max: 10, message: '长度在 6 到 10 个字符', trigger: 'blur'}
   ],

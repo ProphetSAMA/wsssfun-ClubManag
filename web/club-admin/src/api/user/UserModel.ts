@@ -1,9 +1,9 @@
 // 用户的数据类型
 export type User = {
     userId: string,
-    userName: string,
-    passWord: string,
-    nickName: string,
+    username: string,
+    password: string,
+    nickname: string,
     phone: string,
     sex: number,
     status: number
