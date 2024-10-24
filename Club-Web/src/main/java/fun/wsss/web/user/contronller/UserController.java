@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Wsssfun
  * @date 2024/10/24 00:22
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -75,14 +76,14 @@ public class UserController {
      */
     @GetMapping("/list")
     public ResultVo list(PageParm parm) {
-        // 构造分页对象
         IPage<User> page = new Page<>(parm.getCurrentPage(), parm.getPageSize());
+
         //构造查询条件
         QueryWrapper<User> query = new QueryWrapper<>();
-        if (StringUtil.isNullOrEmpty((parm.getNickname()))) {
+        if (StringUtil.isNullOrEmpty(parm.getNickname())) {
             query.lambda().like(User::getNickname, parm.getNickname());
         }
-        // 分页查询
+
         IPage<User> list = userService.page(page, query);
 
         return ResultUtils.success("查询成功", list);

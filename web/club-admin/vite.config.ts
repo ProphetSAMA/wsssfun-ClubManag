@@ -10,10 +10,17 @@ export default defineConfig({
     port: 8080,
     hmr: true,
     open: true,
+    proxy: {
+      '/api' :{
+        target: 'http://localhost:8888',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'), // 确保这里的 '@' 被正确配置
+      '@': resolve(__dirname, 'src'),
     },
   },
 });

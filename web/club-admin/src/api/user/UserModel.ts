@@ -6,4 +6,5 @@ export type User = {
     nickName: string,
     phone: string,
     sex: number,
+    status: number
 }

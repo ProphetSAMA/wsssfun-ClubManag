@@ -14,8 +14,8 @@
         </el-form-item>
         <el-form-item prop="sex" label="性别">
           <el-radio-group v-model="addModel.sex">
-            <el-radio :value="1">男</el-radio>
-            <el-radio :value="2">女</el-radio>
+            <el-radio :value="0">男</el-radio>
+            <el-radio :value="1">女</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item prop="phone" label="联系方式">
@@ -26,6 +26,12 @@
         </el-form-item>
         <el-form-item prop="passWord" label="密码">
           <el-input v-model="addModel.passWord"></el-input>
+        </el-form-item>
+        <el-form-item prop="status" label="状态">
+          <el-radio-group v-model="addModel.status">
+            <el-radio :value="0">启用</el-radio>
+            <el-radio :value="1">停用</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
     </template>
@@ -38,7 +44,8 @@ import useDialog from "@/hooks/useDialog.ts";
 import SysDialog from "@/components/SysDialog.vue";
 import {User} from "@/api/user/UserModel.ts";
 import {reactive, ref} from "vue";
-import {FormInstance} from "element-plus";
+import {ElMessage, FormInstance} from "element-plus";
+import {addUserApi} from '@/api/user'
 
 // 表单ref属性
 const addFormRef = ref<FormInstance>();
@@ -52,7 +59,8 @@ const addModel = reactive<User>({
   passWord: '',
   nickName: '',
   phone: '',
-  sex: 1  // 默认值，或根据需求设置初始值
+  sex: 0, // 默认男
+  status: 0 // 默认启用
 });
 
 // 表单验证规则
@@ -75,11 +83,15 @@ const rules = reactive({
   passWord: [
     {required: true, message: '请输入密码', trigger: 'blur'},
     {min: 6, max: 10, message: '长度在 6 到 10 个字符', trigger: 'blur'}
+  ],
+  status: [
+    {required: true, message: '请选择状态', trigger: 'change'}
   ]
 });
 
 // 显示弹框
 const show = () => {
+  dialog.height = 300
   onShow();
 };
 
@@ -91,9 +103,16 @@ defineExpose({
 // 提交
 const commit = () => {
   // 验证
-  addFormRef.value?.validate((valid) => {
+  addFormRef.value?.validate(async (valid) => {
+    console.log(valid);
+    // valid为true表示验证通过
     if (valid) {
-      console.log(addModel);
+      // 提交表单
+      let res = await addUserApi(addModel)
+      if (res && res.code == 200) {
+        ElMessage.success(res.msg);
+        onClose();
+      }
     } else {
       return false;
     }

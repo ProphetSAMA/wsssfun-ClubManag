@@ -1014,7 +1014,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     </collation>
     <schema id="288" parent="1" name="club">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2024-10-20.17:07:42</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2024-10-24.09:57:46</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="289" parent="1" name="information_schema">
@@ -1058,5 +1058,60 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
+    <table id="300" parent="288" name="sys_user">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <column id="301" parent="300" name="user_id">
+      <Comment>用户ID</Comment>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="302" parent="300" name="username">
+      <Comment>登陆账户</Comment>
+      <Position>2</Position>
+      <StoredType>varchar(24)|0s</StoredType>
+    </column>
+    <column id="303" parent="300" name="password">
+      <Comment>登陆密码</Comment>
+      <Position>3</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="304" parent="300" name="nick_name">
+      <Comment>姓名</Comment>
+      <Position>4</Position>
+      <StoredType>varchar(24)|0s</StoredType>
+    </column>
+    <column id="305" parent="300" name="sex">
+      <Comment>0男1女</Comment>
+      <Position>5</Position>
+      <StoredType>varchar(2)|0s</StoredType>
+    </column>
+    <column id="306" parent="300" name="phone">
+      <Comment>联系方式</Comment>
+      <Position>6</Position>
+      <StoredType>varchar(18)|0s</StoredType>
+    </column>
+    <column id="307" parent="300" name="status">
+      <Comment>0启用1停用</Comment>
+      <Position>7</Position>
+      <StoredType>varchar(2)|0s</StoredType>
+    </column>
+    <column id="308" parent="300" name="is_admin">
+      <Comment>0普通用户1超管</Comment>
+      <Position>8</Position>
+      <StoredType>varchar(2)|0s</StoredType>
+    </column>
+    <index id="309" parent="300" name="PRIMARY">
+      <ColNames>user_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="310" parent="300" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
   </database-model>
 </dataSource>
