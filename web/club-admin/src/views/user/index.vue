@@ -11,6 +11,10 @@
         <el-button icon="plus" type="primary" @click="addBtn">新增</el-button>
       </el-form-item>
     </el-form>
+    <!-- 表格-->
+    <el-table :data="tableList" border style="width: 100%" stripe>
+      <el-table-column prop="nickname" label="姓名"></el-table-column>
+    </el-table>
     <!-- 新增 -->
     <AddUser ref="addUserRef"/>
   </el-main>
@@ -24,7 +28,7 @@ import AddUser from "@/views/user/AddUser.vue";
 // 新增、编辑、删除
 const {addBtn, editBtn, deleteBtn, addUserRef} = useUser()
 // 表格相关操作
-const {searchParm, searchBtn, resetBtn} = useUserTable()
+const {searchParm, searchBtn, resetBtn, tableList} = useUserTable()
 
 
 </script>
