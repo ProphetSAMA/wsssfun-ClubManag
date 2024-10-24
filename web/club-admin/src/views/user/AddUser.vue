@@ -9,7 +9,7 @@
   >
     <template v-slot:content>
       <el-form :model="addModel" ref="addFormRef" :rules="rules" label-width="80px" :inline="false" size="default">
-        <el-form-item prop="nickName" label="姓名">
+        <el-form-item prop="nickname" label="姓名">
           <el-input v-model="addModel.nickname"></el-input>
         </el-form-item>
         <el-form-item prop="sex" label="性别">
@@ -21,10 +21,10 @@
         <el-form-item prop="phone" label="联系方式">
           <el-input v-model="addModel.phone"></el-input>
         </el-form-item>
-        <el-form-item prop="userName" label="登录账号">
+        <el-form-item prop="username" label="登录账号">
           <el-input v-model="addModel.username"></el-input>
         </el-form-item>
-        <el-form-item prop="passWord" label="密码">
+        <el-form-item prop="password" label="密码">
           <el-input v-model="addModel.password"></el-input>
         </el-form-item>
         <el-form-item prop="status" label="状态">
@@ -113,6 +113,8 @@ const commit = () => {
       if (res && res.code == 200) {
         ElMessage.success(res.msg);
         onClose();
+        // 清空表单
+        addFormRef.value?.resetFields();
       }
     } else {
       return false;
