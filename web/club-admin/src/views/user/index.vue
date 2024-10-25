@@ -3,7 +3,7 @@
     <!-- 搜索栏 -->
     <el-form :model="searchParm" :inline="true" size="default">
       <el-form-item>
-        <el-input placeholder="请输入姓名" v-model:size="searchParm.nickName"></el-input>
+        <el-input placeholder="请输入姓名" v-model="searchParm.nickName"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button icon="search" @click="searchBtn">搜索</el-button>

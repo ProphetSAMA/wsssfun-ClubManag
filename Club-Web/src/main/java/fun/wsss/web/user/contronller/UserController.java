@@ -80,8 +80,8 @@ public class UserController {
 
         //构造查询条件
         QueryWrapper<User> query = new QueryWrapper<>();
-        if (StringUtil.isNullOrEmpty(parm.getNickname())) {
-            query.lambda().like(User::getNickname, parm.getNickname());
+        if (StringUtil.isNullOrEmpty(parm.getNickName())) {
+            query.lambda().like(User::getNickname, parm.getNickName());
         }
 
         IPage<User> list = userService.page(page, query);

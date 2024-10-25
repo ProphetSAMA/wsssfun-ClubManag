@@ -12,35 +12,41 @@ export default function useUserTable() {
         pageSize: 10,
         currentPage: 1,
         total: 0
-    })
+    });
+
     // 获取列表
     const getList = async () => {
         let res = await getListApi(searchParm);
         if (res && res.code == 200) {
             // 将后端返回数据设置到表格数据
-            tableList.value = res.data.record;
+            tableList.value = res.data.records;
             // 设置总条数
             searchParm.total = res.data.total;
         }
-    }
+    };
 
     // 搜索
     const searchBtn = () => {
+        searchParm.currentPage = 1; // 搜索时重置到第一页
+        getList();
+    };
 
-    }
     // 重置
     const resetBtn = () => {
-        searchParm.nickName = ''
-    }
+        searchParm.nickName = '';
+        searchParm.currentPage = 1; // 重置时重置到第一页
+        getList();
+    };
 
     onMounted(() => {
         getList();
-    })
+    });
+
     return {
         searchParm,
         getList,
         searchBtn,
         resetBtn,
         tableList
-    }
+    };
 }

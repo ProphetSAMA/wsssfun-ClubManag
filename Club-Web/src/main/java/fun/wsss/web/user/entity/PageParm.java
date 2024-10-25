@@ -13,6 +13,6 @@ import lombok.Data;
 public class PageParm {
     private Long currentPage;
     private Long pageSize;
-    private String nickname;
+    private String nickName;
 
 }
