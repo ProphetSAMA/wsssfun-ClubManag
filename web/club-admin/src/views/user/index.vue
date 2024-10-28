@@ -37,8 +37,8 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="searchParm.total" background>
     </el-pagination>
-    <!-- 新增 -->
-    <AddUser ref="addUserRef"/>
+    <!-- 新增弹框 -->
+    <AddUser ref="addUserRef" @onFresh="getList"/>
   </el-main>
 </template>
 
@@ -46,12 +46,11 @@
 import useUser from "@/composable/user/useUser.ts";
 import useUserTable from "@/composable/user/useUserTable.ts";
 import AddUser from "@/views/user/AddUser.vue";
-import {handleCurrentChange} from "element-plus/es/components/tree/src/model/util";
 
 // 新增、编辑、删除
 const {addBtn, editBtn, deleteBtn, addUserRef} = useUser()
 // 表格相关操作
-const {searchParm, searchBtn, resetBtn, tableList, sizeChange, currentChange} = useUserTable()
+const {searchParm, searchBtn, resetBtn, tableList, getList, sizeChange, currentChange} = useUserTable()
 
 
 </script>

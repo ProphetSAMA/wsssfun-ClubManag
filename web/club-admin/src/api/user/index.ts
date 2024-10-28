@@ -10,3 +10,8 @@ export const addUserApi = (parm: User) => {
 export const getListApi = (parm: ListParm) => {
     return http.get('/api/user/list', parm)
 }
+
+// 编辑用户
+export const editUserApi = (parm: User) => {
+    return http.put('/api/user', parm)
+}

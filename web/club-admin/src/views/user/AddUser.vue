@@ -45,7 +45,8 @@ import SysDialog from "@/components/SysDialog.vue";
 import {User} from "@/api/user/UserModel.ts";
 import {reactive, ref} from "vue";
 import {ElMessage, FormInstance} from "element-plus";
-import {addUserApi} from '@/api/user'
+import {addUserApi, editUserApi} from '@/api/user'
+import {EditType, Title} from "@/type/BaseType";
 
 // 表单ref属性
 const addFormRef = ref<FormInstance>();
@@ -90,10 +91,23 @@ const rules = reactive({
   ]
 });
 
+// 新增和编辑的标识
+const tags = ref('')
+
 // 显示弹框
-const show = () => {
-  dialog.height = 300
+const show = (type: string, row: User) => {
+  dialog.height = 300;
+  tags.value = type;
+  // 设置弹框标题
+  type == EditType.ADD ? dialog.title = Title.ADD : dialog.title = Title.EDIT;
   onShow();
+  // 清空表单
+  addFormRef.value?.resetFields();
+  // 编辑回显
+  if (EditType.EDIT == type && row) {
+    // 编辑回显数据
+    Object.assign(addModel, row);
+  }
 };
 
 // 向外部组件暴露组件内部方法
@@ -101,17 +115,27 @@ defineExpose({
   show
 });
 
-// 提交
+// 注册事件
+const emits = defineEmits(['onFresh']);
+
+// 表单提交
 const commit = () => {
-  // 验证
+  // 表单验证
   addFormRef.value?.validate(async (valid) => {
-    console.log(valid);
     // valid为true表示验证通过
     if (valid) {
       // 提交表单
-      let res = await addUserApi(addModel)
+      let res = null
+      if (tags.value == EditType.ADD) {
+        res = await addUserApi(addModel)
+      } else {
+        res = await editUserApi(addModel)
+      }
+      // 判断是否成功
       if (res && res.code == 200) {
         ElMessage.success(res.msg);
+        // 刷新表格
+        emits('onFresh');
         onClose();
         // 清空表单
         addFormRef.value?.resetFields();
