@@ -38,6 +38,12 @@ export default function useUserTable() {
         getList();
     };
 
+    // 页容量改变时触发
+    const sizeChange = () => {}
+
+    // 页数改变时触发
+    const currentChange = () => {}
+
     onMounted(() => {
         getList();
     });
@@ -47,6 +53,8 @@ export default function useUserTable() {
         getList,
         searchBtn,
         resetBtn,
-        tableList
+        tableList,
+        sizeChange,
+        currentChange
     };
 }

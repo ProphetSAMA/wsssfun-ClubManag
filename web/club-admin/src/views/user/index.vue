@@ -16,7 +16,7 @@
       <el-table-column prop="nickname" label="姓名"></el-table-column>
       <el-table-column prop="sex" label="性别">
         <template #default="scope">
-          <el-tag v-if="scope.row.sex == '0'" type="danger" size="default">男</el-tag>
+          <el-tag v-if="scope.row.sex == '0'" type="primary" size="default">男</el-tag>
           <el-tag v-if="scope.row.sex == '1'" type="danger" size="default">女</el-tag>
         </template>
       </el-table-column>
@@ -28,6 +28,15 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      @size-change="sizeChange"
+      @current-change="currentChange"
+      :current-page.sync="searchParm.currentPage"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="searchParm.pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="searchParm.total" background>
+    </el-pagination>
     <!-- 新增 -->
     <AddUser ref="addUserRef"/>
   </el-main>
@@ -37,11 +46,12 @@
 import useUser from "@/composable/user/useUser.ts";
 import useUserTable from "@/composable/user/useUserTable.ts";
 import AddUser from "@/views/user/AddUser.vue";
+import {handleCurrentChange} from "element-plus/es/components/tree/src/model/util";
 
 // 新增、编辑、删除
 const {addBtn, editBtn, deleteBtn, addUserRef} = useUser()
 // 表格相关操作
-const {searchParm, searchBtn, resetBtn, tableList} = useUserTable()
+const {searchParm, searchBtn, resetBtn, tableList, sizeChange, currentChange} = useUserTable()
 
 
 </script>
