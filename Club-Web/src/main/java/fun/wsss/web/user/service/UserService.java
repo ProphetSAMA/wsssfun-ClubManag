@@ -1,10 +1,7 @@
 package fun.wsss.web.user.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import fun.wsss.web.user.entity.User;
-
-import java.sql.Wrapper;
 
 /**
  * 用户Service接口

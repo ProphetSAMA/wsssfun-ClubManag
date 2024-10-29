@@ -1,8 +1,6 @@
 package fun.wsss.web.user.service.impl;
 
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import fun.wsss.web.user.entity.User;
 import fun.wsss.web.user.mapper.UserMapper;
