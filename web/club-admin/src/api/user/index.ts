@@ -15,3 +15,8 @@ export const getListApi = (parm: ListParm) => {
 export const editUserApi = (parm: User) => {
     return http.put('/api/user', parm)
 }
+
+// 删除用户
+export const deleteUserApi = (parm: User) => {
+    return http.delete(`/api/user/${parm.userId}`)
+}

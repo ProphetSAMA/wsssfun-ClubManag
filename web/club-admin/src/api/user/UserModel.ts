@@ -1,6 +1,6 @@
 // 用户的数据类型
 export type User = {
-    userId: string,
+    userId: long,
     username: string,
     password: string,
     nickname: string,

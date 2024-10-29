@@ -47,11 +47,11 @@ import useUser from "@/composable/user/useUser.ts";
 import useUserTable from "@/composable/user/useUserTable.ts";
 import AddUser from "@/views/user/AddUser.vue";
 
-// 新增、编辑、删除
-const {addBtn, editBtn, deleteBtn, addUserRef} = useUser()
 // 表格相关操作
 const {searchParm, searchBtn, resetBtn, tableList, getList, sizeChange, currentChange} = useUserTable()
 
+// 新增、编辑、删除
+const {addBtn, editBtn, deleteBtn, addUserRef} = useUser(getList)
 
 </script>
 
