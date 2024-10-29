@@ -43,7 +43,7 @@
 import useDialog from "@/hooks/useDialog.ts";
 import SysDialog from "@/components/SysDialog.vue";
 import {User} from "@/api/user/UserModel.ts";
-import {reactive, ref} from "vue";
+import {nextTick, reactive, ref} from "vue";
 import {ElMessage, FormInstance} from "element-plus";
 import {addUserApi, editUserApi} from '@/api/user'
 import {EditType, Title} from "@/type/BaseType";
@@ -101,13 +101,14 @@ const show = (type: string, row: User) => {
   // 设置弹框标题
   type == EditType.ADD ? dialog.title = Title.ADD : dialog.title = Title.EDIT;
   onShow();
+  // 编辑回显回显
+  if (EditType.EDIT == type && row) {
+    nextTick(() => {
+      Object.assign(addModel, row);
+    })
+  }
   // 清空表单
   addFormRef.value?.resetFields();
-  // 编辑回显
-  if (EditType.EDIT == type && row) {
-    // 编辑回显数据
-    Object.assign(addModel, row);
-  }
 };
 
 // 向外部组件暴露组件内部方法
