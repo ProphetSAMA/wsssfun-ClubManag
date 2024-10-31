@@ -87,6 +87,8 @@ public class TeamCategoryController {
         if (StringUtils.isNotEmpty(parm.getName())) {
             query.lambda().like(TeamCategory::getName, parm.getName());
         }
+        // 排序
+        query.lambda().orderByAsc(TeamCategory::getOrderNum);
         IPage<TeamCategory> list = teamCategoryService.page(page, query);
         return ResultUtils.success("查询成功", list);
     }

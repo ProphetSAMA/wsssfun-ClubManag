@@ -1,4 +1,5 @@
 import {ref} from "vue";
+import {CategoryModel} from "@/api/category/CategoryModel";
 
 export default function useCategory() {
     // 弹框属性
@@ -9,12 +10,12 @@ export default function useCategory() {
     }
 
     // 编辑
-    const editBtn = () => {
+    const editBtn = (row: CategoryModel) => {
 
     }
 
     // 删除
-    const deleteBtn = () => {
+    const deleteBtn = (row: CategoryModel) => {
 
     }
 
