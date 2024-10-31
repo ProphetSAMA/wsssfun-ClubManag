@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Wsssfun
  * @date 2024/10/30 02:31
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/category")
 public class TeamCategoryController {

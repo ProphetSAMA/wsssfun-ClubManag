@@ -30,7 +30,8 @@
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
 import {reactive, ref} from "vue";
-import {FormInstance} from "element-plus";
+import {ElMessage, FormInstance} from "element-plus";
+import {addCategoryApi} from "@/api/category";
 
 // 表单的Ref属性
 const formRef = ref<FormInstance>()
@@ -65,8 +66,12 @@ const rules = reactive({
 
 // 表单提交
 const commit = () => {
-  formRef.value?.validate((valid) => {
+  formRef.value?.validate(async (valid) => {
     if (valid) {
+      let res = await addCategoryApi(addModel)
+      if (res && res.code == 200) {
+        ElMessage.success(res.msg)
+      }
       onClose()
     }
   })
