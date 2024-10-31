@@ -26,12 +26,17 @@ public class TeamCategoryController {
     @Autowired
     private TeamCategoryService teamCategoryService;
 
+    public TeamCategoryController(TeamCategoryService teamCategoryService) {
+        this.teamCategoryService = teamCategoryService;
+    }
+
     /**
      * 添加活动
      *
      * @param teamCategory 活动
      * @return 结果
      */
+    @PostMapping
     public ResultVo add(@RequestBody TeamCategory teamCategory) {
         if (teamCategoryService.save(teamCategory)) {
             return ResultUtils.success("添加成功");
@@ -45,6 +50,7 @@ public class TeamCategoryController {
      * @param teamCategory 活动
      * @return 结果
      */
+    @GetMapping
     public ResultVo edit(@RequestBody TeamCategory teamCategory) {
         if (teamCategoryService.updateById(teamCategory)) {
             return ResultUtils.success("编辑成功");
