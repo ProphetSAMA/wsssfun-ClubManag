@@ -29,19 +29,34 @@
 <script setup lang="ts">
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
-import {reactive, ref} from "vue";
+import {nextTick, reactive, ref} from "vue";
 import {ElMessage, FormInstance} from "element-plus";
-import {addCategoryApi} from "@/api/category";
+import {addCategoryApi, editCategoryApi} from "@/api/category";
+import {CategoryModel} from "@/api/category/CategoryModel";
+import {EditType, Title} from "@/type/BaseType";
 
 // 表单的Ref属性
 const formRef = ref<FormInstance>()
 
 // 获取弹框属性
 const {dialog, onClose, onConfirm, onShow} = useDialog()
+
 // 显示弹框
-const show = () => {
+const tags = ref('')
+
+const show = (type: string, row: CategoryModel) => {
+  tags.value = type
+  // 设置弹框标题
+  type == EditType.ADD ? dialog.title = Title.ADD : dialog.title = Title.EDIT
   dialog.height = 100
   onShow()
+
+  // 数据回显
+  if (EditType.EDIT == type && row) {
+    nextTick(() => {
+      Object.assign(addModel, row)
+    })
+  }
   // 清空表单
   formRef.value?.resetFields()
 };
@@ -64,15 +79,28 @@ const rules = reactive({
   ]
 })
 
+// 注册事件
+const emits = defineEmits(['onFresh'])
+
 // 表单提交
 const commit = () => {
   formRef.value?.validate(async (valid) => {
+    // 表单验证通过
     if (valid) {
-      let res = await addCategoryApi(addModel)
+      let res = null
+      // 判断是新增还是编辑
+      if (EditType.ADD == tags.value) {
+        res = await addCategoryApi(addModel)
+      } else {
+        res = await editCategoryApi(addModel)
+      }
+      // 判断是否成功
       if (res && res.code == 200) {
         ElMessage.success(res.msg)
+        emits('onFresh')
+        onClose()
       }
-      onClose()
+
     }
   })
 }

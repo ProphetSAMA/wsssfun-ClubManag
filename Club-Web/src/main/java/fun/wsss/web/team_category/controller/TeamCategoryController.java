@@ -50,7 +50,7 @@ public class TeamCategoryController {
      * @param teamCategory 活动
      * @return 结果
      */
-    @GetMapping
+    @PutMapping
     public ResultVo edit(@RequestBody TeamCategory teamCategory) {
         if (teamCategoryService.updateById(teamCategory)) {
             return ResultUtils.success("编辑成功");

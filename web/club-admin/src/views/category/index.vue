@@ -36,7 +36,7 @@
       :total="searchParm.total" background>
     </el-pagination>
     <!-- 新增弹框 -->
-    <AddCategory ref="addFormRef"></AddCategory>
+    <AddCategory ref="addFormRef" @onFresh="getList"></AddCategory>
 
   </el-main>
 
@@ -46,9 +46,9 @@
 import AddCategory from "@/views/category/AddCategory.vue";
 import useCategory from "@/composable/category/useCategory";
 import useTableCategory from "@/composable/category/useTableCategory";
-
-const {addBtn, deleteBtn, editBtn, addFormRef} = useCategory()
-const {searchParm, tableList, sizeChange, currentChange, tableHeight, searchBtn, resetBtn} = useTableCategory()
+import {getListApi} from "@/api/user";
+const {searchParm, tableList, sizeChange, currentChange, tableHeight, searchBtn, resetBtn, getList} = useTableCategory()
+const {addBtn, deleteBtn, editBtn, addFormRef} = useCategory(getList)
 </script>
 
 <style lang="scss" scoped>
