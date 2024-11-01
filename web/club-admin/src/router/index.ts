@@ -43,7 +43,7 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/club',
                 name: 'club',
-                component: () => import('@/views/club/index.vue'),
+                component: () => import('@/views/team/index.vue'),
                 meta: {
                     title: '社团管理'
                 }
