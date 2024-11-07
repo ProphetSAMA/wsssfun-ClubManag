@@ -7,11 +7,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import fun.wsss.web.team_category.entity.CategoryParm;
+import fun.wsss.web.team_category.entity.SelectType;
 import fun.wsss.web.team_category.entity.TeamCategory;
 import fun.wsss.web.team_category.service.TeamCategoryService;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 活动分类控制器
@@ -91,5 +97,29 @@ public class TeamCategoryController {
         query.lambda().orderByAsc(TeamCategory::getOrderNum);
         IPage<TeamCategory> list = teamCategoryService.page(page, query);
         return ResultUtils.success("查询成功", list);
+    }
+
+    /**
+     * 获取下拉框数据
+     *
+     *
+     * @return 结果
+     */
+    @GetMapping("/getSelectList")
+    public ResultVo getSelectList() {
+        // 查询所有活动分类
+        List<TeamCategory> list = teamCategoryService.list();
+        // 存储下拉框数据
+        List<SelectType> selectList = new ArrayList<>();
+        // 组装下拉框数据
+        Optional.ofNullable(list).orElse(new ArrayList<>())
+                .stream()
+                .forEach(item ->{
+                    SelectType type = new SelectType();
+                    type.setLabel(item.getName());
+                    type.setValue(item.getId());
+                    selectList.add(type);
+                });
+        return ResultUtils.success("查询成功", selectList);
     }
 }
