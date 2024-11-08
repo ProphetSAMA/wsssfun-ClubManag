@@ -23,4 +23,9 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
+  define: {
+    'process.env': {
+      'BASE_API': "http://localhost:8888"
+    }
+  }
 });
