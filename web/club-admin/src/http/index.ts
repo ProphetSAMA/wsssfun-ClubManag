@@ -12,7 +12,7 @@ class Http {
     private instance: AxiosInstance;
 
     // 构造函数内初始化axios实例
-    constructor(config: AxiosInstance) {
+    constructor(config: { baseURL: string; timeout: number }) {
         this.instance = axios.create(config);
         // 定义拦截器
         this.interceptors();
@@ -123,6 +123,14 @@ class Http {
     // DELETE方法
     delete(url: string): Promise<any> {
         return this.instance.delete(url);
+    }
+    // 图片上传
+    upload(url: string, params?: object): Promise<any> {
+        return this.instance.post(url, params, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
     }
 }
 export default new Http(config);

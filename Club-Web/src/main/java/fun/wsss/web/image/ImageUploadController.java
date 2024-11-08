@@ -71,7 +71,7 @@ public class ImageUploadController {
         } catch (IOException e) {
             return null;
         }
-        
+
         return ResultUtils.success("成功", "/images" + url);
     }
 }
