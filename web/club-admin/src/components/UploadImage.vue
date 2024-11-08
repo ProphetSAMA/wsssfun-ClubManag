@@ -38,7 +38,7 @@ type PropType = {
   oldUrl: Array<{ url: string }>
 }
 // 接收父组件传递的参数
-const props = withDefaults(defineProps<ProrType>(),{
+const props = withDefaults(defineProps<PropType>(),{
   fileList: () => [],
   oldUrl: () => []
 })

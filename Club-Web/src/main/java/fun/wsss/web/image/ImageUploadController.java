@@ -4,9 +4,7 @@ package fun.wsss.web.image;
 import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -19,6 +17,7 @@ import java.util.UUID;
  * @author Wsssfun
  * @date 2024/11/9 00:02
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/upload")
 public class ImageUploadController {

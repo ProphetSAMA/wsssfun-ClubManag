@@ -24,6 +24,9 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="社团图片">
+          <UploadImage @getImg="getImg" :oldUrl="oldUrl" :fileList="fileList"></UploadImage>
+        </el-form-item>
       </el-form>
     </template>
   </SysDialog>
@@ -31,17 +34,27 @@
 
 <script setup lang="ts">
 
+import {reactive, ref} from "vue";
 import useDialog from "@/hooks/useDialog";
 import SysDialog from "@/components/SysDialog.vue";
-import {reactive} from "vue";
 import useSelectCategory from "@/composable/team/useSelectCategory";
+import UploadImage from "@/components/UploadImage.vue";
+import UploadUserFile from "element-plus";
+import {NewType} from "@/type/BaseType";
 
 const {selectData, getSelect} = useSelectCategory()
-
+// 图片初始化
+const fileList = ref<Array<UploadUserFile>>([])
+// 回显图片
+const oldUrl = ref<Array<{ url: string }>>([])
+// 图片地址
+const imgUrl = ref<Array<{url: string}>>([])
 // 弹框属性
 const {dialog, onClose, onConfirm, onShow} = useDialog()
 // 显示弹框
 const show = () => {
+  dialog.height = 480
+  dialog.width = 1000
   getSelect()
   onShow()
 }
@@ -62,6 +75,10 @@ const rules = {
   name: [
     {required: true, message: "请输入社团名称", trigger: "blur"}
   ]
+}
+// 子组件调用的方法
+const getImg = (img: NewType) => {
+
 }
 </script>
 
