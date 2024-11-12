@@ -6,7 +6,7 @@
       :width="dialog.width"
       :visible="dialog.visible"
       @on-close="onClose"
-      @on-confirm="onConfirm"
+      @on-confirm="commit"
   >
     <template v-slot:content>
       <el-form :model="addModel" ref="addFormRef" :rules="rules" label-width="80px" :inline="false" size="default">
@@ -25,7 +25,28 @@
           </el-select>
         </el-form-item>
         <el-form-item label="社团图片">
-          <UploadImage @getImg="getImg" :oldUrl="oldUrl" :fileList="fileList"></UploadImage>
+          <UploadImage
+              @getImg="getImg"
+              :oldUrl="oldUrl"
+              :fileList="fileList"
+          ></UploadImage>
+        </el-form-item>
+        <el-form-item prop="details" label="社团详情">
+          <div style="border: 1px solid #ccc">
+            <Toolbar
+            style="border-bottom: 1px solid #ccc"
+            :editor="editorRef"
+            :default-config="toolbarConfig"
+            :mode="mode"
+            />
+            <Editor
+                style="height: 300px; overflow-y: hidden"
+                v-model="valueHtml"
+                :defaultConfig="editorConfig"
+                :mode="mode"
+                @onCreated="handleCreated"
+            />
+          </div>
         </el-form-item>
       </el-form>
     </template>
@@ -34,13 +55,19 @@
 
 <script setup lang="ts">
 
-import {reactive, ref} from "vue";
+import {reactive, ref, watch} from "vue";
 import useDialog from "@/hooks/useDialog";
 import SysDialog from "@/components/SysDialog.vue";
 import useSelectCategory from "@/composable/team/useSelectCategory";
 import UploadImage from "@/components/UploadImage.vue";
 import UploadUserFile from "element-plus";
 import {NewType} from "@/type/BaseType";
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import useEditor from "@/composable/team/useEditor";
+import '@wangeditor/editor/dist/css/style.css'
+
+//文本编辑器
+const {editorRef, editorConfig, handleCreated, valueHtml, toolbarConfig, mode} = useEditor()
 
 const {selectData, getSelect} = useSelectCategory()
 // 图片初始化
@@ -78,7 +105,18 @@ const rules = {
 }
 // 子组件调用的方法
 const getImg = (img: NewType) => {
+  console.log(img)
+}
 
+watch(
+    () => valueHtml.value,
+    (value) => {
+      addModel.details = value
+    }
+)
+// 表单提交
+const commit = () => {
+  console.log(addModel)
 }
 </script>
 
