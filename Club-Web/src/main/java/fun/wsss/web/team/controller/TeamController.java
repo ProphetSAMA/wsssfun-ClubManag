@@ -13,12 +13,15 @@ import fun.wsss.web.team.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 /**
  * 社团控制器
  *
  * @author Wsssfun
  * @date 2024/11/1 21:26
  */
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/team")
 public class TeamController {
@@ -33,6 +36,7 @@ public class TeamController {
      */
     @PostMapping
     public ResultVo add(@RequestBody Team team) {
+        team.setCreateTime(new Date());
         if (teamService.save(team)) {
             return ResultUtils.success("新增成功!");
         }

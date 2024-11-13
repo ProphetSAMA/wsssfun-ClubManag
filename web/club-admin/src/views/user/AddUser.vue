@@ -55,7 +55,7 @@ const {dialog, onClose, onConfirm, onShow} = useDialog();
 
 // 表单绑定数据
 const addModel = reactive<User>({
-  userId: '',
+  userId: 0,
   username: '',
   password: '',
   nickname: '',
@@ -142,7 +142,7 @@ const commit = () => {
         addFormRef.value?.resetFields();
       }
     } else {
-      return false;
+      return;
     }
   });
 };
