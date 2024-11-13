@@ -17,8 +17,8 @@ mybatis-plus:
       update-strategy: not_empty
 # 图片上传路径
 web:
-  uploadpath: D:/upload/
-  load-path: file:D:/upload/
+  uploadpath: D:/images/
+  load-path: file:D://images/
 
 logging:
   pattern:
