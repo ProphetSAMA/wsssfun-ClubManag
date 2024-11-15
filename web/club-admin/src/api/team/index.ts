@@ -1,6 +1,4 @@
-// @ts-ignore
 import http from "@/http/index";
-// @ts-ignore
 import {PageList, TeamType} from "@/api/team/TeamModel";
 
 // 获取下拉列表
@@ -11,6 +9,11 @@ export const getSelectApi = () => {
 // 新增社团
 export const addTeamApi = (parm: TeamType) => {
     return http.post('api/team', parm);
+}
+
+// 编辑社团
+export const editTeamApi = (parm: TeamType) => {
+    return http.put('api/team', parm);
 }
 
 // 列表查询

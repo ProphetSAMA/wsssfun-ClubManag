@@ -42,7 +42,7 @@
     </el-pagination>
 
     <!-- 弹框 -->
-    <AddTeam ref="addTeamRef"></AddTeam>
+    <AddTeam ref="addTeamRef" @onFresh="getList"></AddTeam>
   </el-main>
 </template>
 
@@ -52,7 +52,7 @@ import useTeamTable from "@/composable/team/useTeamTable";
 import useTeam from "@/composable/team/useTeam";
 
 // 表格
-const {searchParm, searchBtn, resetBtn, tableList, sizeChange, currentChange, tableHeight} = useTeamTable()
+const {searchParm, searchBtn, resetBtn, tableList, sizeChange, currentChange, tableHeight, getList} = useTeamTable()
 // CURD
 const {addBtn, editBtn, deleteBtn, addTeamRef} = useTeam()
 </script>
