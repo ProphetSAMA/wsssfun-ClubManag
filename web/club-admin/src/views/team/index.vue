@@ -54,7 +54,7 @@ import useTeam from "@/composable/team/useTeam";
 // 表格
 const {searchParm, searchBtn, resetBtn, tableList, sizeChange, currentChange, tableHeight, getList} = useTeamTable()
 // CURD
-const {addBtn, editBtn, deleteBtn, addTeamRef} = useTeam()
+const {addBtn, editBtn, deleteBtn, addTeamRef} = useTeam(getList)
 </script>
 
 <style lang="scss" scoped>
