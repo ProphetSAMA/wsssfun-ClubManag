@@ -18,6 +18,9 @@ target/
 *.iws
 *.iml
 *.ipr
+.idea/.cache/.Apifox_Helper/.toolWindow.db
+.idea/dataSources/*.xml
+.idea/.name
 
 ### NetBeans ###
 /nbproject/private/
