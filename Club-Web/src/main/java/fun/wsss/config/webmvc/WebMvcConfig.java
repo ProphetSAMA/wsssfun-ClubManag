@@ -15,14 +15,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Value("${web.load-path")
+    @Value("${web.load-path}")
     private String loadPath;
 
     @Override
     public void addCorsMappings(CorsRegistry register) {
         register.addMapping("/**")
                 .allowedOriginPatterns("*")
-                .allowedOrigins("*")
                 .allowedMethods("*")
                 .maxAge(3600)
                 .allowedHeaders("*")

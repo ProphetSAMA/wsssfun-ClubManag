@@ -18,7 +18,7 @@ mybatis-plus:
 # 图片上传路径
 web:
   uploadpath: D:/images/
-  load-path: file:D://images/
+  load-path: D:/images/
 
 logging:
   pattern:
