@@ -73,14 +73,14 @@ const handleClose = (key: string, keyPath: string[]) => {
       <el-icon>
         <DataAnalysis/>
       </el-icon>
-      <template #title>活动管理</template>
+      <template #title>新闻活动</template>
     </el-menu-item>
-    <el-menu-item index="/news">
+    <!-- <el-menu-item index="/news">
       <el-icon>
         <ChatLineSquare/>
       </el-icon>
       <template #title>新闻管理</template>
-    </el-menu-item>
+    </el-menu-item> -->
   </el-menu>
 </template>
 

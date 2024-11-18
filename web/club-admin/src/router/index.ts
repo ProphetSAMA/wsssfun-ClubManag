@@ -61,17 +61,17 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'activity',
                 component: () => import('@/views/activity/index.vue'),
                 meta: {
-                    title: '活动管理'
+                    title: '新闻活动'
                 }
             },
-            {
-                path: '/news',
-                name: 'news',
-                component: () => import('@/views/news/index.vue'),
-                meta: {
-                    title: '新闻管理'
-                }
-            },
+            // {
+            //     path: '/news',
+            //     name: 'news',
+            //     component: () => import('@/views/news/index.vue'),
+            //     meta: {
+            //         title: '新闻管理'
+            //     }
+            // },
         ]
     }
 ]
