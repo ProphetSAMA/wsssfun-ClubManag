@@ -1,11 +1,5 @@
-<template>
-  菜单
-</template>
+<template>菜单</template>
 
-<script setup>
+<script setup></script>
 
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

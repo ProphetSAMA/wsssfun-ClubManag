@@ -1,15 +1,15 @@
 <template>
   <el-container class="myContainer">
     <el-aside class="myAside" width="auto">
-      <Menu/>
+      <Menu />
     </el-aside>
     <el-container>
       <el-header class="myHeader">
-        <Collapse/>
-        <BreadCrumb/>
+        <Collapse />
+        <BreadCrumb />
       </el-header>
       <el-main class="myMain">
-        <RouterView/>
+        <RouterView />
       </el-main>
     </el-container>
   </el-container>

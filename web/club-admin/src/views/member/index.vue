@@ -1,11 +1,5 @@
-<template>
-    成员管理
-</template>
+<template>成员管理</template>
 
-<script setup>
+<script setup></script>
 
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

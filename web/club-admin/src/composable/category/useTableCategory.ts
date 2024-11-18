@@ -1,5 +1,5 @@
-import {nextTick, onMounted, reactive, ref} from "vue";
-import {getCategoryApi} from "@/api/category";
+import { nextTick, onMounted, reactive, ref } from "vue";
+import { getCategoryApi } from "@/api/category";
 
 export default function useTableCategory() {
     // 表格数据

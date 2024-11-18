@@ -1,6 +1,6 @@
 // @ts-ignore
 import { server } from "typescript";
-import {onBeforeUnmount, ref, shallowRef, onMounted} from "vue";
+import { onBeforeUnmount, ref, shallowRef, onMounted } from "vue";
 import { IEditorConfig } from "@wangeditor/editor";
 export default function useEditor() {
 

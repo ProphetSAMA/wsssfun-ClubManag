@@ -1,4 +1,4 @@
-import {ElMessageBox} from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 
 export default function myConfirm(text: string) {
     return new Promise((resolve, reject) => {

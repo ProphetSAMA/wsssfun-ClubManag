@@ -1,6 +1,6 @@
-import {onMounted, reactive, ref} from "vue";
-import {getListApi} from "@/api/user";
-import {ListParm} from "@/api/user/UserModel";
+import { onMounted, reactive, ref } from "vue";
+import { getListApi } from "@/api/user";
+import { ListParm } from "@/api/user/UserModel";
 
 export default function useUserTable() {
     // 表格数据
@@ -39,10 +39,10 @@ export default function useUserTable() {
     };
 
     // 页容量改变时触发
-    const sizeChange = () => {}
+    const sizeChange = () => { }
 
     // 页数改变时触发
-    const currentChange = () => {}
+    const currentChange = () => { }
 
     onMounted(() => {
         getList();

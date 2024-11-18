@@ -1,4 +1,4 @@
-import {reactive} from "vue";
+import { reactive } from "vue";
 
 export default function useDialog() {
     // 定义弹窗属性

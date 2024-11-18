@@ -1,5 +1,5 @@
 import http from '@/http'
-import {ListParm, User} from "@/api/user/UserModel";
+import { ListParm, User } from "@/api/user/UserModel";
 
 // 新增用户
 export const addUserApi = (parm: User) => {

@@ -1,6 +1,6 @@
 // axios请求配置
-import axios, {AxiosInstance} from "axios";
-import {ElMessage} from "element-plus";
+import axios, { AxiosInstance } from "axios";
+import { ElMessage } from "element-plus";
 
 const config = {
     baseURL: 'http://localhost:8888',
@@ -110,7 +110,7 @@ class Http {
     }
     // GET方法
     get(url: string, params?: object): Promise<any> {
-        return this.instance.get(url, {params});
+        return this.instance.get(url, { params });
     }
     // POST方法
     post(url: string, data?: object): Promise<any> {

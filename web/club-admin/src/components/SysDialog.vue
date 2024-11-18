@@ -1,12 +1,13 @@
 <template>
-  <el-dialog :title="title"
-             :model-value="visible"
-             :before-close="onClose"
-             append-to-body
-             :width="width + 'px'"
-             :close-on-click-modal="false"
+  <el-dialog
+    :title="title"
+    :model-value="visible"
+    :before-close="onClose"
+    append-to-body
+    :width="width + 'px'"
+    :close-on-click-modal="false"
   >
-    <div class="container" :style="{height: height + 'px'}">
+    <div class="container" :style="{ height: height + 'px' }">
       <slot name="content"></slot>
     </div>
     <template #footer>
@@ -21,29 +22,29 @@
 <script setup lang="ts">
 // 定义弹框属性的数据类型
 interface DialogProps {
-  title: string, // 标题
-  visible: boolean, // 控制弹框显示 / 隐藏
-  width: number,
-  height: number
+  title: string; // 标题
+  visible: boolean; // 控制弹框显示 / 隐藏
+  width: number;
+  height: number;
 }
 
 // 接收父组件传递的值
 const props = withDefaults(defineProps<DialogProps>(), {
-  title: '标题',
+  title: "标题",
   visible: false,
   width: 500,
-  height: 200
-})
+  height: 200,
+});
 
-const emit = defineEmits(['onClose','onConfirm'])
+const emit = defineEmits(["onClose", "onConfirm"]);
 // 弹框关闭
 const onClose = () => {
-  emit('onClose')
-}
+  emit("onClose");
+};
 // 弹框确定
 const onConfirm = () => {
-  emit('onConfirm')
-}
+  emit("onConfirm");
+};
 </script>
 
 <style scoped lang="scss">

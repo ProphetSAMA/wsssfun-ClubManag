@@ -1,5 +1,5 @@
-import {ref} from "vue";
-import {getSelectApi} from "@/api/team";
+import { ref } from "vue";
+import { getSelectApi } from "@/api/team";
 
 export default function useSelectCategory() {
     // 接收下拉列表数据

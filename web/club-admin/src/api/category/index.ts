@@ -1,5 +1,5 @@
 import http from '@/http'
-import {CategoryModel, CategoryPage} from "@/api/category/CategoryModel";
+import { CategoryModel, CategoryPage } from "@/api/category/CategoryModel";
 
 // 新增
 export const addCategoryApi = (parm: CategoryModel) => {

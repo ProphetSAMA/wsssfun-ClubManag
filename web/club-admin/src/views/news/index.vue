@@ -1,11 +1,5 @@
-<template>
-  新闻管理
-</template>
+<template>新闻管理</template>
 
-<script setup>
+<script setup></script>
 
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

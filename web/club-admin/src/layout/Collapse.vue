@@ -1,13 +1,13 @@
 <template>
-  <el-icon @click="iconClick" :size="28" style="cursor: pointer;">
+  <el-icon @click="iconClick" :size="28" style="cursor: pointer">
     <component :is="status ? Expand : Fold"></component>
   </el-icon>
 </template>
 
 <script setup lang="ts">
-import {Expand, Fold} from "@element-plus/icons-vue";
-import {computed} from "vue";
-import {useMenuStore} from "@/store/menu";
+import { Expand, Fold } from "@element-plus/icons-vue";
+import { computed } from "vue";
+import { useMenuStore } from "@/store/menu";
 
 const store = useMenuStore();
 
@@ -20,5 +20,4 @@ const iconClick = () => {
 };
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

@@ -78,7 +78,7 @@ import { addTeamApi, editTeamApi } from "@/api/team";
 import { TeamType } from "@/api/team/TeamModel";
 
 // 图片上传的ref属性
-const upImgRef = ref()
+const upImgRef = ref();
 
 // 表单ref属性
 const addFormRef = ref<FormInstance>();
@@ -208,9 +208,9 @@ const commit = () => {
         // 刷新表格
         emits("onFresh");
         // 清空图片
-        upImgRef.value?.clearImg()
+        upImgRef.value?.clearImg();
         // 关闭弹窗
-        dialog.visible = false
+        dialog.visible = false;
         onClose();
       }
     }

@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import MenuLogo from "@/layout/MenuLogo.vue";
-import {computed} from 'vue'
-import {Avatar, ChatLineSquare, DataAnalysis, Histogram, HomeFilled, Operation, User} from '@element-plus/icons-vue'
-import {useMenuStore} from "@/store/menu";
+import { computed } from "vue";
+import {
+  Avatar,
+  ChatLineSquare,
+  DataAnalysis,
+  Histogram,
+  HomeFilled,
+  Operation,
+  User,
+} from "@element-plus/icons-vue";
+import { useMenuStore } from "@/store/menu";
 
 const store = useMenuStore();
 
@@ -13,65 +21,64 @@ const IsCollapse = computed(() => {
 // 侧边菜单展开 / 收起
 
 const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+  console.log(key, keyPath);
+};
 const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-
+  console.log(key, keyPath);
+};
 </script>
 
 <template>
-  <MenuLogo/>
+  <MenuLogo />
   <el-menu
-      default-active="0"
-      class="el-menu-vertical-demo"
-      :collapse="IsCollapse"
-      @open="handleOpen"
-      @close="handleClose"
-      active-text-color="#ffd04b"
-      background-color="#0f4980"
-      router
+    default-active="0"
+    class="el-menu-vertical-demo"
+    :collapse="IsCollapse"
+    @open="handleOpen"
+    @close="handleClose"
+    active-text-color="#ffd04b"
+    background-color="#0f4980"
+    router
   >
     <el-menu-item index="/home">
       <el-icon>
-        <HomeFilled/>
+        <HomeFilled />
       </el-icon>
       <template #title>首页</template>
     </el-menu-item>
     <el-menu-item index="/user">
       <el-icon>
-        <User/>
+        <User />
       </el-icon>
       <template #title>用户管理</template>
     </el-menu-item>
     <el-menu-item index="/menu">
       <el-icon>
-        <Menu/>
+        <Menu />
       </el-icon>
       <template #title>菜单管理</template>
     </el-menu-item>
     <el-menu-item index="/category">
       <el-icon>
-        <Operation/>
+        <Operation />
       </el-icon>
       <template #title>社团分类</template>
     </el-menu-item>
     <el-menu-item index="/club">
       <el-icon>
-        <Histogram/>
+        <Histogram />
       </el-icon>
       <template #title>社团管理</template>
     </el-menu-item>
     <el-menu-item index="member">
       <el-icon>
-        <Avatar/>
+        <Avatar />
       </el-icon>
       <template #title>团员管理</template>
     </el-menu-item>
     <el-menu-item index="activity">
       <el-icon>
-        <DataAnalysis/>
+        <DataAnalysis />
       </el-icon>
       <template #title>新闻活动</template>
     </el-menu-item>

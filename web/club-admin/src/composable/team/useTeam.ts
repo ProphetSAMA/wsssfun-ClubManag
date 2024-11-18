@@ -1,5 +1,5 @@
-import {ref} from "vue";
-import {TeamType} from "@/api/team/TeamModel";
+import { ref } from "vue";
+import { TeamType } from "@/api/team/TeamModel";
 import { EditType } from "@/type/BaseType";
 import useInstance from "@/hooks/useInstance";
 import { deleteTeamApi } from "@/api/team";
@@ -20,7 +20,7 @@ export default function useTeam(getList: Function) {
     }
 
     // 删除
-    const deleteBtn = async(row: TeamType) => {
+    const deleteBtn = async (row: TeamType) => {
         const confirm = await global.$myConfirm('阁下请三思！<br/> 确定要删除吗？')
         if (confirm) {
             let res = await deleteTeamApi(row)

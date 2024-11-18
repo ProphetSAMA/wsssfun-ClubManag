@@ -1,6 +1,6 @@
-import {nextTick, onMounted, reactive, ref} from "vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
 // @ts-ignore
-import {getListApi} from "@/api/team";
+import { getListApi } from "@/api/team";
 
 export default function useTeamTable() {
 

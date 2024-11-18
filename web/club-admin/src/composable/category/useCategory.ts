@@ -1,15 +1,15 @@
-import {ref} from "vue";
-import {CategoryModel} from "@/api/category/CategoryModel";
-import {EditType, FuncList} from "@/type/BaseType";
+import { ref } from "vue";
+import { CategoryModel } from "@/api/category/CategoryModel";
+import { EditType, FuncList } from "@/type/BaseType";
 import useInstance from "@/hooks/useInstance";
-import {deleteCategoryApi} from "@/api/category";
-import {ElMessage} from "element-plus";
+import { deleteCategoryApi } from "@/api/category";
+import { ElMessage } from "element-plus";
 
 export default function useCategory(getList: FuncList) {
-    const {global} = useInstance()
+    const { global } = useInstance()
 
     // 弹框属性
-    const addFormRef = ref<{ show: (type: string, row?:CategoryModel) => void }>();
+    const addFormRef = ref<{ show: (type: string, row?: CategoryModel) => void }>();
     // 新增
     const addBtn = () => {
         addFormRef.value?.show(EditType.ADD);

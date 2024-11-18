@@ -1,5 +1,5 @@
 import http from "@/http/index";
-import {PageList, TeamType} from "@/api/team/TeamModel";
+import { PageList, TeamType } from "@/api/team/TeamModel";
 
 // 获取下拉列表
 export const getSelectApi = () => {
