@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author Wsssfun
  * @date 2024/11/19 01:36
@@ -23,5 +25,5 @@ public class News {
     private String details;
     private String hasTop;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private String createTime;
+    private Date createTime;
 }
