@@ -1,3 +1,4 @@
+import { NewsType } from "@/api/news/NewsModel";
 import { ref } from "vue";
 
 /**
@@ -11,10 +12,10 @@ export default function useActivity() {
         addActivityRef.value?.show();
     }
     // 编辑
-    const editBtn = () => {
+    const editBtn = (row: NewsType) => {
     }
     // 删除
-    const deleteBtn = () => {
+    const deleteBtn = (row: NewsType) => {
     }
 
     return {
