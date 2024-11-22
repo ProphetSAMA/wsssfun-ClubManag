@@ -10,11 +10,11 @@ import fun.wsss.utils.ResultVo;
 import fun.wsss.web.news.entity.NewParm;
 import fun.wsss.web.news.entity.News;
 import fun.wsss.web.news.service.NewsService;
-import fun.wsss.web.team.entity.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Wsssfun
@@ -70,6 +70,74 @@ public class NewsController {
 
         IPage<News> list = newsService.page(page, query);
 
+        return ResultUtils.success("查询成功", list);
+    }
+
+    /**
+     * 推荐的活动
+     *
+     * @return 结果
+     */
+    @GetMapping("/getTopActivity")
+    public ResultVo getTopActivity() {
+        // 构造查询条件
+        QueryWrapper<News> query = new QueryWrapper<>();
+        query.lambda()
+                .eq(News::getType, 0)
+                .eq(News::getHasTop, 1)
+                .orderByDesc(News::getCreateTime);
+        List<News> list = newsService.list(query);
+        return ResultUtils.success("查询成功", list);
+    }
+
+    /**
+     * 推荐的公告
+     *
+     * @return 结果
+     */
+    @GetMapping("/getTopNotice")
+    public ResultVo getTopNotice() {
+        // 构造查询条件
+        QueryWrapper<News> query = new QueryWrapper<>();
+        query.lambda()
+                .eq(News::getType, 2)
+                .eq(News::getHasTop, 1)
+                .orderByDesc(News::getCreateTime);
+        List<News> list = newsService.list(query);
+        return ResultUtils.success("查询成功", list);
+    }
+
+    /**
+     * 最新活动
+     *
+     * @return 结果
+     */
+    @GetMapping("/getNewActivity")
+    public ResultVo getNewActivity() {
+        // 构造查询条件
+        QueryWrapper<News> query = new QueryWrapper<>();
+        query.lambda()
+                .eq(News::getType, 0)
+                .orderByDesc(News::getCreateTime)
+                .last("limit 8");
+        List<News> list = newsService.list(query);
+        return ResultUtils.success("查询成功", list);
+    }
+
+    /**
+     * 最新新闻
+     *
+     * @return 结果
+     */
+    @GetMapping("/getNewNotice")
+    public ResultVo getNewNotice() {
+        // 构造查询条件
+        QueryWrapper<News> query = new QueryWrapper<>();
+        query.lambda()
+                .eq(News::getType, 1)
+                .orderByDesc(News::getCreateTime)
+                .last("limit 8");
+        List<News> list = newsService.list(query);
         return ResultUtils.success("查询成功", list);
     }
 }
