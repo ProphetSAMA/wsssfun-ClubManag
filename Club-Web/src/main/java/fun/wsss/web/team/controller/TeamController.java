@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 社团控制器
@@ -90,5 +91,21 @@ public class TeamController {
         IPage<Team> list = teamService.page(page, query);
         return ResultUtils.success("查询成功", list);
 
+    }
+
+    /**
+     * 查询置顶社团
+     *
+     * @return 结果
+     */
+    @GetMapping("/getTopTeam")
+    public ResultVo getTopTeam() {
+        // 构造查询条件
+        QueryWrapper<Team> query = new QueryWrapper<>();
+        query.lambda().eq(Team::getHasTop, "1")
+                .orderByAsc(Team::getCreateTime);
+        List<Team> list = teamService.list(query);
+
+        return ResultUtils.success("查询成功", list);
     }
 }

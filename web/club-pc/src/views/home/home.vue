@@ -50,7 +50,7 @@
       >
         <template #header>
           <div class="card-header">
-            <span class="moretitle">新闻</span>
+            <span class="moretitle">推荐公告</span>
             <el-button class="button" text
               >更多<el-icon><ArrowRight /></el-icon
             ></el-button>

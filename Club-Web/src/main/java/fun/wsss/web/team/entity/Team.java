@@ -25,4 +25,5 @@ public class Team {
     private String details;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createTime;
+    private String hasTop;
 }

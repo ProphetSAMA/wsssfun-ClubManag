@@ -125,7 +125,7 @@ const show = (type: EditType, row?: NewsType) => {
                     fileList.value = [];
                     oldUrl.value = [];
                     const imgs = row.image.split(",");
-                    imgs.forEach(img => {
+                    imgs.forEach((img: string) => {
                         fileList.value.push({ name: img, url: img });
                         oldUrl.value.push({ url: img });
                     });

@@ -10,6 +10,7 @@ import fun.wsss.utils.ResultVo;
 import fun.wsss.web.news.entity.NewParm;
 import fun.wsss.web.news.entity.News;
 import fun.wsss.web.news.service.NewsService;
+import fun.wsss.web.team.entity.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

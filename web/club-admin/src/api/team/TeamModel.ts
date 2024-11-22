@@ -4,7 +4,8 @@ export type TeamType = {
     categoryId: string,
     name: string,
     image: string,
-    details: string
+    details: string,
+    hasTop: string
 }
 
 // 列表查询参数类型

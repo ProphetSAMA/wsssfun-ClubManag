@@ -32,6 +32,15 @@
         </template>
       </el-table-column>
       <el-table-column prop="name" label="社团名称"></el-table-column>
+      <!-- 是否推荐首页 -->
+      <el-table-column prop="hasTop" label="是否推荐首页">
+                <template #default="scope">
+                    <!-- 根据是否推荐首页显示标签 -->
+                    <el-tag :type="scope.row.hasTop === '1' ? 'success' : 'info'">
+                        {{ scope.row.hasTop === "1" ? "是" : "否" }}
+                    </el-tag>
+                </template>
+            </el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column align="center" width="200px" label="操作">
         <template #default="scope">

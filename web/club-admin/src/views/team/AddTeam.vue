@@ -58,6 +58,13 @@
             />
           </div>
         </el-form-item>
+        <!-- 首页推荐 -->
+        <el-form-item label="首页推荐" prop="hasTop">
+                    <el-radio-group v-model="addModel.hasTop">
+                        <el-radio :value="0">否</el-radio>
+                        <el-radio :value="1">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
       </el-form>
     </template>
   </SysDialog>
@@ -152,6 +159,7 @@ const addModel = reactive<TeamType>({
   name: "",
   image: "",
   details: "",
+  hasTop: "",
 });
 // 表单验证规则
 const rules = {
@@ -161,6 +169,7 @@ const rules = {
   ],
   image: [{ required: true, message: "请上传社团图片", trigger: "change" }],
   details: [{ required: true, message: "请输入社团详情", trigger: "blur" }],
+  hasTop: [{ required: true, message: "请选择是否推荐首页", trigger: "change" }],
 };
 // 子组件调用的方法
 const getImg = (img: NewType) => {
