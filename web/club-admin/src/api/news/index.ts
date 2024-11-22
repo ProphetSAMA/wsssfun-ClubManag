@@ -12,8 +12,8 @@ export const editNewsApi = (parm: NewsType) => {
 };
 
 // 删除
-export const deleteNewsApi = (id: string) => {
-  return http.delete(`/api/news/${id}`);
+export const deleteNewsApi = (parm: NewsType) => {
+  return http.delete(`/api/news/${parm.id}`);
 };
 
 // 列表

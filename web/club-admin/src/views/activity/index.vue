@@ -68,7 +68,7 @@
             :total="searchParm.total" background />
 
         <!-- 新增弹窗 -->
-        <AddActivity ref="addActivityRef" />
+        <AddActivity ref="addActivityRef" @onRefresh="getList" />
     </el-main>
 </template>
 

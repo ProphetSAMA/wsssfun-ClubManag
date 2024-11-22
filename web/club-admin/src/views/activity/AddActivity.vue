@@ -53,11 +53,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
+import { ref, reactive, watch, nextTick } from "vue";
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
 import UploadImage from "@/components/UploadImage.vue";
-import { EditType, NewType } from "@/type/BaseType";
+import { EditType, NewType, Title } from "@/type/BaseType";
 import {
     ElMessage,
     FormInstance,
@@ -72,6 +72,9 @@ import { addNewsApi, editNewsApi, deleteNewsApi, getNewsListApi } from "@/api/ne
 
 // 表单ref属性
 const addFormRef = ref<FormInstance>();
+
+// 显示弹框
+const tags = ref("");
 
 //文本编辑器
 const {
@@ -94,9 +97,44 @@ const imgUrl = ref<Array<{ url: string }>>([]);
 const { dialog, onClose, onConfirm, onShow } = useDialog();
 
 // 显示弹框
-const show = () => {
+const show = (type: EditType, row?: NewsType) => {
     dialog.width = 1200;
     dialog.height = 600;
+    
+    // 使用严格的枚举比较
+    if (type === EditType.ADD) {
+        dialog.title = Title.ADD;
+        // 重置表单
+        addModel.id = "";
+        addModel.type = "";
+        addModel.createId = "";
+        addModel.image = "";
+        addModel.title = "";
+        addModel.details = "";
+        addModel.hasTop = "";
+        fileList.value = [];
+        oldUrl.value = [];
+        valueHtml.value = "";
+    } else {
+        dialog.title = Title.EDIT;
+        if (row) {
+            nextTick(() => {
+                Object.assign(addModel, row);
+                // 处理图片回显
+                if (row.image) {
+                    fileList.value = [];
+                    oldUrl.value = [];
+                    const imgs = row.image.split(",");
+                    imgs.forEach(img => {
+                        fileList.value.push({ name: img, url: img });
+                        oldUrl.value.push({ url: img });
+                    });
+                }
+                valueHtml.value = row.details;
+            });
+        }
+    }
+    
     onShow();
 };
 
@@ -153,16 +191,26 @@ watch(
         addModel.details = value;
     }
 );
-
+// 注册刷新事件
+const emits = defineEmits(['onRefresh'])
 // 提交
 const commit = () => {
     console.log(addModel);
     // 只在表单验证通过后提交
     addFormRef.value?.validate(async (valid) => {
         if (valid) {
-            let res = await addNewsApi(addModel);
+            let res = null
+            if (tags.value === EditType.ADD) {
+                res = await addNewsApi(addModel);
+            } else {
+                res = await editNewsApi(addModel);
+            }
             if (res && res.code == 200) {
+                // 信息提示
                 ElMessage.success(res.msg);
+                // 刷新列表
+                emits('onRefresh')
+                // 关闭弹框
                 onClose();
             }
         }
