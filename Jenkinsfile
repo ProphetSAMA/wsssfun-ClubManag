@@ -48,13 +48,7 @@ pipeline {
             }
         }
 
-        stage('Deploy (Optional)') {
-            steps {
-                // 示例：使用 SSH 发布到服务器（需提前配置 SSH 凭据）
-                // sh 'scp Club-Web/target/*.jar user@server:/path/to/deploy'
-                // sh 'scp web/dist/* user@server:/var/www/html'
-            }
-        }
+        
     }
 
     post {
