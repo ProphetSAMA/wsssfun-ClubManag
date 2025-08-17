@@ -58,7 +58,7 @@ pipeline {
         }
         failure {
             // 构建失败时发送通知（需配置邮件/钉钉等插件）
-            emailext body: '构建失败，请检查日志: ${BUILD_URL}', subject: 'Jenkins Build Failed', to: 'your-email@example.com'
+            emailext body: '构建失败，请检查日志: ${BUILD_URL}', subject: 'Jenkins 构建失败', to: 'wsssfun@icloud.com'
         }
     }
 }
