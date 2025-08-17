@@ -26,6 +26,12 @@
 		<tag/>
 		<url/>
 	</scm>
+	<repositories>
+    <repository>
+      <id>aliyun</id>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </repository>
+  </repositories>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
