@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS'  // Jenkins 里配置的 Node.js 工具名
-        maven 'Maven'     // Jenkins 里配置的 Maven 工具名
+        nodejs 'NodeJS_club'  // Jenkins 里配置的 Node.js 工具名
+        maven 'Maven_club'     // Jenkins 里配置的 Maven 工具名
     }
 
     environment {
