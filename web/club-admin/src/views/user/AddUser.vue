@@ -68,7 +68,7 @@ const addModel = reactive<User>({
   phone: "",
   sex: 0, // 默认男
   status: 0, // 默认启用
-  isadmin: 0, // 默认为普通用户
+  isAdmin: 0, // 默认为普通用户
 });
 
 // 表单验证规则
