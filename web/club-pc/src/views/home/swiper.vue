@@ -1,50 +1,59 @@
 <template>
-<swiper
+  <swiper
     :modules="modules"
     :initial-slide="1"
     :slides-per-view="3"
-    :centeredSlides="true"
-    :spaceBetween="20"
+    :centered-slides="true"
+    :space-between="20"
     :autoplay="{ disableOnInteraction: false }"
     loop
     class="mySwiper"
-    @swiper="setSwiperRef"
->
-<swiper-slide class="swiper-slide" v-for="(item, index) in list" :key="index">
-    <el-image style="height: 250px;width: 100%; object-fit: cover;" :src="item.url"/>
-</swiper-slide>
-</swiper>
+  >
+    <swiper-slide v-for="item in list" :key="item.id">
+      <el-image
+        style="height: 250px; width: 100%; object-fit: cover"
+        :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
+        fit="cover"
+      />
+      <div class="slide-title">{{ item.name }}</div>
+    </swiper-slide>
+  </swiper>
 </template>
+
 <script setup lang="ts">
-import { ref } from "vue";
-import img1 from "@/assets/jitashe.jpg";
-import img2 from "@/assets/boyinshe.jpg";
-import img3 from "@/assets/yumaoqiushe.jpg";
-import img4 from "@/assets/4.jpg";
-import img5 from "@/assets/5.jpg";
-import img6 from "@/assets/6.jpg";
-// 引入Swiper核心和所需模块
+import { ref, onMounted } from "vue";
+import defaultImg from "@/assets/jitashe.jpg";
 import { Autoplay, Navigation, Pagination, Virtual } from "swiper/modules";
-
-// 引入Swiper组件
 import { Swiper, SwiperSlide } from "swiper/vue";
-
-// 引入Swiper样式(按需导入)
 import "swiper/css";
-import "swiper/css/navigation"; // 底部圆点
-import "swiper/css/pagination"; // 左右箭头
-import "swiper/css/scrollbar"; // 滚动条
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import http from "@/http";
 
-const modules = [Pagination, Navigation, Virtual, Autoplay]
-let swiperRef = null;
-const setSwiperRef = (swiper: any) => {
-    swiperRef = swiper;
-};
-const list = ref([{ url: img1 }, { url: img2 }, { url: img3 }, { url: img4 }, { url: img5 }, { url: img6 }]);
+const modules = [Pagination, Navigation, Virtual, Autoplay];
+const list = ref<any[]>([]);
+
+onMounted(async () => {
+  try {
+    const res = await http.get("/api/team/getTopTeam");
+    if (res && res.code === 200) {
+      list.value = res.data || [];
+    }
+  } catch (e) {
+    console.error("获取推荐社团失败", e);
+  }
+});
 </script>
+
 <style scoped lang="scss">
 .mySwiper {
-    margin-top: 20px;
-    
+  margin-top: 20px;
+}
+.slide-title {
+  text-align: center;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #303133;
 }
 </style>
