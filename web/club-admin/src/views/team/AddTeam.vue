@@ -190,6 +190,8 @@ const getImg = (img: NewType) => {
   }
   // 取消末尾逗号
   addModel.image = url.substring(0, url.lastIndexOf(","));
+  // 清除图片字段的校验错误
+  addFormRef.value?.clearValidate('image');
 };
 
 // 监听富文本内容
