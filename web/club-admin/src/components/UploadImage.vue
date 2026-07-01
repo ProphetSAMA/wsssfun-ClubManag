@@ -30,7 +30,6 @@ import {
   UploadUserFile,
   UploadFiles,
 } from "element-plus";
-import * as process from "node:process";
 
 // 注册事件
 const emits = defineEmits(["getImg"]);
