@@ -67,21 +67,23 @@
         <h2>最新新闻</h2>
         <span class="more" @click="$router.push('/news')">更多</span>
       </div>
-      <div class="news-row">
-        <div class="news-card" v-for="item in newsList" :key="item.id">
-          <el-image
-            v-if="item.image"
-            class="news-img"
-            :src="'http://localhost:8888' + item.image"
-            fit="cover"
-          />
-          <div class="news-img placeholder" v-else></div>
-          <div class="news-body">
-            <h3>{{ item.title }}</h3>
-            <span class="date">{{ item.createTime }}</span>
+      <div class="card">
+        <div class="news-row">
+          <div class="news-card" v-for="item in newsList" :key="item.id">
+            <el-image
+              v-if="item.image"
+              class="news-img"
+              :src="'http://localhost:8888' + item.image"
+              fit="cover"
+            />
+            <div class="news-img placeholder" v-else></div>
+            <div class="news-body">
+              <h3>{{ item.title }}</h3>
+              <span class="date">{{ item.createTime }}</span>
+            </div>
           </div>
+          <el-empty v-if="newsList.length === 0" description="暂无新闻" :image-size="60" />
         </div>
-        <el-empty v-if="newsList.length === 0" description="暂无新闻" :image-size="60" />
       </div>
     </section>
   </div>
@@ -248,11 +250,16 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  align-items: stretch;
 
   .col {
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  .card {
+    flex: 1;
   }
 }
 
@@ -261,13 +268,13 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  padding: 16px;
   justify-content: center;
 }
 
 .news-card {
-  background: var(--bg-white);
+  background: var(--bg);
   border-radius: var(--radius);
-  border: 1px solid var(--border-light);
   overflow: hidden;
   cursor: pointer;
   transition: box-shadow 0.2s;

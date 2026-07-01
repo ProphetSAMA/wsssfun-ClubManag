@@ -19,19 +19,19 @@
           @click="selectCategory(item.value)"
         >{{ item.label }}</div>
       </aside>
-      <div class="grid">
-        <div class="team-card" v-for="item in teamList" :key="item.id">
+      <div class="card">
+        <div class="item" v-for="item in teamList" :key="item.id">
           <el-image
-            class="team-img"
+            class="item-img"
             :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
             fit="cover"
           />
-          <div class="team-info">
-            <div class="team-name">{{ item.name }}</div>
-            <div class="team-date">{{ item.createTime }}</div>
+          <div class="item-body">
+            <div class="item-name">{{ item.name }}</div>
+            <span class="date">{{ item.createTime }}</span>
           </div>
         </div>
-        <el-empty v-if="teamList.length === 0" description="暂无社团" class="empty-full" />
+        <el-empty v-if="teamList.length === 0" description="暂无社团" />
       </div>
     </div>
   </div>
@@ -69,12 +69,10 @@ const selectCategory = (id: number | null) => {
   gap: 20px;
 }
 
-.page-head {
-  h1 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-1);
-  }
+.page-head h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-1);
 }
 
 .layout {
@@ -110,63 +108,53 @@ const selectCategory = (id: number | null) => {
   cursor: pointer;
   transition: all 0.15s;
 
-  &:hover {
-    background: var(--bg-hover);
-  }
-
-  &.active {
-    background: var(--primary-bg);
-    color: var(--primary);
-    font-weight: 500;
-  }
+  &:hover { background: var(--bg-hover); }
+  &.active { background: var(--primary-bg); color: var(--primary); font-weight: 500; }
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.empty-full {
-  grid-column: 1 / -1;
-}
-
-.team-card {
+.card {
   background: var(--bg-white);
   border-radius: var(--radius);
   border: 1px solid var(--border-light);
   overflow: hidden;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-light);
   cursor: pointer;
-  transition: box-shadow 0.2s;
+  transition: background 0.15s;
 
-  &:hover {
-    box-shadow: var(--shadow-md);
-  }
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--bg-hover); }
 }
 
-.team-img {
-  width: 100%;
-  height: 150px;
+.item-img {
+  width: 110px;
+  height: 75px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  object-fit: cover;
 }
 
-.team-info {
-  padding: 10px 12px;
+.item-body {
+  flex: 1;
+  min-width: 0;
 }
 
-.team-name {
+.item-name {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-1);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
-.team-date {
-  font-size: 12px;
-  color: var(--text-3);
-}
+.date { font-size: 12px; color: var(--text-3); }
 
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
-  .grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
