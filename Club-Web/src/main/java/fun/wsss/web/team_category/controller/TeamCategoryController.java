@@ -1,8 +1,8 @@
 package fun.wsss.web.team_category.controller;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
@@ -10,36 +10,31 @@ import fun.wsss.web.team_category.entity.CategoryParm;
 import fun.wsss.web.team_category.entity.SelectType;
 import fun.wsss.web.team_category.entity.TeamCategory;
 import fun.wsss.web.team_category.service.TeamCategoryService;
-import io.micrometer.common.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * 活动分类控制器
+ * 社团分类控制器
  *
  * @author Wsssfun
  * @date 2024/10/30 02:31
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/category")
 public class TeamCategoryController {
-    @Autowired
-    private TeamCategoryService teamCategoryService;
+
+    private final TeamCategoryService teamCategoryService;
 
     public TeamCategoryController(TeamCategoryService teamCategoryService) {
         this.teamCategoryService = teamCategoryService;
     }
 
     /**
-     * 添加活动
+     * 添加分类
      *
-     * @param teamCategory 活动
+     * @param teamCategory 分类信息
      * @return 结果
      */
     @PostMapping
@@ -51,9 +46,9 @@ public class TeamCategoryController {
     }
 
     /**
-     * 编辑活动
+     * 编辑分类
      *
-     * @param teamCategory 活动
+     * @param teamCategory 分类信息
      * @return 结果
      */
     @PutMapping
@@ -65,9 +60,9 @@ public class TeamCategoryController {
     }
 
     /**
-     * 删除活动
+     * 删除分类
      *
-     * @param id 活动id
+     * @param id 分类ID
      * @return 结果
      */
     @DeleteMapping("/{id}")
@@ -79,21 +74,18 @@ public class TeamCategoryController {
     }
 
     /**
-     * 查询活动列表
+     * 查询分类列表
      *
      * @param parm 查询条件
      * @return 结果
      */
     @GetMapping("/list")
     public ResultVo list(CategoryParm parm) {
-        // 构造分页对象
         IPage<TeamCategory> page = new Page<>(parm.getCurrentPage(), parm.getPageSize());
-        // 构造查询条件
         QueryWrapper<TeamCategory> query = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(parm.getName())) {
             query.lambda().like(TeamCategory::getName, parm.getName());
         }
-        // 排序
         query.lambda().orderByAsc(TeamCategory::getOrderNum);
         IPage<TeamCategory> list = teamCategoryService.page(page, query);
         return ResultUtils.success("查询成功", list);
@@ -102,24 +94,19 @@ public class TeamCategoryController {
     /**
      * 获取下拉框数据
      *
-     *
-     * @return 结果
+     * @return 下拉框选项列表
      */
     @GetMapping("/getSelectList")
     public ResultVo getSelectList() {
-        // 查询所有活动分类
         List<TeamCategory> list = teamCategoryService.list();
-        // 存储下拉框数据
-        List<SelectType> selectList = new ArrayList<>();
-        // 组装下拉框数据
-        Optional.ofNullable(list).orElse(new ArrayList<>())
-                .stream()
-                .forEach(item ->{
+        List<SelectType> selectList = list.stream()
+                .map(item -> {
                     SelectType type = new SelectType();
                     type.setLabel(item.getName());
                     type.setValue(item.getId());
-                    selectList.add(type);
-                });
+                    return type;
+                })
+                .collect(Collectors.toList());
         return ResultUtils.success("查询成功", selectList);
     }
 }

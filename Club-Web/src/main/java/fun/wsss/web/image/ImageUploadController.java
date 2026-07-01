@@ -1,6 +1,5 @@
 package fun.wsss.web.image;
 
-
 import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,60 +16,41 @@ import java.util.UUID;
  * @author Wsssfun
  * @date 2024/11/9 00:02
  */
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/upload")
 public class ImageUploadController {
-    /**
-     * 上传路径
-     */
+
     @Value("${web.uploadpath}")
     private String webUploadPath;
 
     /**
      * 上传图片
      *
-     * @param file 图片
-     * @return 结果
+     * @param file 图片文件
+     * @return 图片访问路径
      */
-    @RequestMapping("/uploadImage")
+    @PostMapping("/uploadImage")
     public ResultVo uploadImage(@RequestParam("file") MultipartFile file) {
-
-        // 图片上传路径
-        String url = null;
-
-        // 获取文件名
         String fileName = file.getOriginalFilename();
-
-        // 获取文件后缀
-        String fileExtenionName = null;
-
-        // 若文件名不为空
-        if (fileName != null) {
-            fileExtenionName = fileName.substring(fileName.lastIndexOf("."));
+        if (fileName == null || fileName.isEmpty()) {
+            return ResultUtils.error("文件名为空");
         }
 
-        // 生成新的文件名
-        String newFileName = UUID.randomUUID() + fileExtenionName;
-        String filePath = webUploadPath;
-        File fileDir = new File(filePath);
+        String extension = fileName.substring(fileName.lastIndexOf("."));
+        String newFileName = UUID.randomUUID() + extension;
 
-        // 如果文件夹不存在则创建
-        if (!fileDir.exists()) {
-            fileDir.mkdirs();
-            // 设置文件权限
-            fileDir.setWritable(true);
+        File dir = new File(webUploadPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
 
-        File targetFile = new File(filePath, newFileName);
-
+        File targetFile = new File(webUploadPath, newFileName);
         try {
             file.transferTo(targetFile);
-            url = "/" + targetFile.getName();
         } catch (IOException e) {
-            return null;
+            return ResultUtils.error("上传失败: " + e.getMessage());
         }
 
-        return ResultUtils.success("成功", "/images" + url);
+        return ResultUtils.success("上传成功", "/images/" + newFileName);
     }
 }
