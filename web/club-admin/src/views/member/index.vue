@@ -121,8 +121,8 @@ const searchParm = reactive<MemberParm>({
 const dialog = reactive({
   title: '',
   visible: false,
-  width: '500px',
-  height: '250px'
+  width: 500,
+  height: 280
 })
 
 const formModel = reactive({
