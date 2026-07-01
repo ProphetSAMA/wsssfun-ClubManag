@@ -1,3 +1,18 @@
+// 登录参数
+export type LoginParm = {
+    username: string,
+    password: string
+}
+
+// 登录返回数据
+export type LoginResult = {
+    token: string,
+    userId: number,
+    username: string,
+    nickname: string,
+    isAdmin: number
+}
+
 // 用户的数据类型
 export type User = {
     userId: number,
@@ -6,14 +21,14 @@ export type User = {
     nickname: string,
     phone: string,
     sex: number,
-    status: number
-    isadmin: number,
+    status: number,
+    isAdmin: number,
 }
 
 // 表格查询参数
 export type ListParm = {
     currentPage: number,
     pageSize: number,
-    nickname: string,
+    nickName: string,
     total?: number
 }

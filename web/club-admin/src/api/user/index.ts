@@ -1,5 +1,15 @@
 import http from '@/http'
-import { ListParm, User } from "@/api/user/UserModel";
+import { ListParm, User, LoginParm } from "@/api/user/UserModel";
+
+// 登录
+export const loginApi = (parm: LoginParm) => {
+    return http.post('/api/user/login', parm)
+}
+
+// 获取当前用户信息
+export const getUserInfoApi = () => {
+    return http.get('/api/user/info')
+}
 
 // 新增用户
 export const addUserApi = (parm: User) => {
