@@ -7,6 +7,10 @@ spring:
     username: root
     password: qwe123.0+-
     driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 mybatis-plus:
   configuration:
@@ -23,7 +27,7 @@ jwt:
 # 图片上传路径
 web:
   uploadpath: D:/images/
-  load-path: D:/images/
+  load-path: file:D:/images/
 
 logging:
   pattern:
