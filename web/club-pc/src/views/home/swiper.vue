@@ -11,7 +11,7 @@
         <div class="team-card">
           <el-image
             class="team-img"
-            :src="item.image ? item.image.split(',')[0] : defaultImg"
+            :src="item.image ? imgUrl(item.image) : defaultImg"
             fit="cover"
           />
           <div class="team-name">{{ item.name }}</div>
@@ -29,6 +29,14 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import http from "@/http";
 
+const BASE = "http://localhost:8888";
+const imgUrl = (image: string) => {
+  if (!image) return "";
+  let url = image.split(",")[0].trim();
+  if (url.startsWith("undefined")) url = url.replace("undefined", "");
+  if (url.startsWith("/")) url = BASE + url;
+  return url;
+};
 const modules = [Autoplay];
 const list = ref<any[]>([]);
 

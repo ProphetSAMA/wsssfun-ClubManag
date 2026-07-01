@@ -99,10 +99,10 @@ const uploadFile = async (file: any) => {
   const res = await UploadImageApi(formData);
   if (res && res.code == 200 && res.data) {
     ElMessage.success("上传成功");
-    file.name = import.meta.env.BASE_API + res.data;
+    file.name = process.env.BASE_API + res.data;
     // 设置到返回子组件的数据中
     newImgRes.value.newImgUrl.push({
-      url: import.meta.env.BASE_API + res.data,
+      url: process.env.BASE_API + res.data,
     });
     emits("getImg", newImgRes.value);
   }

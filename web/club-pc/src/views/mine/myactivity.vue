@@ -6,7 +6,7 @@
         <el-image
           v-if="item.image"
           class="item-img"
-          :src="item.image.split(',')[0]"
+          :src="imgUrl(item.image)"
           fit="cover"
         />
         <div class="item-body">
@@ -23,6 +23,14 @@
 import { ref, onMounted } from 'vue'
 import http from '@/http'
 
+const BASE = "http://localhost:8888";
+const imgUrl = (image: string) => {
+  if (!image) return "";
+  let url = image.split(",")[0].trim();
+  if (url.startsWith("undefined")) url = url.replace("undefined", "");
+  if (url.startsWith("/")) url = BASE + url;
+  return url;
+};
 const activityList = ref<any[]>([])
 
 onMounted(async () => {

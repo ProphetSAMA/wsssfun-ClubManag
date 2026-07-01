@@ -73,7 +73,7 @@
             <el-image
               v-if="item.image"
               class="news-img"
-              :src="item.image.split(',')[0]"
+              :src="imgUrl(item.image)"
               fit="cover"
             />
             <div class="news-img placeholder" v-else></div>
@@ -94,6 +94,19 @@ import { ref, onMounted } from "vue";
 import swiper from "./swiper.vue";
 import swiperActivity from "./swiperActivity.vue";
 import http from "@/http";
+
+const BASE = "http://localhost:8888";
+
+/** 从可能包含多图、脏前缀的 image 字段中取第一张有效 URL */
+const imgUrl = (image: string) => {
+  if (!image) return "";
+  let url = image.split(",")[0].trim();
+  // 兼容旧数据: "undefined/images/xxx.jpg" → "/images/xxx.jpg"
+  if (url.startsWith("undefined")) url = url.replace("undefined", "");
+  // 相对路径补全
+  if (url.startsWith("/")) url = BASE + url;
+  return url;
+};
 
 const noticeList = ref<any[]>([]);
 const activityList = ref<any[]>([]);

@@ -23,7 +23,7 @@
         <div class="item" v-for="item in teamList" :key="item.id">
           <el-image
             class="item-img"
-            :src="item.image ? item.image.split(',')[0] : defaultImg"
+            :src="item.image ? imgUrl(item.image) : defaultImg"
             fit="cover"
           />
           <div class="item-body">
@@ -42,6 +42,14 @@ import { ref, onMounted } from "vue";
 import defaultImg from "@/assets/jitashe.jpg";
 import http from "@/http";
 
+const BASE = "http://localhost:8888";
+const imgUrl = (image: string) => {
+  if (!image) return "";
+  let url = image.split(",")[0].trim();
+  if (url.startsWith("undefined")) url = url.replace("undefined", "");
+  if (url.startsWith("/")) url = BASE + url;
+  return url;
+};
 const categoryList = ref<any[]>([]);
 const teamList = ref<any[]>([]);
 const selectedCategory = ref<number | null>(null);
