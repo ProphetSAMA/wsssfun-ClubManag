@@ -102,7 +102,7 @@ public class MemberController {
     @GetMapping("/list")
     public ResultVo list(MemberParm parm) {
         Page<MemberVo> page = new Page<>(parm.getCurrentPage(), parm.getPageSize());
-        IPage<MemberVo> list = memberMapper.selectMemberPage(page, parm.getTeamId(), parm.getUserId());
+        IPage<MemberVo> list = memberMapper.selectMemberPage(page, parm.getTeamId(), parm.getUserId(), parm.getUserName());
         return ResultUtils.success("查询成功", list);
     }
 }

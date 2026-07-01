@@ -17,5 +17,6 @@ export type MemberParm = {
     pageSize: number,
     teamId?: number,
     userId?: number,
+    userName?: string,
     total?: number
 }

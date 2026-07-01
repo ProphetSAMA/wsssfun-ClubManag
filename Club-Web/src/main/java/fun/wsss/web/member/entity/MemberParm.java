@@ -13,4 +13,5 @@ public class MemberParm {
     private Integer pageSize = 10;
     private Long teamId;
     private Long userId;
+    private String userName;
 }

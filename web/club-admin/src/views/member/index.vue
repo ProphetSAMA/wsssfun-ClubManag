@@ -18,6 +18,14 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-input
+          v-model="searchParm.userName"
+          placeholder="成员姓名"
+          clearable
+          style="width: 180px"
+        />
+      </el-form-item>
+      <el-form-item>
         <el-button icon="search" @click="searchBtn">搜索</el-button>
         <el-button icon="delete" @click="resetBtn" plain circle type="danger" />
         <el-button icon="plus" type="primary" @click="addBtn">新增成员</el-button>
@@ -82,8 +90,20 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item prop="userId" label="用户ID">
-            <el-input v-model.number="formModel.userId" placeholder="请输入用户ID" />
+          <el-form-item prop="userId" label="成员">
+            <el-select
+              v-model="formModel.userId"
+              placeholder="选择成员"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in userList"
+                :key="item.userId"
+                :label="item.nickname + '（' + item.username + '）'"
+                :value="item.userId"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item prop="role" label="角色">
             <el-select v-model="formModel.role" placeholder="选择角色" style="width: 100%">
@@ -104,15 +124,19 @@ import { ElMessage, type FormInstance } from 'element-plus'
 import SysDialog from '@/components/SysDialog.vue'
 import { getMemberListApi, addMemberApi, editMemberApi, deleteMemberApi } from '@/api/member'
 import { getListApi as getTeamListApi } from '@/api/team'
+import { getListApi as getUserListApi } from '@/api/user'
 import type { Member, MemberParm } from '@/api/member/MemberModel'
+import type { User } from '@/api/user/UserModel'
 
 const tableList = ref<Member[]>([])
 const teamList = ref<any[]>([])
+const userList = ref<User[]>([])
 const formRef = ref<FormInstance>()
 const editId = ref(0)
 
 const searchParm = reactive<MemberParm>({
   teamId: undefined,
+  userName: '',
   pageSize: 10,
   currentPage: 1,
   total: 0
@@ -122,7 +146,7 @@ const dialog = reactive({
   title: '',
   visible: false,
   width: 500,
-  height: 280
+  height: 300
 })
 
 const formModel = reactive({
@@ -133,7 +157,7 @@ const formModel = reactive({
 
 const rules = {
   teamId: [{ required: true, message: '请选择社团', trigger: 'change' }],
-  userId: [{ required: true, message: '请输入用户ID', trigger: 'blur' }],
+  userId: [{ required: true, message: '请选择成员', trigger: 'change' }],
   role: [{ required: true, message: '请选择角色', trigger: 'change' }]
 }
 
@@ -148,9 +172,17 @@ const getList = async () => {
 
 // 获取社团列表（用于下拉选择）
 const getTeamList = async () => {
-  const res = await getTeamListApi({ currentPage: 1, pageSize: 999 })
+  const res = await getTeamListApi({ currentPage: 1, pageSize: 999, name: '' })
   if (res && res.code === 200) {
     teamList.value = res.data.records
+  }
+}
+
+// 获取用户列表（用于下拉选择）
+const getUserList = async () => {
+  const res = await getUserListApi({ currentPage: 1, pageSize: 999, nickName: '' })
+  if (res && res.code === 200) {
+    userList.value = res.data.records
   }
 }
 
@@ -161,12 +193,21 @@ const searchBtn = () => {
 
 const resetBtn = () => {
   searchParm.teamId = undefined
+  searchParm.userName = ''
   searchParm.currentPage = 1
   getList()
 }
 
-const sizeChange = () => {}
-const currentChange = () => {}
+const sizeChange = (val: number) => {
+  searchParm.pageSize = val
+  searchParm.currentPage = 1
+  getList()
+}
+
+const currentChange = (val: number) => {
+  searchParm.currentPage = val
+  getList()
+}
 
 const addBtn = () => {
   editId.value = 0
@@ -218,6 +259,7 @@ const onDialogConfirm = () => {
 onMounted(() => {
   getList()
   getTeamList()
+  getUserList()
 })
 </script>
 

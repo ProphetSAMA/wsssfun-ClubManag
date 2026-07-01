@@ -23,6 +23,9 @@
         <if test="userId != null">
             AND m.user_id = #{userId}
         </if>
+        <if test="userName != null and userName != ''">
+            AND u.nick_name LIKE CONCAT('%', #{userName}, '%')
+        </if>
         ORDER BY m.join_time DESC
     </select>
 
