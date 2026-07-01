@@ -4,7 +4,7 @@
       @click="tabClick(item)"
       class="item"
       :class="{ 'active-item': item.value === store.activeName }"
-      v-for="(item, index) in tabs"
+      v-for="(item, index) in visibleTabs"
       :key="index"
     >
       {{ item.title }}
@@ -13,13 +13,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { tabsStore } from "@/store/tabs/index";
+import { useUserStore } from "@/store/user";
 
 const store = tabsStore();
 const router = useRouter();
-
+const userStore = useUserStore();
 
 // 选项卡数据
 const tabs = ref([
@@ -28,27 +29,36 @@ const tabs = ref([
   { title: "活动", value: "activity" },
   { title: "新闻", value: "news" },
   { title: "公告", value: "notice" },
-  { title: "个人中心", value: "mine" },
+  { title: "个人中心", value: "mine", requiresAuth: true },
 ]);
+
+// 根据登录状态过滤可见的 tabs
+const visibleTabs = computed(() => {
+  return tabs.value.filter(item => {
+    if (item.requiresAuth) {
+      return userStore.isLoggedIn;
+    }
+    return true;
+  });
+});
 
 // 页面加载时设置 activeName
 if (!store.activeName) {
-  store.activeName = store.fatable; // 使用 fatable 初始化 activeName
+  store.activeName = store.fatable;
 }
 
 onMounted(() => {
   if (!store.activeName) {
-    store.activeName = store.fatable; // 使用 fatable 初始化 activeName
+    store.activeName = store.fatable;
   }
 });
-// 监听 activeName 变化
+
 const tabClick = (item: any) => {
-  store.activeName = item.value; // 更新选中的 Tab
-  store.fatable = item.value; // 更新 Pinia 状态
-  router.push({ name: item.value }); // 路由跳转
+  store.activeName = item.value;
+  store.fatable = item.value;
+  router.push({ name: item.value });
 };
 
-// 监听 store.fatable 的变化并更新 activeName
 watch(
   () => store.fatable,
   (newValue) => {
@@ -65,7 +75,7 @@ watch(
   margin-left: 80px;
 
   .item {
-    padding: 0px 30px;
+    padding: 0 30px;
     text-align: center;
     color: #fff;
     font-size: 16px;
@@ -75,13 +85,7 @@ watch(
   }
 
   .active-item {
-    padding: 0px 30px;
-    text-align: center;
     color: #d9db37;
-    font-size: 16px;
-    cursor: pointer;
-    height: 60px;
-    line-height: 60px;
     border-bottom: 2px solid #d9db37;
   }
 }

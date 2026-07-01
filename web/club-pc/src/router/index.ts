@@ -1,8 +1,14 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 import Layout from "@/views/layout/index.vue";
+import { useUserStore } from "@/store/user";
 
-// 定义路由规则
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("@/views/login/index.vue"),
+    meta: { title: "登录" }
+  },
   {
     path: "/",
     component: Layout,
@@ -42,36 +48,59 @@ const routes: Array<RouteRecordRaw> = [
         path: "/mine",
         name: "mine",
         component: () => import("@/views/mine/mine.vue"),
-        meta: { title: "个人中心" },
+        meta: { title: "个人中心", requiresAuth: true },
+        redirect: "/mine/mycenter",
         children: [
           {
             path: "/mine/mycenter",
             name: "mycenter",
             component: () => import("@/views/mine/mycenter.vue"),
-            meta: { title: "个人中心" }
+            meta: { title: "个人中心", requiresAuth: true }
           },
           {
             path: "/mine/myclub",
             name: "myclub",
             component: () => import("@/views/mine/myclub.vue"),
-            meta: { title: "我的社团" }
+            meta: { title: "我的社团", requiresAuth: true }
           },
           {
             path: "/mine/myactivity",
             name: "myactivity",
             component: () => import("@/views/mine/myactivity.vue"),
-            meta: { title: "我的活动" }
+            meta: { title: "我的活动", requiresAuth: true }
           },
         ]
       },
     ]
   }
 ];
-// 创建路由实例
+
 const router = createRouter({
   history: createWebHistory(),
   routes
 });
 
-// 导出路由实例
+// 路由守卫
+router.beforeEach((to, _from, next) => {
+  const userStore = useUserStore()
+
+  if (to.path === '/login') {
+    // 已登录则跳转首页
+    if (userStore.isLoggedIn) {
+      next('/home')
+    } else {
+      next()
+    }
+  } else if (to.meta.requiresAuth) {
+    // 需要登录的页面，未登录则跳转登录页
+    if (userStore.isLoggedIn) {
+      next()
+    } else {
+      next('/login')
+    }
+  } else {
+    next()
+  }
+});
+
 export default router;

@@ -1,5 +1,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import { ElMessage } from "element-plus";
+import { useUserStore } from "@/store/user";
+import router from "@/router";
 
 const config: AxiosRequestConfig = {
     baseURL: "http://localhost:8888",
@@ -17,9 +19,9 @@ class Http {
     private interceptors() {
         this.instance.interceptors.request.use(
             (config) => {
-                const token = localStorage.getItem("token");
-                if (token) {
-                    config.headers!["token"] = token;
+                const userStore = useUserStore();
+                if (userStore.token) {
+                    config.headers!["token"] = userStore.token;
                 }
                 return config;
             },
@@ -31,6 +33,14 @@ class Http {
         this.instance.interceptors.response.use(
             (res: any) => {
                 if (res.data.code !== 200) {
+                    // token 过期或未登录
+                    if (res.data.code === 401) {
+                        const userStore = useUserStore();
+                        userStore.logout();
+                        router.push('/login');
+                        ElMessage.error(res.data.msg || '请重新登录');
+                        return Promise.reject(res.data);
+                    }
                     ElMessage.error(res.data.msg || "服务器出错");
                     return Promise.reject(res.data);
                 }
@@ -48,8 +58,15 @@ class Http {
                     503: "服务不可用",
                     504: "网关超时",
                 };
-                const msg = msgMap[error.response?.status] || `连接错误${error.response?.status || ""}`;
+                const status = error.response?.status;
+                const msg = msgMap[status] || `连接错误${status || ""}`;
                 ElMessage.error(msg);
+                // 401 时清除登录状态
+                if (status === 401) {
+                    const userStore = useUserStore();
+                    userStore.logout();
+                    router.push('/login');
+                }
                 return Promise.reject(error);
             }
         );
