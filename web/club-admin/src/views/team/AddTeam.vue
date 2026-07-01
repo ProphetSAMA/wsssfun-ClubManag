@@ -167,7 +167,7 @@ const rules = {
   categoryId: [
     { required: true, message: "请选择社团分类", trigger: "change" },
   ],
-  image: [{ required: true, message: "请上传社团图片", trigger: "change" }],
+  // image 由 UploadImage 自定义组件处理，不走 el-form 校验（见 commit 中手动校验）
   details: [{ required: true, message: "请输入社团详情", trigger: "blur" }],
   hasTop: [{ required: true, message: "请选择是否推荐首页", trigger: "change" }],
 };
@@ -206,6 +206,11 @@ const emits = defineEmits(["onFresh"]);
 // 表单提交
 const commit = () => {
   console.log(addModel);
+  // 手动校验图片（自定义组件无法走 el-form 校验）
+  if (!addModel.image) {
+    ElMessage.warning("请上传社团图片");
+    return;
+  }
   addFormRef.value?.validate(async (valid) => {
     if (valid) {
       let res = null;

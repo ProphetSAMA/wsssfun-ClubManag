@@ -161,7 +161,7 @@ const rules = reactive({
     title: [{ required: true, message: "请输入标题", trigger: "blur" }],
     type: [{ required: true, message: "请选择类型", trigger: "blur" }],
     hasTop: [{ required: true, message: "请选择首页推荐", trigger: "blur" }],
-    image: [{ required: true, message: "请上传封面图", trigger: "blur" }],
+    // image 由 UploadImage 自定义组件处理，不走 el-form 校验（见 commit 中手动校验）
     details: [{ required: true, message: "请输入社团详情", trigger: "blur" }],
 });
 
@@ -200,6 +200,11 @@ const emits = defineEmits(['onRefresh'])
 // 提交
 const commit = () => {
     console.log(addModel);
+    // 手动校验图片（自定义组件无法走 el-form 校验）
+    if (!addModel.image) {
+        ElMessage.warning("请上传封面图");
+        return;
+    }
     // 只在表单验证通过后提交
     addFormRef.value?.validate(async (valid) => {
         if (valid) {
