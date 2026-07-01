@@ -11,7 +11,7 @@
         <div class="team-card">
           <el-image
             class="team-img"
-            :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
+            :src="item.image ? item.image.split(',')[0] : defaultImg"
             fit="cover"
           />
           <div class="team-name">{{ item.name }}</div>

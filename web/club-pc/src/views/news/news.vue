@@ -6,7 +6,7 @@
         <el-image
           v-if="item.image"
           class="item-img"
-          :src="'http://localhost:8888' + item.image"
+          :src="item.image.split(',')[0]"
           fit="cover"
         />
         <div class="item-body">

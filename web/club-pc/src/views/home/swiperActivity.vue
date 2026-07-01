@@ -3,7 +3,7 @@
     <el-carousel-item v-for="item in list" :key="item.id">
       <el-image
         class="carousel-img"
-        :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
+        :src="item.image ? item.image.split(',')[0] : defaultImg"
         fit="cover"
       />
     </el-carousel-item>

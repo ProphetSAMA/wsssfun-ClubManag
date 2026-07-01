@@ -73,7 +73,7 @@
             <el-image
               v-if="item.image"
               class="news-img"
-              :src="'http://localhost:8888' + item.image"
+              :src="item.image.split(',')[0]"
               fit="cover"
             />
             <div class="news-img placeholder" v-else></div>

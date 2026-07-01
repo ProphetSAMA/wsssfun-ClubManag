@@ -23,7 +23,7 @@
         <div class="item" v-for="item in teamList" :key="item.id">
           <el-image
             class="item-img"
-            :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
+            :src="item.image ? item.image.split(',')[0] : defaultImg"
             fit="cover"
           />
           <div class="item-body">
