@@ -1,48 +1,37 @@
 <template>
   <div class="club-page">
-    <div class="page-header">
-      <h1>社团列表</h1>
-      <p>发现并加入你感兴趣的社团</p>
+    <div class="page-head">
+      <h1>社团</h1>
     </div>
-    <div class="club-layout">
-      <!-- 左侧分类 -->
-      <aside class="category-sidebar">
-        <div class="sidebar-title">社团分类</div>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-title">分类</div>
         <div
-          class="cat-item"
+          class="cat"
           :class="{ active: selectedCategory === null }"
           @click="selectCategory(null)"
-        >
-          全部
-        </div>
+        >全部</div>
         <div
-          class="cat-item"
+          class="cat"
           :class="{ active: selectedCategory === item.value }"
           v-for="item in categoryList"
           :key="item.value"
           @click="selectCategory(item.value)"
-        >
-          {{ item.label }}
-        </div>
-        <el-empty v-if="categoryList.length === 0" description="暂无分类" :image-size="40" />
+        >{{ item.label }}</div>
       </aside>
-
-      <!-- 右侧社团列表 -->
-      <div class="club-grid">
-        <div class="club-card" v-for="item in teamList" :key="item.id">
+      <div class="grid">
+        <div class="team-card" v-for="item in teamList" :key="item.id">
           <el-image
-            class="club-img"
+            class="team-img"
             :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
             fit="cover"
           />
-          <div class="club-body">
-            <h3>{{ item.name }}</h3>
-            <div class="club-meta">
-              <span>📅 {{ item.createTime }}</span>
-            </div>
+          <div class="team-info">
+            <div class="team-name">{{ item.name }}</div>
+            <div class="team-date">{{ item.createTime }}</div>
           </div>
         </div>
-        <el-empty v-if="teamList.length === 0" description="暂无社团" />
+        <el-empty v-if="teamList.length === 0" description="暂无社团" class="empty-full" />
       </div>
     </div>
   </div>
@@ -57,141 +46,127 @@ const categoryList = ref<any[]>([]);
 const teamList = ref<any[]>([]);
 const selectedCategory = ref<number | null>(null);
 
-const getCategoryList = async () => {
+onMounted(async () => {
   try {
-    const res = await http.get("/api/category/getSelectList");
-    if (res && res.code === 200) categoryList.value = res.data || [];
-  } catch (e) { console.error("获取分类失败", e); }
-};
-
-const getTeamList = async () => {
-  try {
-    const res = await http.get("/api/team/list", { currentPage: 1, pageSize: 50 });
-    if (res && res.code === 200) teamList.value = res.data.records || [];
-  } catch (e) { console.error("获取社团列表失败", e); }
-};
+    const [c, t] = await Promise.all([
+      http.get("/api/category/getSelectList"),
+      http.get("/api/team/list", { currentPage: 1, pageSize: 50 }),
+    ]);
+    if (c?.code === 200) categoryList.value = c.data || [];
+    if (t?.code === 200) teamList.value = t.data.records || [];
+  } catch (e) { console.error(e); }
+});
 
 const selectCategory = (id: number | null) => {
   selectedCategory.value = id;
 };
-
-onMounted(() => {
-  getCategoryList();
-  getTeamList();
-});
 </script>
 
 <style scoped lang="scss">
 .club-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: 20px;
 }
 
-.page-header {
+.page-head {
   h1 {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--text-primary);
-  }
-  p {
-    color: var(--text-secondary);
-    margin-top: 4px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-1);
   }
 }
 
-.club-layout {
+.layout {
   display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: var(--space-lg);
+  grid-template-columns: 180px 1fr;
+  gap: 20px;
 }
 
-.category-sidebar {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+.sidebar {
+  background: var(--bg-white);
+  border-radius: var(--radius);
   border: 1px solid var(--border-light);
-  padding: var(--space-md);
+  padding: 12px;
   height: fit-content;
   position: sticky;
-  top: calc(var(--header-height) + var(--space-xl));
+  top: calc(var(--header-h) + 24px);
 }
 
 .sidebar-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 12px;
-  padding-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  padding-bottom: 10px;
+  margin-bottom: 6px;
   border-bottom: 1px solid var(--border-light);
 }
 
-.cat-item {
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--text-secondary);
+.cat {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-2);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
 
   &:hover {
     background: var(--bg-hover);
-    color: var(--text-primary);
   }
 
   &.active {
     background: var(--primary-bg);
     color: var(--primary);
-    font-weight: 600;
+    font-weight: 500;
   }
 }
 
-.club-grid {
+.grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-md);
+  gap: 16px;
 }
 
-.club-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+.empty-full {
+  grid-column: 1 / -1;
+}
+
+.team-card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
   border: 1px solid var(--border-light);
   overflow: hidden;
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: box-shadow 0.2s;
 
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-md);
   }
 }
 
-.club-img {
+.team-img {
   width: 100%;
-  height: 160px;
+  height: 150px;
 }
 
-.club-body {
-  padding: 14px;
-
-  h3 {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-  }
+.team-info {
+  padding: 10px 12px;
 }
 
-.club-meta {
+.team-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+
+.team-date {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-3);
 }
 
 @media (max-width: 768px) {
-  .club-layout {
-    grid-template-columns: 1fr;
-  }
-  .club-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .layout { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>

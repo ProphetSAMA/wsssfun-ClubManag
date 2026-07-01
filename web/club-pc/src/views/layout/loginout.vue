@@ -1,42 +1,37 @@
 <template>
   <div class="user-area">
-    <!-- 已登录 -->
     <el-dropdown v-if="userStore.isLoggedIn" trigger="click" @command="handleCommand">
-      <div class="user-avatar-btn">
-        <div class="avatar">{{ (userStore.nickname || userStore.username || 'U').charAt(0) }}</div>
-        <span class="username">{{ userStore.nickname || userStore.username }}</span>
-        <el-icon class="arrow"><ArrowDown /></el-icon>
-      </div>
+      <span class="user-btn">
+        <span class="avatar">{{ initial }}</span>
+        <span class="name">{{ userStore.nickname || userStore.username }}</span>
+      </span>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item command="mine">
-            <el-icon><User /></el-icon>个人中心
-          </el-dropdown-item>
-          <el-dropdown-item command="logout" divided>
-            <el-icon><SwitchButton /></el-icon>退出登录
-          </el-dropdown-item>
+          <el-dropdown-item command="mine">个人中心</el-dropdown-item>
+          <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-
-    <!-- 未登录 -->
-    <el-button v-else class="login-btn" @click="$router.push('/login')">
-      登录
-    </el-button>
+    <span v-else class="login-link" @click="$router.push('/login')">登录</span>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 
 const router = useRouter()
 const userStore = useUserStore()
 
-const handleCommand = (command: string) => {
-  if (command === 'mine') {
-    router.push('/mine/mycenter')
-  } else if (command === 'logout') {
+const initial = computed(() => {
+  const n = userStore.nickname || userStore.username || ''
+  return n.charAt(0) || 'U'
+})
+
+const handleCommand = (cmd: string) => {
+  if (cmd === 'mine') router.push('/mine/mycenter')
+  else if (cmd === 'logout') {
     userStore.logout()
     router.push('/home')
   }
@@ -48,54 +43,46 @@ const handleCommand = (command: string) => {
   flex-shrink: 0;
 }
 
-.user-avatar-btn {
+.user-btn {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  padding: 4px 12px;
-  border-radius: 40px;
+  padding: 4px 10px;
+  border-radius: 6px;
   transition: background 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
   }
 }
 
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.2);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
-.username {
+.name {
   color: #fff;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
 }
 
-.arrow {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 12px;
-}
-
-.login-btn {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: #fff !important;
-  border-radius: 20px !important;
-  padding: 6px 20px !important;
-  font-weight: 500 !important;
+.login-link {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 12px;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.25) !important;
+    color: #fff;
   }
 }
 </style>

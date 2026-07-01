@@ -1,81 +1,61 @@
 <template>
   <div class="home-page">
-    <!-- Hero 区域 -->
-    <section class="hero">
-      <div class="hero-content">
+    <!-- 顶部 banner -->
+    <section class="banner">
+      <div class="banner-text">
         <h1>发现你的社团</h1>
-        <p>探索丰富多彩的校园社团生活，找到属于你的精彩</p>
-        <el-button class="hero-btn" size="large" @click="$router.push('/club')">
-          浏览社团 <el-icon class="el-icon--right"><ArrowRight /></el-icon>
-        </el-button>
+        <p>探索校园社团生活，找到属于你的精彩</p>
+        <el-button @click="$router.push('/club')">浏览社团</el-button>
       </div>
     </section>
 
     <!-- 推荐社团 -->
     <section class="section">
-      <div class="section-header">
-        <h2>⭐ 推荐社团</h2>
-        <el-button text class="more-btn" @click="$router.push('/club')">
-          查看更多 <el-icon><ArrowRight /></el-icon>
-        </el-button>
+      <div class="section-head">
+        <h2>推荐社团</h2>
+        <span class="more" @click="$router.push('/club')">更多</span>
       </div>
       <swiper />
     </section>
 
-    <!-- 双栏：推荐活动 + 推荐公告 -->
-    <section class="section">
-      <div class="dual-grid">
-        <div class="grid-left">
-          <div class="section-header">
-            <h2>🔥 推荐活动</h2>
-            <el-button text class="more-btn" @click="$router.push('/activity')">
-              更多 <el-icon><ArrowRight /></el-icon>
-            </el-button>
-          </div>
-          <div class="card-body">
-            <swiperActivity />
-          </div>
+    <!-- 推荐活动 + 公告 -->
+    <section class="row-2">
+      <div class="col">
+        <div class="section-head">
+          <h2>推荐活动</h2>
+          <span class="more" @click="$router.push('/activity')">更多</span>
         </div>
-        <div class="grid-right">
-          <div class="section-header">
-            <h2>📢 推荐公告</h2>
-            <el-button text class="more-btn" @click="$router.push('/notice')">
-              更多 <el-icon><ArrowRight /></el-icon>
-            </el-button>
+        <div class="card">
+          <swiperActivity />
+        </div>
+      </div>
+      <div class="col">
+        <div class="section-head">
+          <h2>推荐公告</h2>
+          <span class="more" @click="$router.push('/notice')">更多</span>
+        </div>
+        <div class="card">
+          <div class="list-item" v-for="(item, i) in noticeList" :key="item.id">
+            <span class="idx" :class="{ hot: i < 3 }">{{ i + 1 }}</span>
+            <span class="title">{{ item.title }}</span>
+            <span class="date">{{ item.createTime }}</span>
           </div>
-          <div class="card-body list-body">
-            <div
-              class="list-item"
-              v-for="(item, index) in noticeList"
-              :key="item.id"
-            >
-              <span class="list-index" :class="{ hot: index < 3 }">{{ index + 1 }}</span>
-              <span class="list-title">{{ item.title }}</span>
-              <span class="list-date">{{ item.createTime }}</span>
-            </div>
-            <el-empty v-if="noticeList.length === 0" description="暂无公告" :image-size="60" />
-          </div>
+          <el-empty v-if="noticeList.length === 0" description="暂无公告" :image-size="60" />
         </div>
       </div>
     </section>
 
     <!-- 最新活动 -->
     <section class="section">
-      <div class="section-header">
-        <h2>📅 最新活动</h2>
-        <el-button text class="more-btn" @click="$router.push('/activity')">
-          更多 <el-icon><ArrowRight /></el-icon>
-        </el-button>
+      <div class="section-head">
+        <h2>最新活动</h2>
+        <span class="more" @click="$router.push('/activity')">更多</span>
       </div>
-      <div class="card-body list-body">
-        <div
-          class="list-item"
-          v-for="(item, index) in activityList"
-          :key="item.id"
-        >
-          <span class="list-index" :class="{ hot: index < 3 }">{{ index + 1 }}</span>
-          <span class="list-title">{{ item.title }}</span>
-          <span class="list-date">{{ item.createTime }}</span>
+      <div class="card">
+        <div class="list-item" v-for="(item, i) in activityList" :key="item.id">
+          <span class="idx" :class="{ hot: i < 3 }">{{ i + 1 }}</span>
+          <span class="title">{{ item.title }}</span>
+          <span class="date">{{ item.createTime }}</span>
         </div>
         <el-empty v-if="activityList.length === 0" description="暂无活动" :image-size="60" />
       </div>
@@ -83,13 +63,11 @@
 
     <!-- 最新新闻 -->
     <section class="section">
-      <div class="section-header">
-        <h2>📰 最新新闻</h2>
-        <el-button text class="more-btn" @click="$router.push('/news')">
-          更多 <el-icon><ArrowRight /></el-icon>
-        </el-button>
+      <div class="section-head">
+        <h2>最新新闻</h2>
+        <span class="more" @click="$router.push('/news')">更多</span>
       </div>
-      <div class="news-grid">
+      <div class="news-row">
         <div class="news-card" v-for="item in newsList" :key="item.id">
           <el-image
             v-if="item.image"
@@ -97,10 +75,10 @@
             :src="'http://localhost:8888' + item.image"
             fit="cover"
           />
-          <div class="news-img placeholder" v-else>📰</div>
+          <div class="news-img placeholder" v-else></div>
           <div class="news-body">
             <h3>{{ item.title }}</h3>
-            <span class="news-date">{{ item.createTime }}</span>
+            <span class="date">{{ item.createTime }}</span>
           </div>
         </div>
         <el-empty v-if="newsList.length === 0" description="暂无新闻" :image-size="60" />
@@ -121,16 +99,16 @@ const newsList = ref<any[]>([]);
 
 onMounted(async () => {
   try {
-    const [noticeRes, activityRes, newsRes] = await Promise.all([
+    const [n, a, ne] = await Promise.all([
       http.get("/api/news/getTopNotice"),
       http.get("/api/news/getNewActivity"),
       http.get("/api/news/getNewNotice"),
     ]);
-    if (noticeRes?.code === 200) noticeList.value = noticeRes.data || [];
-    if (activityRes?.code === 200) activityList.value = activityRes.data || [];
-    if (newsRes?.code === 200) newsList.value = newsRes.data || [];
+    if (n?.code === 200) noticeList.value = n.data || [];
+    if (a?.code === 200) activityList.value = a.data || [];
+    if (ne?.code === 200) newsList.value = ne.data || [];
   } catch (e) {
-    console.error("获取首页数据失败", e);
+    console.error(e);
   }
 });
 </script>
@@ -139,130 +117,88 @@ onMounted(async () => {
 .home-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: 28px;
 }
 
-/* Hero */
-.hero {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
-  border-radius: var(--radius-xl);
-  padding: 60px 48px;
+/* banner */
+.banner {
+  background: #2c3e6b;
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
   color: #fff;
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    right: -40px;
-    top: -40px;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .hero-content {
-    position: relative;
-    z-index: 1;
-  }
 
   h1 {
-    font-size: 36px;
-    font-weight: 800;
-    margin-bottom: 12px;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
   }
 
   p {
-    font-size: 17px;
-    opacity: 0.85;
-    margin-bottom: 28px;
+    font-size: 15px;
+    opacity: 0.7;
+    margin-bottom: 24px;
+  }
+
+  .el-button {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+    padding: 8px 24px !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25) !important;
+    }
   }
 }
 
-.hero-btn {
-  height: 48px;
-  padding: 0 32px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 12px !important;
-  background: rgba(255, 255, 255, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: #fff !important;
-  backdrop-filter: blur(10px);
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.3) !important;
-  }
-}
-
-/* Section */
+/* section */
 .section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 12px;
 }
 
-.section-header {
+.section-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   h2 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-primary);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+
+  .more {
+    font-size: 13px;
+    color: var(--text-3);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--primary);
+    }
   }
 }
 
-.more-btn {
-  color: var(--text-secondary) !important;
-  font-weight: 500;
-
-  &:hover {
-    color: var(--primary) !important;
-  }
-}
-
-/* Card body */
-.card-body {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+/* card */
+.card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
   border: 1px solid var(--border-light);
-  padding: var(--space-lg);
-  box-shadow: var(--shadow-sm);
+  padding: 0;
+  overflow: hidden;
 }
 
-/* Dual grid */
-.dual-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg);
-
-  .grid-left,
-  .grid-right {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-}
-
-/* List */
-.list-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  padding: var(--space-md) var(--space-lg);
-}
-
+/* list */
 .list-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 0;
+  gap: 10px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border-light);
-  transition: background 0.2s;
   cursor: pointer;
+  transition: background 0.15s;
 
   &:last-child {
     border-bottom: none;
@@ -270,18 +206,15 @@ onMounted(async () => {
 
   &:hover {
     background: var(--bg-hover);
-    margin: 0 calc(-1 * var(--space-lg));
-    padding-left: var(--space-lg);
-    padding-right: var(--space-lg);
   }
 }
 
-.list-index {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: var(--bg-hover);
-  color: var(--text-muted);
+.idx {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text-3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -290,91 +223,92 @@ onMounted(async () => {
   flex-shrink: 0;
 
   &.hot {
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    background: #e74c3c;
     color: #fff;
   }
 }
 
-.list-title {
+.title {
   flex: 1;
-  font-size: 14px;
-  color: var(--text-primary);
+  font-size: 13px;
+  color: var(--text-1);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.list-date {
-  font-size: 13px;
-  color: var(--text-muted);
+.date {
+  font-size: 12px;
+  color: var(--text-3);
   flex-shrink: 0;
 }
 
-/* News grid */
-.news-grid {
+/* row-2 */
+.row-2 {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-md);
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* news */
+.news-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
 }
 
 .news-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+  background: var(--bg-white);
+  border-radius: var(--radius);
   border: 1px solid var(--border-light);
   overflow: hidden;
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: box-shadow 0.2s;
+  flex: 0 0 calc(25% - 12px);
+  max-width: calc(25% - 12px);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
   }
 }
 
 .news-img {
   width: 100%;
-  height: 140px;
-  object-fit: cover;
+  height: 130px;
 
   &.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-bg);
-    font-size: 36px;
+    background: var(--bg);
   }
 }
 
 .news-body {
-  padding: 14px;
+  padding: 12px;
 
   h3 {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 8px;
+    color: var(--text-1);
+    margin-bottom: 6px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 }
 
-.news-date {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-  .dual-grid {
+  .row-2 {
     grid-template-columns: 1fr;
   }
-  .news-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .hero {
-    padding: 40px 24px;
-    h1 { font-size: 28px; }
+  .news-card {
+    flex: 0 0 calc(50% - 8px);
+    max-width: calc(50% - 8px);
   }
 }
 </style>

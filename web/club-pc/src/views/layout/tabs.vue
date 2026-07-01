@@ -3,7 +3,7 @@
     <div
       @click="tabClick(item)"
       class="nav-item"
-      :class="{ active: item.value === store.activeName }"
+      :class="{ active: item.value === activeName }"
       v-for="item in visibleTabs"
       :key="item.value"
     >
@@ -13,13 +13,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { tabsStore } from "@/store/tabs/index";
 import { useUserStore } from "@/store/user";
 
 const store = tabsStore();
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 
 const tabs = ref([
@@ -35,54 +36,48 @@ const visibleTabs = computed(() =>
   tabs.value.filter(item => !item.requiresAuth || userStore.isLoggedIn)
 );
 
-if (!store.activeName) {
-  store.activeName = store.fatable;
-}
-
-onMounted(() => {
-  if (!store.activeName) {
-    store.activeName = store.fatable;
+// 根据当前路由计算高亮项
+const activeName = computed(() => {
+  const name = route.name as string;
+  // 子路由（如 mycenter）映射到父级 mine
+  if (name && ['mycenter', 'myclub', 'myactivity'].includes(name)) {
+    return 'mine';
   }
+  return name || 'home';
 });
 
 const tabClick = (item: any) => {
-  store.activeName = item.value;
-  store.fatable = item.value;
   router.push({ name: item.value });
 };
-
-watch(() => store.fatable, (v) => { store.activeName = v; });
 </script>
 
 <style scoped lang="scss">
 .nav-tabs {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-left: 48px;
+  gap: 2px;
+  margin-left: 40px;
   flex-grow: 1;
 }
 
 .nav-item {
-  padding: 8px 20px;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 15px;
+  padding: 6px 18px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.25s ease;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
   white-space: nowrap;
-  position: relative;
 
   &:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
   }
 
   &.active {
     color: #fff;
-    background: rgba(255, 255, 255, 0.18);
-    font-weight: 600;
+    background: rgba(255, 255, 255, 0.15);
   }
 }
 </style>

@@ -1,22 +1,17 @@
 <template>
   <div class="mine-page">
-    <div class="page-header">
-      <h1>👤 个人中心</h1>
-    </div>
-    <div class="mine-layout">
-      <aside class="mine-sidebar">
+    <div class="page-head"><h1>个人中心</h1></div>
+    <div class="layout">
+      <aside class="sidebar">
         <div
-          class="side-item"
+          class="nav"
           :class="{ active: activeName === item.id }"
-          v-for="item in category"
+          v-for="item in menu"
           :key="item.id"
           @click="btnClick(item.id)"
-        >
-          <span class="side-icon">{{ item.icon }}</span>
-          {{ item.name }}
-        </div>
+        >{{ item.name }}</div>
       </aside>
-      <div class="mine-content">
+      <div class="content">
         <RouterView />
       </div>
     </div>
@@ -25,81 +20,58 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import { tabsStore } from '@/store/tabs/index';
 
+const router = useRouter();
 const store = tabsStore();
 const activeName = computed(() => store.mineTabs);
 
 const btnClick = (id: string) => {
   store.mineTabs = id;
+  router.push(id);
 };
 
-const category = ref([
-  { name: "个人信息", id: "/mine/mycenter", icon: "👤" },
-  { name: "我的社团", id: "/mine/myclub", icon: "🏛️" },
-  { name: "我的活动", id: "/mine/myactivity", icon: "🎯" },
+const menu = ref([
+  { name: "个人信息", id: "/mine/mycenter" },
+  { name: "我的社团", id: "/mine/myclub" },
+  { name: "我的活动", id: "/mine/myactivity" },
 ]);
 </script>
 
 <style scoped lang="scss">
-.mine-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-}
+.mine-page { display: flex; flex-direction: column; gap: 20px; }
+.page-head h1 { font-size: 20px; font-weight: 700; color: var(--text-1); }
 
-.page-header {
-  h1 { font-size: 28px; font-weight: 800; color: var(--text-primary); }
-}
-
-.mine-layout {
+.layout {
   display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: var(--space-lg);
+  grid-template-columns: 180px 1fr;
+  gap: 20px;
 }
 
-.mine-sidebar {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+.sidebar {
+  background: var(--bg-white);
+  border-radius: var(--radius);
   border: 1px solid var(--border-light);
-  padding: var(--space-md);
+  padding: 8px;
   height: fit-content;
   position: sticky;
-  top: calc(var(--header-height) + var(--space-xl));
+  top: calc(var(--header-h) + 24px);
 }
 
-.side-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--text-secondary);
+.nav {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-2);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
 
-  &:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-  }
-
-  &.active {
-    background: var(--primary-bg);
-    color: var(--primary);
-    font-weight: 600;
-  }
-}
-
-.side-icon {
-  font-size: 16px;
-}
-
-.mine-content {
-  min-width: 0;
+  &:hover { background: var(--bg-hover); }
+  &.active { background: var(--primary-bg); color: var(--primary); font-weight: 500; }
 }
 
 @media (max-width: 768px) {
-  .mine-layout { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: 1fr; }
 }
 </style>

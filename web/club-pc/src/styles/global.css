@@ -1,74 +1,44 @@
-/* ========== 现代设计系统 ========== */
-
-/* Google Fonts - Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* ========== 基础设计变量 ========== */
 
 :root {
-  /* 主色 */
-  --primary: #6366f1;
-  --primary-light: #818cf8;
-  --primary-dark: #4f46e5;
-  --primary-bg: #eef2ff;
+  --primary: #4f6ef7;
+  --primary-hover: #3b5bdb;
+  --primary-bg: #f0f4ff;
 
-  /* 辅助色 */
-  --accent: #f59e0b;
-  --accent-light: #fbbf24;
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --info: #3b82f6;
+  --text-1: #1a1a2e;
+  --text-2: #555;
+  --text-3: #999;
 
-  /* 中性色 */
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-  --bg-page: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
+  --bg: #f5f6fa;
+  --bg-white: #fff;
+  --bg-hover: #f8f9fb;
 
-  /* 阴影 */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  --border: #e8e8e8;
+  --border-light: #f0f0f0;
 
-  /* 圆角 */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-  /* 间距 */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
+  --radius: 8px;
+  --radius-lg: 12px;
 
-  /* 头部高度 */
-  --header-height: 64px;
+  --header-h: 56px;
 }
 
-/* ========== 全局重置 ========== */
+/* ========== 重置 ========== */
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 html {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16px;
-  color: var(--text-primary);
-  background: var(--bg-page);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  color: var(--text-1);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -83,11 +53,6 @@ body {
 a {
   color: var(--primary);
   text-decoration: none;
-  transition: color 0.2s;
-}
-
-a:hover {
-  color: var(--primary-dark);
 }
 
 img {
@@ -95,75 +60,41 @@ img {
   display: block;
 }
 
-/* ========== Element Plus 覆盖 ========== */
+/* ========== Element Plus 微调 ========== */
 
 .el-card {
   border: 1px solid var(--border-light) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-sm) !important;
-  transition: box-shadow 0.3s ease, transform 0.3s ease !important;
-}
-
-.el-card:hover {
-  box-shadow: var(--shadow-md) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow) !important;
 }
 
 .el-button--primary {
   background: var(--primary) !important;
   border-color: var(--primary) !important;
-  border-radius: var(--radius-sm) !important;
+  border-radius: 6px !important;
 }
 
 .el-button--primary:hover {
-  background: var(--primary-dark) !important;
-  border-color: var(--primary-dark) !important;
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
 }
 
 .el-tag {
-  border-radius: 20px !important;
+  border-radius: 4px !important;
 }
 
-.el-empty {
-  padding: 40px 0 !important;
-}
-
-/* ========== 滚动条美化 ========== */
+/* ========== 滚动条 ========== */
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
+  background: #ccc;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-}
-
-/* ========== 过渡动画 ========== */
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-up-enter-active {
-  transition: all 0.4s ease-out;
-}
-
-.slide-up-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
+  background: #aaa;
 }

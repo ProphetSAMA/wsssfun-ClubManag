@@ -1,7 +1,7 @@
 <template>
-  <div class="info-card">
+  <div class="card">
     <div class="card-title">我的社团</div>
-    <el-table :data="clubList" stripe class="club-table">
+    <el-table :data="clubList" stripe>
       <el-table-column prop="teamId" label="社团ID" width="100" />
       <el-table-column prop="role" label="角色" width="120">
         <template #default="scope">
@@ -28,30 +28,24 @@ onMounted(async () => {
   try {
     const res = await http.get('/api/member/list', { currentPage: 1, pageSize: 50, userId: userStore.userId }) as any
     if (res && res.code === 200) clubList.value = res.data.records || []
-  } catch (e) { console.error('获取我的社团失败', e) }
+  } catch (e) { console.error(e) }
 })
 </script>
 
 <style scoped lang="scss">
-.info-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+.card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
   border: 1px solid var(--border-light);
-  padding: var(--space-lg);
+  padding: 20px;
 }
 
 .card-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-md);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border-light);
-}
-
-.club-table {
-  :deep(th) {
-    background: var(--bg-hover) !important;
-  }
 }
 </style>

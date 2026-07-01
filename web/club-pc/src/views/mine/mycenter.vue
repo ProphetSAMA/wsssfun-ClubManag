@@ -1,7 +1,7 @@
 <template>
-  <div class="info-card">
+  <div class="card">
     <div class="card-title">个人信息</div>
-    <el-descriptions :column="1" border class="info-desc">
+    <el-descriptions :column="1" border>
       <el-descriptions-item label="用户名">{{ user.username }}</el-descriptions-item>
       <el-descriptions-item label="昵称">{{ user.nickname }}</el-descriptions-item>
       <el-descriptions-item label="性别">{{ user.sex === '0' ? '男' : '女' }}</el-descriptions-item>
@@ -36,26 +36,19 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.info-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+.card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
   border: 1px solid var(--border-light);
-  padding: var(--space-lg);
+  padding: 20px;
 }
 
 .card-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-md);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border-light);
-}
-
-.info-desc {
-  :deep(.el-descriptions__label) {
-    width: 100px;
-    font-weight: 500;
-  }
 }
 </style>

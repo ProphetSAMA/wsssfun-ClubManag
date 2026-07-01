@@ -1,16 +1,8 @@
 <template>
   <div class="login-page">
-    <div class="login-bg">
-      <div class="bg-shape bg-shape-1"></div>
-      <div class="bg-shape bg-shape-2"></div>
-      <div class="bg-shape bg-shape-3"></div>
-    </div>
     <div class="login-card">
-      <div class="card-header">
-        <div class="card-icon">🏛️</div>
-        <h1>欢迎回来</h1>
-        <p>登录高校社团信息化平台</p>
-      </div>
+      <h1>登录</h1>
+      <p class="sub">高校社团信息化平台</p>
       <el-form
         ref="loginFormRef"
         :model="loginForm"
@@ -19,35 +11,25 @@
         size="large"
       >
         <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            prefix-icon="User"
-          />
+          <el-input v-model="loginForm.username" placeholder="用户名" prefix-icon="User" />
         </el-form-item>
         <el-form-item prop="password">
           <el-input
             v-model="loginForm.password"
             type="password"
-            placeholder="请输入密码"
+            placeholder="密码"
             prefix-icon="Lock"
             show-password
             @keyup.enter="handleLogin"
           />
         </el-form-item>
         <el-form-item>
-          <el-button
-            class="submit-btn"
-            :loading="loading"
-            @click="handleLogin"
-          >
+          <el-button class="submit-btn" :loading="loading" @click="handleLogin">
             {{ loading ? '登录中...' : '登 录' }}
           </el-button>
         </el-form-item>
       </el-form>
-      <div class="card-footer">
-        <span>默认账号: admin / admin123</span>
-      </div>
+      <p class="hint">默认账号: admin / admin123</p>
     </div>
   </div>
 </template>
@@ -98,105 +80,50 @@ const handleLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-.login-bg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.bg-shape {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.1;
-  background: #fff;
-
-  &.bg-shape-1 {
-    width: 600px;
-    height: 600px;
-    top: -200px;
-    right: -100px;
-    animation: float 8s ease-in-out infinite;
-  }
-
-  &.bg-shape-2 {
-    width: 400px;
-    height: 400px;
-    bottom: -150px;
-    left: -100px;
-    animation: float 10s ease-in-out infinite reverse;
-  }
-
-  &.bg-shape-3 {
-    width: 200px;
-    height: 200px;
-    top: 50%;
-    left: 50%;
-    animation: float 6s ease-in-out infinite;
-  }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-30px); }
+  background: var(--bg);
 }
 
 .login-card {
-  width: 420px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 48px 40px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-  position: relative;
-  z-index: 1;
-}
-
-.card-header {
-  text-align: center;
-  margin-bottom: 36px;
-
-  .card-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-  }
+  width: 380px;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  box-shadow: var(--shadow-md);
 
   h1 {
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 8px;
+    color: var(--text-1);
+    margin-bottom: 4px;
   }
 
-  p {
-    font-size: 15px;
-    color: var(--text-secondary);
+  .sub {
+    font-size: 14px;
+    color: var(--text-3);
+    margin-bottom: 32px;
   }
 }
 
 .submit-btn {
   width: 100%;
-  height: 48px;
-  font-size: 16px;
+  height: 44px;
+  font-size: 15px;
   font-weight: 600;
-  border-radius: 12px !important;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-  border: none !important;
+  border-radius: 8px !important;
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
   letter-spacing: 2px;
 
   &:hover {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+    background: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
   }
 }
 
-.card-footer {
+.hint {
   text-align: center;
-  margin-top: 20px;
-  font-size: 13px;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 16px;
 }
 </style>

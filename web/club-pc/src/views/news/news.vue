@@ -1,24 +1,21 @@
 <template>
   <div class="page">
-    <div class="page-header">
-      <h1>📰 新闻</h1>
-      <p>了解社团最新动态</p>
-    </div>
-    <div class="news-grid">
-      <div class="news-card" v-for="item in list" :key="item.id">
+    <div class="page-head"><h1>新闻</h1></div>
+    <div class="grid">
+      <div class="card" v-for="item in list" :key="item.id">
         <el-image
           v-if="item.image"
           class="card-img"
           :src="'http://localhost:8888' + item.image"
           fit="cover"
         />
-        <div class="card-img placeholder" v-else>📰</div>
+        <div class="card-img placeholder" v-else></div>
         <div class="card-body">
           <h3>{{ item.title }}</h3>
-          <span class="card-date">{{ item.createTime }}</span>
+          <span class="date">{{ item.createTime }}</span>
         </div>
       </div>
-      <el-empty v-if="list.length === 0" description="暂无新闻" />
+      <el-empty v-if="list.length === 0" description="暂无新闻" class="empty-full" />
     </div>
   </div>
 </template>
@@ -33,75 +30,55 @@ onMounted(async () => {
   try {
     const res = await http.get("/api/news/list", { currentPage: 1, pageSize: 50, type: "1", title: "" });
     if (res && res.code === 200) list.value = res.data.records || [];
-  } catch (e) { console.error("获取新闻列表失败", e); }
+  } catch (e) { console.error(e); }
 });
 </script>
 
 <style scoped lang="scss">
-.page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-}
+.page { display: flex; flex-direction: column; gap: 20px; }
+.page-head h1 { font-size: 20px; font-weight: 700; color: var(--text-1); }
 
-.page-header {
-  h1 { font-size: 28px; font-weight: 800; color: var(--text-primary); }
-  p { color: var(--text-secondary); margin-top: 4px; }
-}
-
-.news-grid {
+.grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-md);
+  gap: 16px;
 }
 
-.news-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+.card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
   border: 1px solid var(--border-light);
   overflow: hidden;
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: box-shadow 0.2s;
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
+  &:hover { box-shadow: var(--shadow-md); }
 }
 
 .card-img {
   width: 100%;
-  height: 140px;
+  height: 130px;
 
-  &.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-bg);
-    font-size: 36px;
-  }
+  &.placeholder { background: var(--bg); }
 }
 
 .card-body {
-  padding: 14px;
+  padding: 10px 12px;
 
   h3 {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 8px;
+    color: var(--text-1);
+    margin-bottom: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 }
 
-.card-date {
-  font-size: 12px;
-  color: var(--text-muted);
-}
+.date { font-size: 12px; color: var(--text-3); }
 
 @media (max-width: 768px) {
-  .news-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
