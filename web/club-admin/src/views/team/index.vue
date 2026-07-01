@@ -26,9 +26,12 @@
       <el-table-column prop="image" label="社团图片">
         <template #default="scope">
           <el-image
+            v-if="scope.row.image"
             style="width: 60px; height: 60px; border-radius: 50%"
-            :src="scope.row.image.split(',')[0]"
-          ></el-image>
+            :src="scope.row.image.includes(',') ? 'http://localhost:8888' + scope.row.image.split(',')[0] : 'http://localhost:8888' + scope.row.image"
+            fit="cover"
+          />
+          <span v-else>暂无图片</span>
         </template>
       </el-table-column>
       <el-table-column prop="name" label="社团名称"></el-table-column>

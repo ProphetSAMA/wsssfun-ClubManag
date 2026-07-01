@@ -7,7 +7,7 @@ export default defineConfig({
   // 服务器设置
   server: {
     host: '0.0.0.0',
-    port: 80,
+    port: 8081,
     hmr: true,
     open: true
   },
