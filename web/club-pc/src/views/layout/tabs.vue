@@ -1,15 +1,15 @@
 <template>
-  <div class="tabs">
+  <nav class="nav-tabs">
     <div
       @click="tabClick(item)"
-      class="item"
-      :class="{ 'active-item': item.value === store.activeName }"
-      v-for="(item, index) in visibleTabs"
-      :key="index"
+      class="nav-item"
+      :class="{ active: item.value === store.activeName }"
+      v-for="item in visibleTabs"
+      :key="item.value"
     >
       {{ item.title }}
     </div>
-  </div>
+  </nav>
 </template>
 
 <script setup lang="ts">
@@ -22,7 +22,6 @@ const store = tabsStore();
 const router = useRouter();
 const userStore = useUserStore();
 
-// 选项卡数据
 const tabs = ref([
   { title: "首页", value: "home" },
   { title: "社团", value: "club" },
@@ -32,17 +31,10 @@ const tabs = ref([
   { title: "个人中心", value: "mine", requiresAuth: true },
 ]);
 
-// 根据登录状态过滤可见的 tabs
-const visibleTabs = computed(() => {
-  return tabs.value.filter(item => {
-    if (item.requiresAuth) {
-      return userStore.isLoggedIn;
-    }
-    return true;
-  });
-});
+const visibleTabs = computed(() =>
+  tabs.value.filter(item => !item.requiresAuth || userStore.isLoggedIn)
+);
 
-// 页面加载时设置 activeName
 if (!store.activeName) {
   store.activeName = store.fatable;
 }
@@ -59,34 +51,38 @@ const tabClick = (item: any) => {
   router.push({ name: item.value });
 };
 
-watch(
-  () => store.fatable,
-  (newValue) => {
-    store.activeName = newValue;
-  }
-);
+watch(() => store.fatable, (v) => { store.activeName = v; });
 </script>
 
 <style scoped lang="scss">
-.tabs {
+.nav-tabs {
   display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 48px;
   flex-grow: 1;
-  font-weight: 600;
-  margin-left: 80px;
+}
 
-  .item {
-    padding: 0 30px;
-    text-align: center;
+.nav-item {
+  padding: 8px 20px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  position: relative;
+
+  &:hover {
     color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    height: 60px;
-    line-height: 60px;
+    background: rgba(255, 255, 255, 0.12);
   }
 
-  .active-item {
-    color: #d9db37;
-    border-bottom: 2px solid #d9db37;
+  &.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    font-weight: 600;
   }
 }
 </style>

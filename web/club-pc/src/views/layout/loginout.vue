@@ -1,22 +1,29 @@
 <template>
-  <!-- 已登录：显示用户下拉菜单 -->
-  <el-dropdown v-if="userStore.isLoggedIn" style="padding: 0 20px; cursor: pointer" @command="handleCommand">
-    <span class="el-dropdown-link">
-      <img class="userimg" src="@/assets/user.jpg" />
-      <span class="username">{{ userStore.nickname || userStore.username }}</span>
-    </span>
-    <template #dropdown>
-      <el-dropdown-menu>
-        <el-dropdown-item command="mine">个人中心</el-dropdown-item>
-        <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
-      </el-dropdown-menu>
-    </template>
-  </el-dropdown>
+  <div class="user-area">
+    <!-- 已登录 -->
+    <el-dropdown v-if="userStore.isLoggedIn" trigger="click" @command="handleCommand">
+      <div class="user-avatar-btn">
+        <div class="avatar">{{ (userStore.nickname || userStore.username || 'U').charAt(0) }}</div>
+        <span class="username">{{ userStore.nickname || userStore.username }}</span>
+        <el-icon class="arrow"><ArrowDown /></el-icon>
+      </div>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item command="mine">
+            <el-icon><User /></el-icon>个人中心
+          </el-dropdown-item>
+          <el-dropdown-item command="logout" divided>
+            <el-icon><SwitchButton /></el-icon>退出登录
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
 
-  <!-- 未登录：显示登录按钮 -->
-  <el-button v-else type="text" class="login-btn" @click="$router.push('/login')">
-    登录
-  </el-button>
+    <!-- 未登录 -->
+    <el-button v-else class="login-btn" @click="$router.push('/login')">
+      登录
+    </el-button>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -37,22 +44,58 @@ const handleCommand = (command: string) => {
 </script>
 
 <style scoped lang="scss">
-.userimg {
-  width: 36px;
-  height: 36px;
+.user-area {
+  flex-shrink: 0;
+}
+
+.user-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 40px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  vertical-align: middle;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .username {
   color: #fff;
-  margin-left: 6px;
   font-size: 14px;
+  font-weight: 500;
+}
+
+.arrow {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
 }
 
 .login-btn {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   color: #fff !important;
-  font-size: 14px;
-  padding: 0 20px;
+  border-radius: 20px !important;
+  padding: 6px 20px !important;
+  font-weight: 500 !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+  }
 }
 </style>

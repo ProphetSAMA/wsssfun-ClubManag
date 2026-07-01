@@ -1,8 +1,8 @@
 <template>
-  <el-carousel height="250px">
+  <el-carousel height="200px" :interval="4000" indicator-position="outside">
     <el-carousel-item v-for="item in list" :key="item.id">
       <el-image
-        style="height: 250px; width: 100%; object-fit: cover"
+        class="carousel-img"
         :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
         fit="cover"
       />
@@ -28,3 +28,11 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.carousel-img {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+}
+</style>

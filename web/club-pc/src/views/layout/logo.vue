@@ -1,29 +1,36 @@
 <template>
-    <div class="logo">
-        <img :src="logo" />
-        <div class="title">高校社团信息化平台</div>
-    </div>
+  <div class="logo" @click="$router.push('/home')">
+    <div class="logo-icon">🏛️</div>
+    <div class="logo-text">社团平台</div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import logo from '@/assets/logo.png'
 </script>
 
 <style scoped lang="scss">
 .logo {
-    display: flex;
-    align-items: center;
-    padding-left: 40px;
-    img {
-        width:40px;
-        height:40px;
-    }
-    .title {
-        font-size: 20px;
-        color: #fff;
-        font-weight: 600;
-        font-family: 'Microsoft YaHei';
-        margin-left: 6px;
-    }
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.logo-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
 }
 </style>

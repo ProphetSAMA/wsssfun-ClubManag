@@ -1,36 +1,37 @@
 <template>
-  <swiper
-    :modules="modules"
-    :initial-slide="1"
-    :slides-per-view="3"
-    :centered-slides="true"
-    :space-between="20"
-    :autoplay="{ disableOnInteraction: false }"
-    loop
-    class="mySwiper"
-  >
-    <swiper-slide v-for="item in list" :key="item.id">
-      <el-image
-        style="height: 250px; width: 100%; object-fit: cover"
-        :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
-        fit="cover"
-      />
-      <div class="slide-title">{{ item.name }}</div>
-    </swiper-slide>
-  </swiper>
+  <div class="swiper-wrap">
+    <swiper
+      :modules="modules"
+      :slides-per-view="4"
+      :space-between="16"
+      :autoplay="{ disableOnInteraction: false, delay: 3000 }"
+      loop
+    >
+      <swiper-slide v-for="item in list" :key="item.id">
+        <div class="team-card">
+          <el-image
+            class="team-img"
+            :src="item.image ? 'http://localhost:8888' + item.image : defaultImg"
+            fit="cover"
+          />
+          <div class="team-info">
+            <div class="team-name">{{ item.name }}</div>
+          </div>
+        </div>
+      </swiper-slide>
+    </swiper>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import defaultImg from "@/assets/jitashe.jpg";
-import { Autoplay, Navigation, Pagination, Virtual } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import http from "@/http";
 
-const modules = [Pagination, Navigation, Virtual, Autoplay];
+const modules = [Autoplay];
 const list = ref<any[]>([]);
 
 onMounted(async () => {
@@ -46,14 +47,41 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.mySwiper {
-  margin-top: 20px;
+.swiper-wrap {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
 }
-.slide-title {
-  text-align: center;
-  padding: 8px;
+
+.team-card {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.team-img {
+  width: 100%;
+  height: 180px;
+  display: block;
+}
+
+.team-info {
+  padding: 12px;
+  background: #fff;
+}
+
+.team-name {
   font-size: 14px;
-  font-weight: bold;
-  color: #303133;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
 }
 </style>
