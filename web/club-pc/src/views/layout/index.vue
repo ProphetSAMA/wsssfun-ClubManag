@@ -10,7 +10,7 @@
     </el-main>
     <el-footer class="footer">
       <div class="footer">
-        <p>2024</p>
+        <p>&copy; {{ new Date().getFullYear() }} 社团管理系统</p>
       </div>
     </el-footer>
   </el-container>
