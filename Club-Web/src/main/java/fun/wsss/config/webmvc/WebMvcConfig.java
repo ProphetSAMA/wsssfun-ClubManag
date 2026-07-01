@@ -49,7 +49,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/api/team/list",
                         "/api/team/getTopTeam",
                         "/api/category/list",
-                        "/api/category/getSelectList"
+                        "/api/category/getSelectList",
+                        "/api/member/list"
                 );
     }
 
