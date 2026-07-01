@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import fun.wsss.config.jwt.JwtUtils;
 import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
-import fun.wsss.web.user.entity.PageParm;
-import fun.wsss.web.user.entity.User;
+import fun.wsss.web.user.entity.*;
 import fun.wsss.web.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +22,59 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtils jwtUtils;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtils jwtUtils) {
         this.userService = userService;
+        this.jwtUtils = jwtUtils;
+    }
+
+    /**
+     * 用户登录
+     *
+     * @param loginDTO 登录参数
+     * @return 登录结果（含 token）
+     */
+    @PostMapping("/login")
+    public ResultVo login(@RequestBody LoginDTO loginDTO) {
+        if (StringUtils.isEmpty(loginDTO.getUsername()) || StringUtils.isEmpty(loginDTO.getPassword())) {
+            return ResultUtils.error("用户名和密码不能为空");
+        }
+
+        QueryWrapper<User> query = new QueryWrapper<>();
+        query.lambda().eq(User::getUsername, loginDTO.getUsername());
+        User user = userService.getOne(query);
+
+        if (user == null) {
+            return ResultUtils.error("用户不存在");
+        }
+
+        if (!loginDTO.getPassword().equals(user.getPassword())) {
+            return ResultUtils.error("密码错误");
+        }
+
+        if (user.getStatus() != null && user.getStatus() == 0) {
+            return ResultUtils.error("账号已被禁用");
+        }
+
+        String token = jwtUtils.generateToken(user.getUserId(), user.getUsername(), user.getIsAdmin());
+        LoginVO loginVO = new LoginVO(token, user.getUserId(), user.getUsername(), user.getNickname(), user.getIsAdmin());
+        return ResultUtils.success("登录成功", loginVO);
+    }
+
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return 用户信息
+     */
+    @GetMapping("/info")
+    public ResultVo info(@RequestAttribute Long userId) {
+        User user = userService.getById(userId);
+        if (user == null) {
+            return ResultUtils.error("用户不存在");
+        }
+        user.setPassword(null);
+        return ResultUtils.success("查询成功", user);
     }
 
     /**
@@ -78,12 +128,10 @@ public class UserController {
     @GetMapping("/list")
     public ResultVo list(PageParm parm) {
         IPage<User> page = new Page<>(parm.getCurrentPage(), parm.getPageSize());
-
         QueryWrapper<User> query = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(parm.getNickName())) {
             query.lambda().like(User::getNickname, parm.getNickName());
         }
-
         IPage<User> list = userService.page(page, query);
         return ResultUtils.success("查询成功", list);
     }
