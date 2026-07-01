@@ -100,8 +100,10 @@ const { dialog, onClose, onConfirm, onShow } = useDialog();
 const show = (type: EditType, row?: NewsType) => {
     dialog.width = 1200;
     dialog.height = 600;
-    
-    // 使用严格的枚举比较
+
+    // 记录当前操作类型（新增/编辑）
+    tags.value = type;
+
     if (type === EditType.ADD) {
         dialog.title = Title.ADD;
         // 重置表单
