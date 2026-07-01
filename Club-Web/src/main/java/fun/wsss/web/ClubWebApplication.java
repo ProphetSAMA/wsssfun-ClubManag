@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Wsssfun
  * @date 2024年10月21日 01点10分
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "fun.wsss")
 public class ClubWebApplication {
 
 	public static void main(String[] args) {
