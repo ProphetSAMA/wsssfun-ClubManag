@@ -1,0 +1,29 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTO Mapper 3.0 //EN"
+        "http://mybatis.org/mybatis-3-mapper.dtd">
+<mapper namespace="fun.wsss.web.member.mapper.MemberMapper">
+
+    <select id="selectMemberPage" resultType="fun.wsss.web.member.entity.MemberVo">
+        SELECT
+            m.id,
+            m.team_id AS teamId,
+            m.user_id AS userId,
+            m.role,
+            m.status,
+            m.join_time AS joinTime,
+            t.name AS teamName,
+            u.nick_name AS userName
+        FROM member m
+        LEFT JOIN team t ON m.team_id = t.id
+        LEFT JOIN sys_user u ON m.user_id = u.user_id
+        WHERE m.status = 1
+        <if test="teamId != null">
+            AND m.team_id = #{teamId}
+        </if>
+        <if test="userId != null">
+            AND m.user_id = #{userId}
+        </if>
+        ORDER BY m.join_time DESC
+    </select>
+
+</mapper>

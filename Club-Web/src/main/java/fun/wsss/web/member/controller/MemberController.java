@@ -7,6 +7,8 @@ import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import fun.wsss.web.member.entity.Member;
 import fun.wsss.web.member.entity.MemberParm;
+import fun.wsss.web.member.entity.MemberVo;
+import fun.wsss.web.member.mapper.MemberMapper;
 import fun.wsss.web.member.service.MemberService;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +24,11 @@ import java.util.Date;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberMapper memberMapper;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, MemberMapper memberMapper) {
         this.memberService = memberService;
+        this.memberMapper = memberMapper;
     }
 
     /**
@@ -90,23 +94,15 @@ public class MemberController {
     }
 
     /**
-     * 查询成员列表
+     * 查询成员列表（关联社团名称和用户姓名）
      *
      * @param parm 查询条件
      * @return 成员列表
      */
     @GetMapping("/list")
     public ResultVo list(MemberParm parm) {
-        IPage<Member> page = new Page<>(parm.getCurrentPage(), parm.getPageSize());
-        QueryWrapper<Member> query = new QueryWrapper<>();
-        if (parm.getTeamId() != null) {
-            query.lambda().eq(Member::getTeamId, parm.getTeamId());
-        }
-        if (parm.getUserId() != null) {
-            query.lambda().eq(Member::getUserId, parm.getUserId());
-        }
-        query.lambda().eq(Member::getStatus, 1).orderByDesc(Member::getJoinTime);
-        IPage<Member> list = memberService.page(page, query);
+        Page<MemberVo> page = new Page<>(parm.getCurrentPage(), parm.getPageSize());
+        IPage<MemberVo> list = memberMapper.selectMemberPage(page, parm.getTeamId(), parm.getUserId());
         return ResultUtils.success("查询成功", list);
     }
 }
