@@ -20,6 +20,8 @@ public class News {
     private Long id;
     private String type;
     private Long createId;
+    /** 所属社团；为空表示平台内容 */
+    private Long teamId;
     private String image;
     private String title;
     private String details;

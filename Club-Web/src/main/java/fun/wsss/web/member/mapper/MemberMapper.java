@@ -3,10 +3,14 @@ package fun.wsss.web.member.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import fun.wsss.web.club.entity.ClubMemberVo;
+import fun.wsss.web.club.entity.ClubTeamVo;
 import fun.wsss.web.member.entity.Member;
 import fun.wsss.web.member.entity.MemberVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 社团成员Mapper
@@ -25,6 +29,22 @@ public interface MemberMapper extends BaseMapper<Member> {
      * @param userName 成员姓名（模糊搜索，可选）
      * @return 成员列表
      */
+    /**
+     * 我管理的社团（role >= 1）
+     *
+     * @param userId 当前用户
+     * @return 社团列表
+     */
+    List<ClubTeamVo> selectManagedTeams(@Param("userId") Long userId);
+
+    /**
+     * 某个社团的在册成员（社团管理员视角，含手机号）
+     *
+     * @param teamId 社团ID
+     * @return 成员列表
+     */
+    List<ClubMemberVo> selectClubMembers(@Param("teamId") Long teamId);
+
     IPage<MemberVo> selectMemberPage(Page<MemberVo> page,
                                      @Param("teamId") Long teamId,
                                      @Param("userId") Long userId,

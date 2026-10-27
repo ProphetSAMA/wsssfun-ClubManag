@@ -29,4 +29,33 @@
         ORDER BY m.join_time DESC
     </select>
 
+
+    <select id="selectManagedTeams" resultType="fun.wsss.web.club.entity.ClubTeamVo">
+        SELECT
+            m.team_id  AS teamId,
+            t.name     AS teamName,
+            m.role     AS role
+        FROM member m
+        INNER JOIN team t ON m.team_id = t.id
+        WHERE m.user_id = #{userId}
+          AND m.status = 1
+          AND m.role >= 1
+        ORDER BY m.role DESC, m.join_time ASC
+    </select>
+
+    <select id="selectClubMembers" resultType="fun.wsss.web.club.entity.ClubMemberVo">
+        SELECT
+            m.id,
+            m.user_id   AS userId,
+            u.nick_name AS userName,
+            u.phone     AS phone,
+            m.role      AS role,
+            DATE_FORMAT(m.join_time, '%Y-%m-%d') AS joinTime
+        FROM member m
+        LEFT JOIN sys_user u ON m.user_id = u.user_id
+        WHERE m.team_id = #{teamId}
+          AND m.status = 1
+        ORDER BY m.role DESC, m.join_time ASC
+    </select>
+
 </mapper>
