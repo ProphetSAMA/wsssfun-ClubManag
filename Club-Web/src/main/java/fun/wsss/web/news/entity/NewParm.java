@@ -13,4 +13,6 @@ public class NewParm {
     private Integer pageSize = 10;
     private String title;
     private String type;
+    /** 仅管理员可用：0-草稿 1-已发布 */
+    private Integer status;
 }

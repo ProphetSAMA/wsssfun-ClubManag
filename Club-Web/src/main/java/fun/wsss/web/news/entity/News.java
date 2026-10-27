@@ -26,4 +26,8 @@ public class News {
     private String hasTop;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTime;
+    /** 0-草稿 1-已发布 */
+    private Integer status;
+    /** 浏览量 */
+    private Integer viewCount;
 }
