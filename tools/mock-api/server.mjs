@@ -66,6 +66,19 @@ const news = [
   { id: 8, title: '暑期社团活动场地开放安排', type: '2', image: '', createTime: '2026-06-11', hasTop: '0', details: detailText('场地开放安排') },
 ];
 
+// BULK: 再造 27 条，让每个类型的条数都超过一页（pageSize=10）
+for (let i = 0; i < 27; i++) {
+  news.push({
+    id: 100 + i,
+    title: ['示例活动', '示例新闻', '示例公告'][i % 3] + ' ' + (i + 1),
+    type: String(i % 3),
+    image: i % 4 === 0 ? '' : '/images/team' + ((i % 8) + 1) + '.svg',
+    createTime: '2026-05-' + String((i % 28) + 1).padStart(2, '0'),
+    hasTop: '0',
+    details: detailText('示例内容 ' + (i + 1)),
+  });
+}
+
 const users = [
   { userId: 1, username: 'admin', nickname: '系统管理员', phone: '13800000000', sex: 0, status: 1, isAdmin: 1 },
   { userId: 12, username: 'chenyu', nickname: '陈雨', phone: '13811112222', sex: 1, status: 1, isAdmin: 0 },
@@ -156,6 +169,24 @@ function handle(req, res, url, path) {
     const { password, ...safe } = currentUser;
     return ok(res, safe);
   }
+  if (path === '/api/user/register' && req.method === 'POST') {
+    return readJson(req, res, (body) => {
+      const username = String(body.username || '').trim();
+      if (!/^[A-Za-z0-9_]{3,20}$/.test(username)) return fail(res, '用户名只能包含字母、数字和下划线，长度 3-20');
+      if (!body.password || body.password.length < 6) return fail(res, '密码至少 6 位');
+      if (users.some((u) => u.username === username)) return fail(res, '用户名已存在');
+      users.push({
+        userId: users.length + 1,
+        username,
+        nickname: body.nickname || username,
+        phone: '',
+        sex: 0,
+        status: 1,
+        isAdmin: 0,
+      });
+      return ok(res, null, '注册成功');
+    });
+  }
   if (path === '/api/user/profile' && req.method === 'PUT') {
     return readJson(req, res, (body) => {
       if (!body.nickname) return fail(res, '昵称不能为空');
@@ -201,7 +232,9 @@ function handle(req, res, url, path) {
   // 活动 / 新闻 / 公告
   if (path === '/api/news/list') {
     const type = url.searchParams.get('type');
-    const rows = type ? news.filter((n) => n.type === type) : news;
+    const title = (url.searchParams.get('title') || '').trim();
+    let rows = type ? news.filter((n) => n.type === type) : news;
+    if (title) rows = rows.filter((n) => n.title.includes(title));
     return ok(res, paged(rows, url));
   }
   const topMap = {
