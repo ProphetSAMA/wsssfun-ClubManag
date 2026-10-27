@@ -1,5 +1,5 @@
 import { onBeforeUnmount, ref, shallowRef } from "vue";
-import { IEditorConfig } from "@wangeditor/editor";
+import type { IEditorConfig } from "@wangeditor/editor";
 import { apiUrl } from "@/http";
 import { useUserStore } from "@/store/user";
 export default function useEditor() {

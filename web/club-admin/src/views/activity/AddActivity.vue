@@ -68,7 +68,10 @@ import UploadImage from "@/components/UploadImage.vue";
 import { EditType, NewType, Title } from "@/type/BaseType";
 import type { FormInstance, UploadUserFile } from "element-plus";
 
-import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+import { defineAsyncComponent } from "vue";
+// 编辑器体积较大（约 800KB），改成用了弹框才加载
+const Editor = defineAsyncComponent(() => import("@wangeditor/editor-for-vue").then((m: any) => m.Editor));
+const Toolbar = defineAsyncComponent(() => import("@wangeditor/editor-for-vue").then((m: any) => m.Toolbar));
 import useEditor from "@/composable/team/useEditor";
 import "@wangeditor/editor/dist/css/style.css";
 import { addNewsApi, editNewsApi } from "@/api/news";
