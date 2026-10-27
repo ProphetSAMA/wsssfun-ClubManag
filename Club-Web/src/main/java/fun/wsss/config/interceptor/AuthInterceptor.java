@@ -2,6 +2,7 @@ package fun.wsss.config.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fun.wsss.config.jwt.JwtUtils;
+import fun.wsss.config.jwt.TokenBlacklist;
 import fun.wsss.status.StatusCode;
 import fun.wsss.utils.ResultUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,10 +52,12 @@ public class AuthInterceptor implements HandlerInterceptor {
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private final JwtUtils jwtUtils;
+    private final TokenBlacklist tokenBlacklist;
     private final ObjectMapper objectMapper;
 
-    public AuthInterceptor(JwtUtils jwtUtils, ObjectMapper objectMapper) {
+    public AuthInterceptor(JwtUtils jwtUtils, TokenBlacklist tokenBlacklist, ObjectMapper objectMapper) {
         this.jwtUtils = jwtUtils;
+        this.tokenBlacklist = tokenBlacklist;
         this.objectMapper = objectMapper;
     }
 
@@ -70,10 +73,21 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         if (token != null && !token.isEmpty()) {
             if (jwtUtils.validateToken(token)) {
+                String jti = jwtUtils.getJti(token);
+                if (tokenBlacklist.isRevoked(jti)) {
+                    // 已登出的 token：公开接口按游客处理，其余接口直接拒绝
+                    if (!publicPath) {
+                        writeError(response, "登录已失效，请重新登录", StatusCode.UNAUTHORIZED);
+                        return false;
+                    }
+                    return true;
+                }
                 // 将用户信息存入 request 属性，供 Controller / AdminInterceptor 使用
                 request.setAttribute("userId", jwtUtils.getUserId(token));
                 request.setAttribute("username", jwtUtils.getUsername(token));
                 request.setAttribute("isAdmin", jwtUtils.getIsAdmin(token));
+                request.setAttribute("jti", jti);
+                request.setAttribute("tokenExpiration", jwtUtils.getExpiration(token).getTime());
                 return true;
             }
             if (!publicPath) {

@@ -10,6 +10,11 @@ export const registerApi = (parm: { username: string, password: string, nickname
     return http.post('/api/user/register', parm)
 }
 
+// 退出登录（把当前 token 拉黑）
+export const logoutApi = () => {
+    return http.post('/api/user/logout')
+}
+
 // 获取当前用户信息
 export const getUserInfoApi = () => {
     return http.get('/api/user/info')

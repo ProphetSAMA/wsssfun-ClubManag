@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
+import { logoutApi } from '@/api/user'
 import Menu from "@/layout/menu.vue";
 import Collapse from "@/layout/Collapse.vue";
 import BreadCrumb from "@/layout/BreadCrumb.vue";
@@ -39,8 +40,14 @@ import BreadCrumb from "@/layout/BreadCrumb.vue";
 const router = useRouter()
 const userStore = useUserStore()
 
-const handleCommand = (command: string) => {
+const handleCommand = async (command: string) => {
   if (command === 'logout') {
+    // 先让后端把当前 token 拉黑，再清本地状态
+    try {
+      await logoutApi()
+    } catch (e) {
+      console.error('登出接口失败', e)
+    }
     userStore.logout()
     router.push('/login')
   }

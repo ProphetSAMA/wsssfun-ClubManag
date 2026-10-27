@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.wsss.config.jwt.JwtUtils;
+import fun.wsss.config.jwt.TokenBlacklist;
+import fun.wsss.config.security.LoginAttemptService;
 import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import fun.wsss.web.user.entity.*;
@@ -32,11 +34,19 @@ public class UserController {
     private final UserService userService;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
+    private final TokenBlacklist tokenBlacklist;
+    private final LoginAttemptService loginAttemptService;
 
-    public UserController(UserService userService, JwtUtils jwtUtils, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService,
+                          JwtUtils jwtUtils,
+                          PasswordEncoder passwordEncoder,
+                          TokenBlacklist tokenBlacklist,
+                          LoginAttemptService loginAttemptService) {
         this.userService = userService;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
+        this.tokenBlacklist = tokenBlacklist;
+        this.loginAttemptService = loginAttemptService;
     }
 
     private static boolean isBcrypt(String password) {
@@ -55,12 +65,20 @@ public class UserController {
             return ResultUtils.error("用户名和密码不能为空");
         }
 
+        long lockedSeconds = loginAttemptService.lockedSeconds(loginDTO.getUsername());
+        if (lockedSeconds > 0) {
+            long minutes = Math.max(1, (lockedSeconds + 59) / 60);
+            return ResultUtils.error("登录失败次数过多，请 " + minutes + " 分钟后再试");
+        }
+
         QueryWrapper<User> query = new QueryWrapper<>();
         query.lambda().eq(User::getUsername, loginDTO.getUsername());
         User user = userService.getOne(query);
 
         if (user == null) {
-            return ResultUtils.error("用户不存在");
+            // 统一文案，避免通过"用户不存在/密码错误"猜账号
+            loginAttemptService.onFailure(loginDTO.getUsername());
+            return ResultUtils.error("用户名或密码错误");
         }
 
         boolean matched;
@@ -75,12 +93,15 @@ public class UserController {
             }
         }
         if (!matched) {
-            return ResultUtils.error("密码错误");
+            loginAttemptService.onFailure(loginDTO.getUsername());
+            return ResultUtils.error("用户名或密码错误");
         }
 
         if (user.getStatus() != null && user.getStatus() == 0) {
             return ResultUtils.error("账号已被禁用");
         }
+
+        loginAttemptService.onSuccess(loginDTO.getUsername());
 
         String token = jwtUtils.generateToken(user.getUserId(), user.getUsername(), user.getIsAdmin());
         LoginVO loginVO = new LoginVO(token, user.getUserId(), user.getUsername(), user.getNickname(), user.getIsAdmin());
@@ -107,8 +128,8 @@ public class UserController {
         if (!username.matches("^[A-Za-z0-9_]+$")) {
             return ResultUtils.error("用户名只能包含字母、数字和下划线");
         }
-        if (password.length() < 6) {
-            return ResultUtils.error("密码至少 6 位");
+        if (password.length() < 8) {
+            return ResultUtils.error("密码至少 8 位");
         }
 
         QueryWrapper<User> query = new QueryWrapper<>();
@@ -161,6 +182,27 @@ public class UserController {
             return ResultUtils.success("添加成功");
         }
         return ResultUtils.error("添加失败");
+    }
+
+    /**
+     * 退出登录
+     *
+     * <p>JWT 无状态，这里把当前 token 的 jti 加入黑名单，过期前都不能再用。
+     *
+     * @param jti               当前令牌 ID（来自拦截器）
+     * @param tokenExpiration   当前令牌过期时间（来自拦截器）
+     * @return 结果
+     */
+    @PostMapping("/logout")
+    public ResultVo logout(@RequestAttribute(value = "jti", required = false) String jti,
+                           @RequestAttribute(value = "tokenExpiration", required = false) Long tokenExpiration) {
+        if (jti != null && !jti.isEmpty()) {
+            long expiresAt = tokenExpiration == null
+                    ? System.currentTimeMillis() + 24L * 60 * 60 * 1000
+                    : tokenExpiration;
+            tokenBlacklist.revoke(jti, expiresAt);
+        }
+        return ResultUtils.success("已退出登录");
     }
 
     /**
@@ -227,8 +269,8 @@ public class UserController {
         if (StringUtils.isEmpty(parm.getOldPassword()) || StringUtils.isEmpty(parm.getNewPassword())) {
             return ResultUtils.error("原密码和新密码不能为空");
         }
-        if (parm.getNewPassword().length() < 6) {
-            return ResultUtils.error("新密码至少 6 位");
+        if (parm.getNewPassword().length() < 8) {
+            return ResultUtils.error("新密码至少 8 位");
         }
         User exist = userService.getById(userId);
         if (exist == null) {

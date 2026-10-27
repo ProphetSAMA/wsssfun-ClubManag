@@ -94,7 +94,7 @@ class UserPasswordTest {
                         .content(loginBody("stu", "wrong")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(500))
-                .andExpect(jsonPath("$.msg").value("密码错误"));
+                .andExpect(jsonPath("$.msg").value("用户名或密码错误"));
 
         verify(userService, never()).updateById(any(User.class));
     }

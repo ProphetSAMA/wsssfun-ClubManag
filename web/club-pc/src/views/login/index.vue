@@ -45,7 +45,7 @@
           <el-input v-model="registerForm.nickname" placeholder="不填则默认用用户名" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="registerForm.password" type="password" show-password placeholder="至少 6 位" />
+          <el-input v-model="registerForm.password" type="password" show-password placeholder="至少 8 位" />
         </el-form-item>
         <el-form-item label="确认密码" prop="confirmPassword">
           <el-input v-model="registerForm.confirmPassword" type="password" show-password />
@@ -111,7 +111,7 @@ const registerRules: FormRules = {
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码至少 6 位', trigger: 'blur' }
+    { min: 8, message: '密码至少 8 位', trigger: 'blur' }
   ],
   confirmPassword: [
     { required: true, message: '请再次输入密码', trigger: 'blur' },

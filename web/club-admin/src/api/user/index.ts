@@ -1,6 +1,11 @@
 import http from '@/http'
 import { ListParm, User, LoginParm } from "@/api/user/UserModel";
 
+// 退出登录（把当前 token 拉黑）
+export const logoutApi = () => {
+    return http.post('/api/user/logout')
+}
+
 // 登录
 export const loginApi = (parm: LoginParm) => {
     return http.post('/api/user/login', parm)

@@ -20,6 +20,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
+import { logoutApi } from '@/api'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -29,9 +30,18 @@ const initial = computed(() => {
   return n.charAt(0) || 'U'
 })
 
-const handleCommand = (cmd: string) => {
-  if (cmd === 'mine') router.push('/mine/mycenter')
-  else if (cmd === 'logout') {
+const handleCommand = async (cmd: string) => {
+  if (cmd === 'mine') {
+    router.push('/mine/mycenter')
+    return
+  }
+  if (cmd === 'logout') {
+    // 先让后端把当前 token 拉黑，再清本地状态
+    try {
+      await logoutApi()
+    } catch (e) {
+      console.error('登出接口失败', e)
+    }
     userStore.logout()
     router.push('/home')
   }

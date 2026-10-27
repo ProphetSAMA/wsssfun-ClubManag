@@ -160,7 +160,7 @@ class UserProfileTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"oldPassword\":\"oldpass123\",\"newPassword\":\"123\"}"))
                 .andExpect(jsonPath("$.code").value(500))
-                .andExpect(jsonPath("$.msg").value("新密码至少 6 位"));
+                .andExpect(jsonPath("$.msg").value("新密码至少 8 位"));
 
         verify(userService, never()).updateById(any(User.class));
     }

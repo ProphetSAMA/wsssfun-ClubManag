@@ -42,7 +42,8 @@ public class AdminInterceptor implements HandlerInterceptor {
     private static final Set<String> SELF_SERVICE_PATHS = Set.of(
             "/api/user/profile",
             "/api/user/password",
-            "/api/user/refresh"
+            "/api/user/refresh",
+            "/api/user/logout"
     );
 
     private final ObjectMapper objectMapper;

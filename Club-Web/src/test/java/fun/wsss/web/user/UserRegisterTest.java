@@ -95,7 +95,7 @@ class UserRegisterTest {
         mockMvc.perform(post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"newbie\",\"password\":\"123\"}"))
-                .andExpect(jsonPath("$.msg").value("密码至少 6 位"));
+                .andExpect(jsonPath("$.msg").value("密码至少 8 位"));
 
         verify(userService, never()).save(any(User.class));
     }
