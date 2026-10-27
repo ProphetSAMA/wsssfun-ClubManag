@@ -1,0 +1,40 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTO Mapper 3.0 //EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fun.wsss.web.signup.mapper.SignupMapper">
+
+    <select id="selectMySignups" resultType="fun.wsss.web.signup.entity.SignupVo">
+        SELECT
+            s.id,
+            s.news_id   AS newsId,
+            s.user_id   AS userId,
+            s.status,
+            n.title,
+            n.image,
+            DATE_FORMAT(n.create_time, '%Y-%m-%d')     AS activityTime,
+            DATE_FORMAT(s.create_time, '%Y-%m-%d %H:%i') AS signupTime
+        FROM activity_signup s
+        INNER JOIN news n ON s.news_id = n.id
+        WHERE s.user_id = #{userId}
+          AND s.status = 1
+          AND n.status = 1
+        ORDER BY s.create_time DESC
+    </select>
+
+    <select id="selectSignupsByNews" resultType="fun.wsss.web.signup.entity.SignupVo">
+        SELECT
+            s.id,
+            s.news_id   AS newsId,
+            s.user_id   AS userId,
+            s.status,
+            DATE_FORMAT(s.create_time, '%Y-%m-%d %H:%i') AS signupTime,
+            u.nick_name AS userName,
+            u.phone
+        FROM activity_signup s
+        LEFT JOIN sys_user u ON s.user_id = u.user_id
+        WHERE s.news_id = #{newsId}
+          AND s.status = 1
+        ORDER BY s.create_time ASC
+    </select>
+
+</mapper>
