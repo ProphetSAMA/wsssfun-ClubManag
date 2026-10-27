@@ -266,9 +266,12 @@ public class UserController {
     public ResultVo list(PageParm parm) {
         IPage<User> page = new Page<>(parm.getCurrentPage(), parm.getPageSize());
         QueryWrapper<User> query = new QueryWrapper<>();
-        if (StringUtils.isNotEmpty(parm.getNickName())) {
-            query.lambda().like(User::getNickname, parm.getNickName());
-        }
+        query.lambda()
+                .like(StringUtils.isNotEmpty(parm.getNickName()), User::getNickname, parm.getNickName())
+                .like(StringUtils.isNotEmpty(parm.getUsername()), User::getUsername, parm.getUsername())
+                .like(StringUtils.isNotEmpty(parm.getPhone()), User::getPhone, parm.getPhone())
+                .eq(parm.getIsAdmin() != null, User::getIsAdmin, parm.getIsAdmin())
+                .orderByDesc(User::getUserId);
         IPage<User> list = userService.page(page, query);
         // 列表不需要密码，且不应该把哈希下发到前端
         list.getRecords().forEach(item -> item.setPassword(null));

@@ -4,9 +4,33 @@
     <el-form :model="searchParm" :inline="true" size="default">
       <el-form-item>
         <el-input
-          placeholder="请输入姓名"
+          placeholder="姓名"
           v-model="searchParm.nickName"
+          clearable
+          style="width: 140px"
         ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input
+          placeholder="登录账号"
+          v-model="searchParm.username"
+          clearable
+          style="width: 140px"
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input
+          placeholder="手机号"
+          v-model="searchParm.phone"
+          clearable
+          style="width: 150px"
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="searchParm.isAdmin" clearable placeholder="角色" style="width: 120px">
+          <el-option label="管理员" :value="1" />
+          <el-option label="普通用户" :value="0" />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button icon="search" @click="searchBtn">搜索</el-button>

@@ -30,5 +30,8 @@ export type ListParm = {
     currentPage: number,
     pageSize: number,
     nickName: string,
+    username?: string,
+    phone?: string,
+    isAdmin?: number,
     total?: number
 }

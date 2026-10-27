@@ -11,6 +11,9 @@ export default function useUserTable() {
     // 搜索表单绑定数据
     const searchParm = reactive(<ListParm>{
         nickName: '',
+        username: '',
+        phone: '',
+        isAdmin: undefined,
         pageSize: 10,
         currentPage: 1,
         total: 0
@@ -41,6 +44,9 @@ export default function useUserTable() {
     // 重置
     const resetBtn = () => {
         searchParm.nickName = '';
+        searchParm.username = '';
+        searchParm.phone = '';
+        searchParm.isAdmin = undefined;
         searchParm.currentPage = 1; // 重置时重置到第一页
         getList();
     };
