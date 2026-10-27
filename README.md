@@ -31,8 +31,8 @@ Jenkinsfile               构建流水线
 
 ## 功能
 
-- **用户门户**：首页（推荐社团 / 活动 / 公告 + 最新内容）、社团列表（分类筛选 + 加入社团）、活动 / 新闻 / 公告列表（点开看图文详情）、个人中心（我的资料 / 我的社团 / 我的活动）。
-- **管理后台**：数据看板、用户 / 分类 / 社团 / 成员 / 新闻活动管理，富文本编辑器 + 图片上传。
+- **用户门户**：注册与登录、首页（推荐社团 / 活动 / 公告 + 最新内容）、社团列表（分类筛选）、社团详情（简介 + 成员 + 加入）、活动 / 新闻 / 公告列表（搜索 + 分页 + 图文详情 + 浏览量）、活动报名与取消、个人中心（改资料 / 改密码 / 我的社团 / 我报名的活动）。
+- **管理后台**：看板（数量 + 近 7 天报名趋势 + 内容类型分布）、用户 / 分类 / 社团 / 成员 / 内容管理，内容支持草稿与发布、批量删除与导出 CSV，富文本编辑 + 图片上传与孤儿图片清理。
 
 ## 快速开始
 
@@ -97,17 +97,21 @@ node tools/mock-api/server.mjs     # http://localhost:8888，两个前端的 .en
 
 | 模块 | 接口 |
 | --- | --- |
-| 用户 | `POST /api/user/login`、`GET /api/user/info`、`/api/user` 增改删、`GET /api/user/list` |
+| 用户 | `POST /api/user/login`、`POST /api/user/register`、`POST /api/user/refresh`（续签）、`GET /api/user/info`、`PUT /api/user/profile`、`PUT /api/user/password`、`/api/user` 增改删、`GET /api/user/list` |
 | 分类 | `/api/category` 增改删、`GET /api/category/list`、`GET /api/category/getSelectList` |
-| 社团 | `/api/team` 增改删、`GET /api/team/list`、`GET /api/team/getTopTeam` |
-| 内容 | `/api/news` 增改删、`GET /api/news/list`、`getTopActivity`、`getTopNotice`、`getNewActivity`、`getNewNotice` |
+| 社团 | `/api/team` 增改删、`GET /api/team/list`、`GET /api/team/getTopTeam`、`GET /api/team/{id}`、`GET /api/team/{id}/members` |
+| 内容 | `/api/news` 增改删、`GET /api/news/list`、`GET /api/news/detail/{id}`（浏览量 +1）、`getTopActivity`、`getTopNotice`、`getNewActivity`、`getNewNotice` |
 | 成员 | `/api/member` 增改、`DELETE /api/member/{id}`（逻辑退团）、`GET /api/member/list` |
-| 上传 | `POST /api/upload/uploadImage` → 返回 `/images/xxx.jpg` |
+| 报名 | `POST /api/signup`、`DELETE /api/signup/{newsId}`、`GET /api/signup/my`、`GET /api/signup/count`、`GET /api/signup/list`（管理员） |
+| 统计 | `GET /api/stats/overview`（仅管理员） |
+| 上传 | `POST /api/upload/uploadImage` → 返回 `/images/xxx.jpg`；`DELETE /api/upload?filename=`；`POST /api/upload/cleanup`（清理孤儿图片） |
 
 ## 数据约定
 
 - `news.type`：`0` 活动 / `1` 新闻 / `2` 公告；`has_top = '1'` 表示首页推荐。
 - `member.role`：`0` 普通成员 / `1` 管理员 / `2` 社长；`status = 0` 表示已退出（逻辑删除，记录保留）。
+- `news.status`：`0` 草稿（仅管理员可见）/ `1` 已发布；`news.view_count` 由详情接口自增。
+- `activity_signup`：同一用户对同一活动只有一行（`news_id + user_id` 唯一），取消报名把 `status` 置 0。
 - `image` 字段存相对路径（`/images/xxx.jpg`），前端用 `src/utils/image.ts` 的 `imgUrl()` 拼完整地址。
 - 上传接口只信任文件头（`ImageTypeUtils`）：扩展名由 magic bytes 决定（jpg/png/gif/webp），客户端文件名和 content-type 都不参与，单张上限 5MB。
 - `image` 字段历史上被写脏过（`undefined/images/xxx.png`、`http://localhost:8888/images/xxx.png`），前端 `imgUrl()` 会兜底；要彻底清干净见 `db/cleanup-image-paths.sql`（附带备份和回滚 SQL，不自动执行）。
@@ -117,9 +121,9 @@ node tools/mock-api/server.mjs     # http://localhost:8888，两个前端的 .en
 
 ## 已知问题 / 待办
 
-- 管理接口的写操作（非 GET）由 `AdminInterceptor` 统一校验 `is_admin`；只读接口保持开放，但 `GET /api/user/list` 例外（会暴露全员手机号），仅管理员可用。
-- 门户的内容详情用 `v-html` 直接渲染后台富文本，目前没有做 HTML 清洗（依赖“后台内容可信”这个前提）。
-- 富文本编辑器（`@wangeditor`）仍是 810KB 的 chunk，只有后台的「新增活动/社团」弹框会用到，可以进一步改成异步加载。
+- 管理接口的写操作（非 GET）由 `AdminInterceptor` 统一校验 `is_admin`；只读接口保持开放，但 `GET /api/user/list` 与 `/api/stats/**` 例外，仅管理员可用。
+- 接口文档：启动后访问 `/swagger-ui/index.html`（JSON 见 `/v3/api-docs`）。
+- 富文本编辑器（`@wangeditor`）810KB 的 chunk 已改成弹框打开时才加载，但单次打开仍要下载 810KB，后续可考虑换更轻的编辑器或裁剪菜单。
 
 ## 构建
 
