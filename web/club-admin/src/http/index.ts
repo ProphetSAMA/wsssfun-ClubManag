@@ -1,10 +1,20 @@
 import axios, { type AxiosInstance } from "axios";
-import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/user";
 import router from "@/router";
 
+export const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+
+export const apiUrl = (path: string) => {
+    if (/^https?:\/\//i.test(path)) {
+        return path;
+    }
+
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    return `${apiBaseUrl}${normalizedPath}`;
+};
+
 const config = {
-    baseURL: 'http://localhost:8888',
+    baseURL: apiBaseUrl,
     timeout: 10000,
 }
 
@@ -62,6 +72,11 @@ class Http {
                 }
                 const msg = msgMap[error.response.status] || `连接错误${error.response.status}`;
                 ElMessage.error(msg);
+                if (error.response.status === 401) {
+                    const userStore = useUserStore();
+                    userStore.logout();
+                    router.push('/login');
+                }
             } else {
                 ElMessage.error('连接到服务器失败');
             }

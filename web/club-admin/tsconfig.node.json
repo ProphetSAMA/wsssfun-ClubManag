@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,
     "forceConsistentCasingInFileNames": true,
     "target": "ES2022",
     "lib": ["ES6", "DOM"],
@@ -18,8 +17,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "declaration": true
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["vite.config.ts"]
 }

@@ -1,4 +1,3 @@
-import { ElMessageBox } from 'element-plus'
 
 export default function myConfirm(text: string): Promise<boolean> {
     return new Promise((resolve) => {

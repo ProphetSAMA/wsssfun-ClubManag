@@ -13,6 +13,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/',
         component: Layout,
         redirect: '/home',
+        meta: { requiresAdmin: true },
         children: [
             {
                 path: '/home',
@@ -63,17 +64,19 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
     const userStore = useUserStore()
     if (to.path === '/login') {
-        if (userStore.token) {
+        if (userStore.token && userStore.isAdmin === 1) {
             next('/home')
         } else {
             next()
         }
+    } else if (!userStore.token) {
+        next('/login')
+    } else if (to.meta.requiresAdmin && userStore.isAdmin !== 1) {
+        userStore.logout()
+        ElMessage.error('该账号没有管理后台权限')
+        next('/login')
     } else {
-        if (userStore.token) {
-            next()
-        } else {
-            next('/login')
-        }
+        next()
     }
 })
 

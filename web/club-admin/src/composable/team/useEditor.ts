@@ -1,7 +1,7 @@
-// @ts-ignore
-import { server } from "typescript";
-import { onBeforeUnmount, ref, shallowRef, onMounted } from "vue";
+import { onBeforeUnmount, ref, shallowRef } from "vue";
 import { IEditorConfig } from "@wangeditor/editor";
+import { apiUrl } from "@/http";
+import { useUserStore } from "@/store/user";
 export default function useEditor() {
 
     type InsertFnType = (url: string, alt?: string, href?: string) => void;
@@ -31,13 +31,16 @@ export default function useEditor() {
     editorConfig.MENU_CONF!['uploadImage'] = {
         fieldName: 'file',
         // 上传图片后端地址
-        server: process.env.BASE_API + '/api/upload/uploadImage',
+        server: apiUrl('/api/upload/uploadImage'),
+        headers: {
+            token: useUserStore().token,
+        },
         // 自定义插入图片
         customInsert(res: any, insertFn: InsertFnType) {
             // res为服务端返回结果
             console.log(res)
             // 从res中找到url、alt、href,然后插入图片
-            insertFn(process.env.BASE_API + res.data)
+            insertFn(apiUrl(res.data))
         }
     }
 

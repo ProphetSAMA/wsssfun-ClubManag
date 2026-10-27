@@ -1,7 +1,5 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": true,
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
     "target": "ES2020",

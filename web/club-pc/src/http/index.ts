@@ -1,10 +1,20 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
-import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/user";
 import router from "@/router";
 
+export const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+
+export const apiUrl = (path: string) => {
+    if (/^https?:\/\//i.test(path)) {
+        return path;
+    }
+
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    return `${apiBaseUrl}${normalizedPath}`;
+};
+
 const config: AxiosRequestConfig = {
-    baseURL: "http://localhost:8888",
+    baseURL: apiBaseUrl,
     timeout: 10000,
 };
 
