@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS `news` (
   `id`          bigint       NOT NULL AUTO_INCREMENT,
   `type`        varchar(10)  DEFAULT NULL COMMENT '0-活动 1-新闻 2-公告',
   `create_id`   bigint       DEFAULT NULL COMMENT '发布人 sys_user.user_id',
+  `team_id`     bigint       DEFAULT NULL COMMENT '所属社团；空表示平台内容',
   `image`       varchar(500) DEFAULT NULL,
   `title`       varchar(200) DEFAULT NULL,
   `details`     text,
@@ -80,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `news` (
   `view_count`  int          NOT NULL DEFAULT 0 COMMENT '浏览量',
   PRIMARY KEY (`id`),
   KEY `idx_news_type_top` (`type`, `has_top`),
+  KEY `idx_news_team` (`team_id`),
   KEY `idx_news_create_time` (`create_time`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
