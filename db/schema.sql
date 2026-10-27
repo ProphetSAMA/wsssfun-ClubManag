@@ -105,6 +105,27 @@ CREATE TABLE IF NOT EXISTS `member` (
   COLLATE = utf8mb4_0900_ai_ci
   COMMENT = '社团成员';
 
+-- 社团成立申请：通过后自动建社团并把申请人设为社长
+CREATE TABLE IF NOT EXISTS `team_apply` (
+  `id`            bigint       NOT NULL AUTO_INCREMENT,
+  `name`          varchar(100) NOT NULL COMMENT '拟成立的社团名称',
+  `category_id`   bigint       DEFAULT NULL COMMENT '所属分类',
+  `reason`        varchar(500) DEFAULT NULL COMMENT '申请理由',
+  `applicant_id`  bigint       NOT NULL COMMENT '申请人 sys_user.user_id',
+  `status`        tinyint      NOT NULL DEFAULT 0 COMMENT '0-待审核 1-已通过 2-已驳回',
+  `review_id`     bigint       DEFAULT NULL COMMENT '审核人',
+  `review_time`   datetime     DEFAULT NULL,
+  `reject_reason` varchar(200) DEFAULT NULL,
+  `team_id`       bigint       DEFAULT NULL COMMENT '通过后创建的社团',
+  `create_time`   datetime     DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_team_apply_status` (`status`),
+  KEY `idx_team_apply_applicant` (`applicant_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci
+  COMMENT = '社团成立申请';
+
 -- 活动报名：同一用户对同一活动只留一行，取消报名把 status 置 0
 CREATE TABLE IF NOT EXISTS `activity_signup` (
   `id`          bigint  NOT NULL AUTO_INCREMENT,
