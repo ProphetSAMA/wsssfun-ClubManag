@@ -25,6 +25,7 @@ web/
   club-admin/             管理后台（Vue3 + Element Plus + wangeditor，端口 8080）
   club-pc/                用户门户（Vue3 + Element Plus + swiper，端口 8081）
 db/schema.sql             数据库结构（MySQL 8）
+db/seed-mock-data.sql     演示数据（和假后端数据一致，可选）
 tools/mock-api/           前端开发用的假后端（零依赖，见该目录 README）
 Jenkinsfile               构建流水线
 ```
@@ -42,8 +43,18 @@ Jenkinsfile               构建流水线
 mysql -u root -p < db/schema.sql
 ```
 
-建出 `club` 库和 5 张表（`sys_user`、`team`、`team_category`、`news`、`member`），并写入 5 条默认分类。
+建出 `club` 库和 6 张表（`sys_user`、`team`、`team_category`、`news`、`member`、`activity_signup`），并写入 5 条默认分类。
 管理员账号需要自己插一条（见 `db/schema.sql` 末尾的注释），`is_admin = 1` 才能登录后台。
+
+想直接看到有内容的页面，可以再导一份演示数据（可重复执行）：
+
+```bash
+mysql -u root -p club < db/seed-mock-data.sql
+```
+
+它会写入 3 个账号（`admin` / `chenyu` / `lihao`，密码都是 `123456`，首次登录后自动升级为 BCrypt）、
+8 个社团、35 条内容（活动/新闻/公告，含 7 天可翻页的量）、社团成员和 1 条报名记录。
+数据与 `tools/mock-api` 的假数据一致，方便前端不连后端也能对上。
 
 ### 2. 后端
 
