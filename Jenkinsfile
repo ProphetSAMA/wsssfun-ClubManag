@@ -23,7 +23,8 @@ pipeline {
         stage('Build Backend') {
             steps {
                 dir(env.BACKEND_DIR) {
-                    sh 'mvn clean package -DskipTests'
+                    // 测试用 H2 内存库，CI 上不依赖外部 MySQL
+                    sh 'mvn clean package'
                 }
             }
             post {

@@ -1,0 +1,26 @@
+# 测试专用配置：覆盖 src/main/resources/application.yml
+# 目的：让 mvn test 不依赖本机 MySQL，CI 上也能直接跑
+spring:
+  datasource:
+    url: jdbc:h2:mem:club_test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+
+jwt:
+  secret: club-manag-test-secret-key-at-least-32bytes-long
+  expiration: 3600000
+
+web:
+  uploadpath: ./target/test-uploads/
+  load-path: file:./target/test-uploads/
+
+logging:
+  level:
+    root: warn
+    fun.wsss: info
