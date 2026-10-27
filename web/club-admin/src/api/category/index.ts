@@ -17,7 +17,7 @@ export const editCategoryApi = (parm: CategoryModel) => {
 }
 
 // 删除
-export const deleteCategoryApi = (parm: CategoryPage) => {
-    return http.delete(`/api/category/${parm.id}`)
+export const deleteCategoryApi = (id: number) => {
+    return http.delete(`/api/category/${id}`)
 }
 

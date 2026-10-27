@@ -29,7 +29,7 @@ interface DialogProps {
 }
 
 // 接收父组件传递的值
-const props = withDefaults(defineProps<DialogProps>(), {
+withDefaults(defineProps<DialogProps>(), {
   title: "标题",
   visible: false,
   width: 500,

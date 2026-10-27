@@ -1,6 +1,6 @@
 // 定义分类数据类型
 export type CategoryModel = {
-    id: string;
+    id?: number;
     name: string;
     orderNum: number;
 }
@@ -10,5 +10,5 @@ export type CategoryPage = {
     currentPage: number;
     pageSize: number;
     name: string;
-    total: number;
+    total?: number;
 }
