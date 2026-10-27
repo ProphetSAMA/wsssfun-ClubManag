@@ -86,6 +86,49 @@ public class UserController {
     }
 
     /**
+     * 用户注册
+     *
+     * <p>游客可调用。新用户一律是普通用户：状态启用、is_admin = 0，
+     * 密码加密存储。用户名唯一，重复注册会被告知。
+     *
+     * @param parm 注册参数
+     * @return 结果
+     */
+    @PostMapping("/register")
+    public ResultVo register(@RequestBody RegisterParm parm) {
+        String username = parm.getUsername() == null ? "" : parm.getUsername().trim();
+        String password = parm.getPassword() == null ? "" : parm.getPassword();
+
+        if (username.length() < 3 || username.length() > 20) {
+            return ResultUtils.error("用户名长度需在 3 到 20 个字符之间");
+        }
+        if (!username.matches("^[A-Za-z0-9_]+$")) {
+            return ResultUtils.error("用户名只能包含字母、数字和下划线");
+        }
+        if (password.length() < 6) {
+            return ResultUtils.error("密码至少 6 位");
+        }
+
+        QueryWrapper<User> query = new QueryWrapper<>();
+        query.lambda().eq(User::getUsername, username);
+        if (userService.count(query) > 0) {
+            return ResultUtils.error("用户名已存在");
+        }
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setNickname(StringUtils.isEmpty(parm.getNickname()) ? username : parm.getNickname().trim());
+        user.setSex("0");
+        user.setStatus(1);
+        user.setIsAdmin(0);
+        if (userService.save(user)) {
+            return ResultUtils.success("注册成功");
+        }
+        return ResultUtils.error("注册失败");
+    }
+
+    /**
      * 获取当前登录用户信息
      *
      * @return 用户信息

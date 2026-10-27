@@ -5,6 +5,11 @@ export const loginApi = (parm: { username: string, password: string }) => {
     return http.post('/api/user/login', parm)
 }
 
+// 注册（游客可调用）
+export const registerApi = (parm: { username: string, password: string, nickname?: string }) => {
+    return http.post('/api/user/register', parm)
+}
+
 // 获取当前用户信息
 export const getUserInfoApi = () => {
     return http.get('/api/user/info')

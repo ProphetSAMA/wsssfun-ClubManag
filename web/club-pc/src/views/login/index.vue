@@ -29,15 +29,41 @@
           </el-button>
         </el-form-item>
       </el-form>
+      <p class="switch">
+        还没有账号？
+        <span class="link" @click="openRegister">立即注册</span>
+      </p>
     </div>
+
+    <!-- 注册 -->
+    <el-dialog v-model="registerVisible" title="注册账号" width="420px">
+      <el-form ref="registerRef" :model="registerForm" :rules="registerRules" label-width="80px">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="registerForm.username" placeholder="3-20 位字母/数字/下划线" />
+        </el-form-item>
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="registerForm.nickname" placeholder="不填则默认用用户名" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="registerForm.password" type="password" show-password placeholder="至少 6 位" />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword">
+          <el-input v-model="registerForm.confirmPassword" type="password" show-password />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="registerVisible = false">取消</el-button>
+        <el-button type="primary" :loading="registering" @click="handleRegister">注册</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import type { FormInstance } from 'element-plus'
-import { loginApi } from '@/api'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import { loginApi, registerApi } from '@/api'
 import { useUserStore } from '@/store/user'
 
 const router = useRouter()
@@ -46,7 +72,7 @@ const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
 
 const loginForm = reactive({ username: '', password: '' })
-const rules = {
+const rules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
@@ -68,6 +94,70 @@ const handleLogin = () => {
       ElMessage.error(e?.msg || '登录失败')
     } finally {
       loading.value = false
+    }
+  })
+}
+
+// ---------------- 注册 ----------------
+const registerVisible = ref(false)
+const registering = ref(false)
+const registerRef = ref<FormInstance>()
+const registerForm = reactive({ username: '', nickname: '', password: '', confirmPassword: '' })
+
+const registerRules: FormRules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { pattern: /^[A-Za-z0-9_]{3,20}$/, message: '3-20 位字母、数字或下划线', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码至少 6 位', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, message: '请再次输入密码', trigger: 'blur' },
+    {
+      validator: (_rule: any, value: string, callback: (e?: Error) => void) => {
+        if (value !== registerForm.password) {
+          callback(new Error('两次输入的密码不一致'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
+  ]
+}
+
+const openRegister = () => {
+  registerForm.username = ''
+  registerForm.nickname = ''
+  registerForm.password = ''
+  registerForm.confirmPassword = ''
+  registerVisible.value = true
+  registerRef.value?.clearValidate()
+}
+
+const handleRegister = () => {
+  registerRef.value?.validate(async (valid) => {
+    if (!valid) return
+    registering.value = true
+    try {
+      const res = await registerApi({
+        username: registerForm.username,
+        password: registerForm.password,
+        nickname: registerForm.nickname || undefined
+      }) as any
+      if (res && res.code === 200) {
+        ElMessage.success('注册成功，请登录')
+        loginForm.username = registerForm.username
+        registerVisible.value = false
+      } else {
+        ElMessage.error(res?.msg || '注册失败')
+      }
+    } catch (e: any) {
+      ElMessage.error(e?.msg || '注册失败')
+    } finally {
+      registering.value = false
     }
   })
 }
@@ -119,4 +209,17 @@ const handleLogin = () => {
   }
 }
 
+.switch {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-3);
+  margin-top: 4px;
+
+  .link {
+    color: var(--primary);
+    cursor: pointer;
+
+    &:hover { text-decoration: underline; }
+  }
+}
 </style>

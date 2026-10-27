@@ -44,6 +44,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/**")
                 .excludePathPatterns(
                         "/api/user/login",
+                        "/api/user/register",
                         "/api/news/getTopActivity",
                         "/api/news/getTopNotice",
                         "/api/news/getNewActivity",
@@ -64,7 +65,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/api/news/**",
                         "/api/upload/**"
                 )
-                .excludePathPatterns("/api/user/login");
+                .excludePathPatterns("/api/user/login", "/api/user/register");
     }
 
     @Override
