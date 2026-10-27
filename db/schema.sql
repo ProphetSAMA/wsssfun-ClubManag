@@ -76,6 +76,8 @@ CREATE TABLE IF NOT EXISTS `news` (
   `details`     text,
   `has_top`     varchar(10)  DEFAULT '0' COMMENT '0-否 1-是',
   `create_time` datetime     DEFAULT NULL,
+  `status`      tinyint      NOT NULL DEFAULT 1 COMMENT '0-草稿 1-已发布',
+  `view_count`  int          NOT NULL DEFAULT 0 COMMENT '浏览量',
   PRIMARY KEY (`id`),
   KEY `idx_news_type_top` (`type`, `has_top`),
   KEY `idx_news_create_time` (`create_time`)
@@ -100,6 +102,21 @@ CREATE TABLE IF NOT EXISTS `member` (
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
   COMMENT = '社团成员';
+
+-- 活动报名：同一用户对同一活动只留一行，取消报名把 status 置 0
+CREATE TABLE IF NOT EXISTS `activity_signup` (
+  `id`          bigint  NOT NULL AUTO_INCREMENT,
+  `news_id`     bigint  NOT NULL COMMENT '活动 id（news.type=0 的记录）',
+  `user_id`     bigint  NOT NULL COMMENT '报名用户 sys_user.user_id',
+  `status`      tinyint NOT NULL DEFAULT 1 COMMENT '1-已报名 0-已取消',
+  `create_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_activity_signup` (`news_id`, `user_id`),
+  KEY `idx_activity_signup_user` (`user_id`, `status`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci
+  COMMENT = '活动报名';
 
 -- 初始分类（可删）
 INSERT INTO `team_category` (`name`, `order_num`)
