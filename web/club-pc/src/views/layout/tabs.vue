@@ -13,12 +13,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { tabsStore } from "@/store/tabs/index";
 import { useUserStore } from "@/store/user";
 
-const store = tabsStore();
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();

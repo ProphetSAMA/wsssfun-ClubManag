@@ -10,12 +10,7 @@ export const tabsStore = defineStore('tableStore', {
         }
     },
     persist: {
-        enabled: true,
-        strategies: [
-            {
-                storage: localStorage,
-                paths: ['fatable', 'mineTabs', 'activeName'], // 需要持久化的状态
-            }
-        ]
+        storage: localStorage,
+        pick: ['fatable', 'mineTabs', 'activeName'],
     }
 })
