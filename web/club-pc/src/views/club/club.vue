@@ -2,6 +2,10 @@
   <div class="club-page">
     <div class="page-head">
       <h1>社团</h1>
+      <div class="head-actions">
+        <el-button size="small" plain @click="openMyApply">我的申请</el-button>
+        <el-button size="small" type="primary" @click="openApply">申请成立社团</el-button>
+      </div>
     </div>
     <div class="layout">
       <aside class="sidebar">
@@ -51,18 +55,58 @@
         />
       </div>
     </div>
+
+    <!-- 申请成立社团 -->
+    <el-dialog v-model="applyDialog" title="申请成立社团" width="480px">
+      <el-form ref="applyRef" :model="applyForm" :rules="applyRules" label-width="80px">
+        <el-form-item label="社团名称" prop="name">
+          <el-input v-model="applyForm.name" maxlength="30" show-word-limit placeholder="例如：飞盘社" />
+        </el-form-item>
+        <el-form-item label="分类" prop="categoryId">
+          <el-select v-model="applyForm.categoryId" placeholder="请选择分类" style="width: 100%">
+            <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="申请理由" prop="reason">
+          <el-input v-model="applyForm.reason" type="textarea" :rows="4" maxlength="200" show-word-limit
+            placeholder="说说你想成立这个社团的原因、计划做些什么" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="applyDialog = false">取消</el-button>
+        <el-button type="primary" :loading="applying" @click="submitApply">提交申请</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 我的申请 -->
+    <el-dialog v-model="myApplyDialog" title="我的申请" width="560px">
+      <el-table :data="myApplies" size="small" border>
+        <el-table-column prop="name" label="社团名称" />
+        <el-table-column label="状态" width="100">
+          <template #default="scope">
+            <el-tag v-if="scope.row.status === 0" type="warning" size="small">待审核</el-tag>
+            <el-tag v-else-if="scope.row.status === 1" type="success" size="small">已通过</el-tag>
+            <el-tag v-else type="info" size="small">已驳回</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="rejectReason" label="驳回原因" />
+      </el-table>
+      <el-empty v-if="myApplies.length === 0" description="还没有提交过申请" :image-size="60" />
+    </el-dialog>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import defaultImg from "@/assets/jitashe.jpg";
 import http from "@/http";
 import { imgUrl } from "@/utils/image";
 import { useUserStore } from "@/store/user";
 import { joinTeamApi, myTeamsApi } from "@/api/member";
+import { applyTeamApi, myTeamApplyApi } from "@/api/teamApply";
+import { ElMessage } from "element-plus";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -84,6 +128,53 @@ const goDetail = (row: any) => {
 const joiningId = ref(0);
 const loading = ref(true);
 const error = ref("");
+
+
+// ---------- 申请成立社团 ----------
+const applyDialog = ref(false);
+const applyRef = ref<any>();
+const applying = ref(false);
+const applyForm = reactive({ name: "", categoryId: undefined as number | undefined, reason: "" });
+const applyRules = {
+  name: [{ required: true, message: "请填写社团名称", trigger: "blur" }],
+  categoryId: [{ required: true, message: "请选择分类", trigger: "change" }],
+  reason: [{ required: true, message: "请填写申请理由", trigger: "blur" }]
+};
+
+const myApplyDialog = ref(false);
+const myApplies = ref<any[]>([]);
+
+const openApply = () => {
+  applyForm.name = "";
+  applyForm.categoryId = undefined;
+  applyForm.reason = "";
+  applyDialog.value = true;
+  applyRef.value?.clearValidate();
+};
+
+const submitApply = () => {
+  applyRef.value?.validate(async (valid: boolean) => {
+    if (!valid) return;
+    applying.value = true;
+    try {
+      const res = (await applyTeamApi({ ...applyForm })) as any;
+      if (res?.code === 200) {
+        ElMessage.success(res.msg || "申请已提交");
+        applyDialog.value = false;
+      }
+    } finally {
+      applying.value = false;
+    }
+  });
+};
+
+const openMyApply = async () => {
+  const res = (await myTeamApplyApi()) as any;
+  if (res?.code === 200) {
+    myApplies.value = res.data || [];
+    myApplyDialog.value = true;
+  }
+};
 
 onMounted(async () => {
   try {
