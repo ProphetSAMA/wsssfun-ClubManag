@@ -9,8 +9,8 @@ import lombok.Data;
  */
 @Data
 public class NewParm {
-    private Integer currentPage;
-    private Integer pageSize;
+    private Integer currentPage = 1;
+    private Integer pageSize = 10;
     private String title;
     private String type;
 }

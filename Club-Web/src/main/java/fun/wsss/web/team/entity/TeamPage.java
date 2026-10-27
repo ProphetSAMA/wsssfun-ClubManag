@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 public class TeamPage {
-    private Integer currentPage;
-    private Integer pageSize;
+    private Integer currentPage = 1;
+    private Integer pageSize = 10;
     private String name;
 }

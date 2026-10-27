@@ -11,8 +11,8 @@ import lombok.Data;
  */
 @Data
 public class PageParm {
-    private Long currentPage;
-    private Long pageSize;
+    private Long currentPage = 1L;
+    private Long pageSize = 10L;
     private String nickName;
 
 }
