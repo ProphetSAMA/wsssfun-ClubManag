@@ -21,7 +21,7 @@
       </el-form-item>
     </el-form>
     <!-- 表格-->
-    <el-table :data="tableList" border style="width: 100%" stripe>
+    <el-table v-loading="loading" :data="tableList" border style="width: 100%" stripe>
       <el-table-column prop="nickname" label="姓名"></el-table-column>
       <el-table-column prop="sex" label="性别">
         <template #default="scope">
@@ -48,7 +48,7 @@
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
-      :current-page.sync="searchParm.currentPage"
+      :current-page="searchParm.currentPage"
       :page-sizes="[10, 20, 30, 40]"
       :page-size="searchParm.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
@@ -72,6 +72,7 @@ const {
   searchBtn,
   resetBtn,
   tableList,
+  loading,
   getList,
   sizeChange,
   currentChange,

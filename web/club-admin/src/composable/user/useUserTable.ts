@@ -5,6 +5,8 @@ import { ListParm } from "@/api/user/UserModel";
 export default function useUserTable() {
     // 表格数据
     const tableList = ref([]);
+    // 加载状态
+    const loading = ref(false);
 
     // 搜索表单绑定数据
     const searchParm = reactive(<ListParm>{
@@ -16,12 +18,17 @@ export default function useUserTable() {
 
     // 获取列表
     const getList = async () => {
-        let res = await getListApi(searchParm);
-        if (res && res.code == 200) {
-            // 将后端返回数据设置到表格数据
-            tableList.value = res.data.records;
-            // 设置总条数
-            searchParm.total = res.data.total;
+        loading.value = true;
+        try {
+            let res = await getListApi(searchParm);
+            if (res && res.code == 200) {
+                // 将后端返回数据设置到表格数据
+                tableList.value = res.data.records;
+                // 设置总条数
+                searchParm.total = res.data.total;
+            }
+        } finally {
+            loading.value = false;
         }
     };
 
@@ -38,11 +45,18 @@ export default function useUserTable() {
         getList();
     };
 
-    // 页容量改变时触发
-    const sizeChange = () => { }
+    // 页容量改变时触发：改容量后回到第一页，避免停在越界页码
+    const sizeChange = (size: number) => {
+        searchParm.pageSize = size;
+        searchParm.currentPage = 1;
+        getList();
+    }
 
     // 页数改变时触发
-    const currentChange = () => { }
+    const currentChange = (page: number) => {
+        searchParm.currentPage = page;
+        getList();
+    }
 
     onMounted(() => {
         getList();
@@ -54,6 +68,7 @@ export default function useUserTable() {
         searchBtn,
         resetBtn,
         tableList,
+        loading,
         sizeChange,
         currentChange
     };

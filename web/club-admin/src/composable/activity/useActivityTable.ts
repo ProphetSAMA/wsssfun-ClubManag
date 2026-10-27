@@ -22,13 +22,19 @@ export default function useActivityTable() {
 
     // 表格数据
     const tableList = ref([]);
+    // 加载状态
+    const loading = ref(false);
     // 列表
     const getList = async () => {
-        let res = await getNewsListApi(searchParm);
-        if (res && res.code == 200) {
-            console.log(res.data);
-            tableList.value = res.data.records;
-            searchParm.total = res.data.total;
+        loading.value = true;
+        try {
+            let res = await getNewsListApi(searchParm);
+            if (res && res.code == 200) {
+                tableList.value = res.data.records;
+                searchParm.total = res.data.total;
+            }
+        } finally {
+            loading.value = false;
         }
     }
     // 搜索
@@ -45,9 +51,10 @@ export default function useActivityTable() {
         await getList();
     }
 
-    // 页数改变时触发
+    // 页容量改变时触发
     const sizeChange = async (size: number) => {
         searchParm.pageSize = size;
+        searchParm.currentPage = 1;
         await getList();
     }
 
@@ -74,6 +81,7 @@ export default function useActivityTable() {
         resetBtn,
         options,
         tableList,
+        loading,
         sizeChange,
         currentChange,
         tableHeight,

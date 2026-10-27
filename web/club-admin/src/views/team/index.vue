@@ -22,13 +22,13 @@
       </el-form-item>
     </el-form>
     <!-- 表格 -->
-    <el-table :height="tableHeight" :data="tableList" border stripe>
+    <el-table v-loading="loading" :height="tableHeight" :data="tableList" border stripe>
       <el-table-column prop="image" label="社团图片">
         <template #default="scope">
           <el-image
             v-if="scope.row.image"
             style="width: 60px; height: 60px; border-radius: 50%"
-            :src="scope.row.image.includes(',') ? 'http://localhost:8888' + scope.row.image.split(',')[0] : 'http://localhost:8888' + scope.row.image"
+            :src="imageUrl(scope.row.image)"
             fit="cover"
           />
           <span v-else>暂无图片</span>
@@ -60,7 +60,7 @@
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
-      :current-page.sync="searchParm.currentPage"
+      :current-page="searchParm.currentPage"
       :page-sizes="[10, 20, 30, 40]"
       :page-size="searchParm.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
@@ -78,6 +78,7 @@
 import AddTeam from "@/views/team/AddTeam.vue";
 import useTeamTable from "@/composable/team/useTeamTable";
 import useTeam from "@/composable/team/useTeam";
+import { apiUrl } from "@/http";
 
 // 表格
 const {
@@ -85,6 +86,7 @@ const {
   searchBtn,
   resetBtn,
   tableList,
+  loading,
   sizeChange,
   currentChange,
   tableHeight,
@@ -92,6 +94,8 @@ const {
 } = useTeamTable();
 // CURD
 const { addBtn, editBtn, deleteBtn, addTeamRef } = useTeam(getList);
+
+const imageUrl = (image: string) => apiUrl(image.includes(',') ? image.split(',')[0] : image);
 </script>
 
 <style lang="scss" scoped></style>

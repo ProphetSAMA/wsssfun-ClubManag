@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container">
+  <div class="home-container" v-loading="loading">
     <el-row :gutter="20">
       <el-col :span="6">
         <el-card shadow="hover" class="stat-card">
@@ -81,6 +81,8 @@ import { getListApi as getTeamList } from '@/api/team'
 import { getCategoryApi as getCategoryList } from '@/api/category'
 import { getNewsListApi as getNewsList } from '@/api/news'
 
+const loading = ref(false)
+
 const stats = reactive({
   userCount: 0,
   teamCount: 0,
@@ -92,12 +94,15 @@ const latestTeams = ref<any[]>([])
 const latestNews = ref<any[]>([])
 
 onMounted(async () => {
+  loading.value = true
   try {
+    // 每个请求单独兜底：某个统计接口失败时，其余卡片仍能正常展示
+    const ignore = (e: any) => { console.error('首页统计接口失败', e); return { code: -1, data: null } }
     const [userRes, teamRes, catRes, newsRes] = await Promise.all([
-      getUserList({ currentPage: 1, pageSize: 1, nickName: '' }),
-      getTeamList({ currentPage: 1, pageSize: 5, name: '' }),
-      getCategoryList({ currentPage: 1, pageSize: 1, name: '' }),
-      getNewsList({ currentPage: 1, pageSize: 5, title: '', type: '' })
+      getUserList({ currentPage: 1, pageSize: 1, nickName: '' }).catch(ignore),
+      getTeamList({ currentPage: 1, pageSize: 5, name: '' }).catch(ignore),
+      getCategoryList({ currentPage: 1, pageSize: 1, name: '' }).catch(ignore),
+      getNewsList({ currentPage: 1, pageSize: 5, title: '', type: '' }).catch(ignore)
     ])
     if (userRes?.code === 200) stats.userCount = userRes.data.total
     if (teamRes?.code === 200) {
@@ -111,6 +116,8 @@ onMounted(async () => {
     }
   } catch (e) {
     console.error('加载首页数据失败', e)
+  } finally {
+    loading.value = false
   }
 })
 </script>

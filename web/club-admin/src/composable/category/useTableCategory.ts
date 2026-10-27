@@ -4,6 +4,8 @@ import { getCategoryApi } from "@/api/category";
 export default function useTableCategory() {
     // 表格数据
     const tableList = ref([]);
+    // 加载状态
+    const loading = ref(false);
     // 表格高度
     const tableHeight = ref(0);
     // 搜搜栏绑定数据
@@ -16,17 +18,23 @@ export default function useTableCategory() {
 
     // 列表
     const getList = async () => {
-        let res = await getCategoryApi(searchParm);
-        if (res && res.code == 200) {
-            // 将返回值设置到表格数据
-            tableList.value = res.data.records;
-            searchParm.total = res.data.total;
+        loading.value = true;
+        try {
+            let res = await getCategoryApi(searchParm);
+            if (res && res.code == 200) {
+                // 将返回值设置到表格数据
+                tableList.value = res.data.records;
+                searchParm.total = res.data.total;
+            }
+        } finally {
+            loading.value = false;
         }
     }
 
     // 页容量改变时触发
     const sizeChange = async (size: number) => {
         searchParm.pageSize = size;
+        searchParm.currentPage = 1;
         await getList();
     }
 
@@ -61,6 +69,7 @@ export default function useTableCategory() {
         searchParm,
         getList,
         tableList,
+        loading,
         currentChange,
         sizeChange,
         tableHeight,

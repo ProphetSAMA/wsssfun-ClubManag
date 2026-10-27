@@ -33,7 +33,7 @@
     </el-form>
 
     <!-- 表格 -->
-    <el-table :data="tableList" border style="width: 100%" stripe>
+    <el-table v-loading="loading" :data="tableList" border style="width: 100%" stripe>
       <el-table-column prop="teamName" label="社团名称" />
       <el-table-column prop="userName" label="成员姓名" />
       <el-table-column prop="role" label="角色">
@@ -55,7 +55,7 @@
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
-      :current-page.sync="searchParm.currentPage"
+      :current-page="searchParm.currentPage"
       :page-sizes="[10, 20, 30, 40]"
       :page-size="searchParm.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
@@ -120,7 +120,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import { ElMessage, type FormInstance } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import SysDialog from '@/components/SysDialog.vue'
 import { getMemberListApi, addMemberApi, editMemberApi, deleteMemberApi } from '@/api/member'
 import { getListApi as getTeamListApi } from '@/api/team'
@@ -133,6 +133,7 @@ const teamList = ref<any[]>([])
 const userList = ref<User[]>([])
 const formRef = ref<FormInstance>()
 const editId = ref(0)
+const loading = ref(false)
 
 const searchParm = reactive<MemberParm>({
   teamId: undefined,
@@ -163,10 +164,15 @@ const rules = {
 
 // 获取成员列表
 const getList = async () => {
-  const res = await getMemberListApi(searchParm)
-  if (res && res.code === 200) {
-    tableList.value = res.data.records
-    searchParm.total = res.data.total
+  loading.value = true
+  try {
+    const res = await getMemberListApi(searchParm)
+    if (res && res.code === 200) {
+      tableList.value = res.data.records
+      searchParm.total = res.data.total
+    }
+  } finally {
+    loading.value = false
   }
 }
 

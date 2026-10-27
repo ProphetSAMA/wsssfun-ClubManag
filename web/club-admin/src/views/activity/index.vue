@@ -25,7 +25,7 @@
         </el-form>
 
         <!-- 表格 -->
-        <el-table :height="tableHeight" :data="tableList" border stripe>
+        <el-table v-loading="loading" :height="tableHeight" :data="tableList" border stripe>
 
             <el-table-column prop="title" label="标题" />
 
@@ -63,8 +63,8 @@
 
         <!-- 分页 -->
         <el-pagination @size-change="sizeChange" @current-change="currentChange"
-            :current-page.sync="searchParm.currentPage" :page-sizes="[10, 20, 30, 40]"
-            :page-size.sync="searchParm.pageSize" layout="total, sizes, prev, pager, next, jumper"
+            :current-page="searchParm.currentPage" :page-sizes="[10, 20, 30, 40]"
+            :page-size="searchParm.pageSize" layout="total, sizes, prev, pager, next, jumper"
             :total="searchParm.total" background />
 
         <!-- 新增弹窗 -->
@@ -73,7 +73,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import AddActivity from "./AddActivity.vue";
 import useActivityTable from "@/composable/activity/useActivityTable";
 import useActivity from "@/composable/activity/useActivity";
@@ -82,6 +81,7 @@ const {
     searchParm,
     options,
     tableList,
+    loading,
     getList,
     searchBtn,
     resetBtn,
@@ -89,9 +89,9 @@ const {
     currentChange,
     tableHeight,
 } = useActivityTable();
-const { addBtn, editBtn, deleteBtn, addActivityRef } = useActivity();
+const { addBtn, editBtn, deleteBtn, addActivityRef } = useActivity(getList);
 
-const getTagType = (type: string) => {
+const getTagType = (type: string): "success" | "warning" | "info" => {
     switch (type) {
         case '0':
             return 'success'  // 活动 - 绿色
@@ -100,7 +100,7 @@ const getTagType = (type: string) => {
         case '2':
             return 'info'     // 公告 - 灰色
         default:
-            return ''
+            return 'info'
     }
 }
 </script>

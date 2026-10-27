@@ -18,7 +18,7 @@
       </el-form-item>
     </el-form>
     <!-- 表格-->
-    <el-table :height="tableHeight" :data="tableList" border stripe>
+    <el-table v-loading="loading" :height="tableHeight" :data="tableList" border stripe>
       <el-table-column prop="orderNum" label="序号"></el-table-column>
       <el-table-column prop="name" label="分类名称"></el-table-column>
       <el-table-column label="操作" width="220" align="center">
@@ -36,7 +36,7 @@
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
-      :current-page.sync="searchParm.currentPage"
+      :current-page="searchParm.currentPage"
       :page-sizes="[10, 20, 30, 40]"
       :page-size="searchParm.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
@@ -57,6 +57,7 @@ import useTableCategory from "@/composable/category/useTableCategory";
 const {
   searchParm,
   tableList,
+  loading,
   sizeChange,
   currentChange,
   tableHeight,
