@@ -217,15 +217,26 @@ function handle(req, res, url, path) {
   if (path === '/api/user/list') {
     const page = Number(url.searchParams.get('currentPage') || 1);
     const size = Number(url.searchParams.get('pageSize') || 10);
-    return ok(res, fakeRows(page, size, '用户', (i, p) => ({
+    const username = (url.searchParams.get('username') || '').trim();
+    const nickname = (url.searchParams.get('nickName') || '').trim();
+    const phone = (url.searchParams.get('phone') || '').trim();
+    const isAdmin = url.searchParams.get('isAdmin');
+
+    let rows = Array.from({ length: 24 }, (_, i) => ({
       userId: i + 1,
       username: 'u' + (i + 1),
-      nickname: '用户-P' + p + '-' + (i + 1),
-      phone: '13800000000',
+      nickname: '用户' + (i + 1),
+      phone: '1380000' + String(1000 + i),
       sex: 0,
       status: 1,
-      isAdmin: 0,
-    })));
+      isAdmin: i === 0 ? 1 : 0,
+    }));
+    if (username) rows = rows.filter((r) => r.username.includes(username));
+    if (nickname) rows = rows.filter((r) => r.nickname.includes(nickname));
+    if (phone) rows = rows.filter((r) => r.phone.includes(phone));
+    if (isAdmin !== null && isAdmin !== '') rows = rows.filter((r) => String(r.isAdmin) === isAdmin);
+
+    return ok(res, { records: rows.slice((page - 1) * size, page * size), total: rows.length });
   }
 
   // 分类
@@ -235,7 +246,46 @@ function handle(req, res, url, path) {
   }
 
   // 社团
+  const membersMatch = path.match(/^\/api\/team\/(\d+)\/members$/);
+  if (membersMatch) {
+    const teamId = Number(membersMatch[1]);
+    const names = ['陈雨', '李昊', '王思妍', '张一鸣', '林小满'];
+    return ok(res, names.map((name, i) => ({
+      userName: name,
+      role: i === 0 ? 2 : (i === 1 ? 1 : 0),
+      joinTime: '2025-0' + ((i % 8) + 1) + '-1' + i,
+    })).slice(0, 3 + (teamId % 3)));
+  }
+  const teamDetail = path.match(/^\/api\/team\/(\d+)$/);
+  if (teamDetail) {
+    const team = teams.find((t) => t.id === Number(teamDetail[1]));
+    return team ? ok(res, team) : fail(res, '社团不存在');
+  }
   if (path === '/api/team/list') return ok(res, paged(teams, url));
+
+  // 看板统计
+  if (path === '/api/stats/overview') {
+    const byType = ['0', '1', '2'].map((type) => ({
+      label: { '0': '活动', '1': '新闻', '2': '公告' }[type],
+      count: news.filter((n) => n.type === type).length,
+    }));
+    const trend = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000);
+      const key = String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      trend.push({ date: key, count: (i * 3) % 5 });
+    }
+    return ok(res, {
+      userCount: users.length,
+      teamCount: teams.length,
+      categoryCount: categories.length,
+      newsCount: news.length,
+      signupCount: signups.filter((x) => x.status === 1).length,
+      newsByType: byType,
+      teamByCategory: categories.map((c) => ({ label: c.name, count: teams.filter((t) => t.categoryId === c.id).length })),
+      signupTrend: trend,
+    });
+  }
   if (path === '/api/team/getTopTeam') return ok(res, teams.filter((t) => t.hasTop === '1'));
 
   // 活动 / 新闻 / 公告
