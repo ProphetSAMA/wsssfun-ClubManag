@@ -28,12 +28,24 @@
                 <el-button icon="Search" @click="searchBtn">搜索</el-button>
                 <el-button type="danger" icon="Close" plain @click="resetBtn">重置</el-button>
                 <el-button type="primary" icon="Plus" @click="addBtn">新增</el-button>
+                <el-button type="danger" plain :disabled="!selectedRows.length" @click="batchDelete">
+                    批量删除{{ selectedRows.length ? "(" + selectedRows.length + ")" : "" }}
+                </el-button>
+                <el-button icon="Download" @click="exportCsv">导出 CSV</el-button>
             </el-form-item>
 
         </el-form>
 
         <!-- 表格 -->
-        <el-table v-loading="loading" :height="tableHeight" :data="tableList" border stripe>
+        <el-table
+            v-loading="loading"
+            :height="tableHeight"
+            :data="tableList"
+            border
+            stripe
+            @selection-change="onSelectionChange"
+        >
+            <el-table-column type="selection" width="45" />
 
             <el-table-column prop="title" label="标题" />
 
@@ -93,6 +105,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { deleteNewsApi } from "@/api/news";
 import AddActivity from "./AddActivity.vue";
 import useActivityTable from "@/composable/activity/useActivityTable";
 import useActivity from "@/composable/activity/useActivity";
@@ -110,6 +125,68 @@ const {
     tableHeight,
 } = useActivityTable();
 const { addBtn, editBtn, deleteBtn, addActivityRef } = useActivity(getList);
+
+/** 表格选中行 */
+const selectedRows = ref<any[]>([]);
+const onSelectionChange = (rows: any[]) => {
+    selectedRows.value = rows;
+};
+
+/** 批量删除：逐条调现有删除接口 */
+const batchDelete = async () => {
+    if (!selectedRows.value.length) {
+        ElMessage.warning("请先选择要删除的内容");
+        return;
+    }
+    try {
+        await ElMessageBox.confirm(
+            "确定删除选中的 " + selectedRows.value.length + " 条内容吗？",
+            "提示",
+            { type: "warning", confirmButtonText: "删除", cancelButtonText: "取消" }
+        );
+    } catch {
+        return;
+    }
+    let deleted = 0;
+    for (const row of selectedRows.value) {
+        const res = (await deleteNewsApi({ id: row.id } as any)) as any;
+        if (res && res.code === 200) {
+            deleted++;
+        }
+    }
+    ElMessage.success("已删除 " + deleted + " 条");
+    selectedRows.value = [];
+    getList();
+};
+
+/** 导出 CSV（选中优先，否则导出当前页），Excel 可直接打开 */
+const exportCsv = () => {
+    const rows = selectedRows.value.length ? selectedRows.value : tableList.value;
+    if (!rows.length) {
+        ElMessage.warning("当前没有可导出的数据");
+        return;
+    }
+    const typeLabel = (type: string) =>
+        ({ "0": "活动", "1": "新闻", "2": "公告" } as Record<string, string>)[type] || type;
+    const header = ["ID", "标题", "类型", "状态", "浏览量", "创建时间"];
+    const body = rows.map((row: any) => [
+        row.id,
+        row.title,
+        typeLabel(row.type),
+        row.status === 0 ? "草稿" : "已发布",
+        row.viewCount ?? 0,
+        row.createTime
+    ]);
+    const csv = "\uFEFF" + [header, ...body]
+        .map((cols) => cols.map((c: any) => '"' + String(c ?? "").replace(/"/g, '""') + '"').join(","))
+        .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "内容列表-" + new Date().toISOString().slice(0, 10) + ".csv";
+    link.click();
+    URL.revokeObjectURL(link.href);
+};
 
 const getTagType = (type: string): "success" | "warning" | "info" => {
     switch (type) {
