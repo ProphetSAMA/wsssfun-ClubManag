@@ -19,3 +19,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# 本地环境变量（含密码/密钥，不要提交）
+.env
+Club-Web/.env

@@ -20,6 +20,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${web.load-path}")
     private String loadPath;
 
+    /** 允许跨域的前端地址，逗号分隔 */
+    @Value("${web.cors.allowed-origins:http://localhost:8080,http://localhost:8081}")
+    private String allowedOrigins;
+
     private final AuthInterceptor authInterceptor;
     private final AdminInterceptor adminInterceptor;
 
@@ -30,12 +34,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry register) {
+        // 只放行配置里的前端地址；本项目用请求头 token 鉴权、不用 Cookie，所以关掉 allowCredentials
+        String[] origins = allowedOrigins.split(",");
+        for (int i = 0; i < origins.length; i++) {
+            origins[i] = origins[i].trim();
+        }
         register.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedMethods("*")
+                .allowedOrigins(origins)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("token", "Content-Type")
                 .maxAge(3600)
-                .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(false);
     }
 
     @Override
