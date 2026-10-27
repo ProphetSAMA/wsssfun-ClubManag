@@ -2,6 +2,11 @@
   <div class="home-container" v-loading="loading">
     <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon class="err" />
 
+    <div class="toolbar">
+      <el-button size="small" :loading="cleaning" @click="cleanupImages">清理未引用图片</el-button>
+      <span class="hint">删除上传目录中未被内容引用、且超过 24 小时的文件</span>
+    </div>
+
     <!-- 概览数字 -->
     <el-row :gutter="16">
       <el-col :xs="12" :sm="8" :md="4" v-for="card in cards" :key="card.label">
@@ -75,12 +80,14 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import http from '@/http'
 import { getListApi as getTeamList } from '@/api/team'
 import { getNewsListApi as getNewsList } from '@/api/news'
 
 const loading = ref(false)
 const error = ref('')
+const cleaning = ref(false)
 
 const counts = ref({
   userCount: 0,
@@ -106,6 +113,28 @@ const newsMax = computed(() => Math.max(1, ...newsByType.value.map((n: any) => N
 const trendMax = computed(() => Math.max(1, ...signupTrend.value.map((n: any) => Number(n.count) || 0)))
 const barHeight = (value: number) => Math.max(4, Math.round((Number(value) || 0) / trendMax.value * 120))
 const percent = (value: number, max: number) => Math.round((Number(value) || 0) / max * 100)
+
+const cleanupImages = async () => {
+  try {
+    await ElMessageBox.confirm('确定清理未引用且超过 24 小时的图片吗？', '提示', {
+      type: 'warning',
+      confirmButtonText: '清理',
+      cancelButtonText: '取消'
+    })
+  } catch {
+    return
+  }
+  cleaning.value = true
+  try {
+    const res = (await http.post('/api/upload/cleanup')) as any
+    if (res?.code === 200) {
+      const d = res.data || {}
+      ElMessage.success(`扫描 ${d.scanned ?? 0} 个，删除 ${d.deleted ?? 0} 个，跳过 ${d.skippedRecent ?? 0} 个近期文件`)
+    }
+  } finally {
+    cleaning.value = false
+  }
+}
 
 onMounted(async () => {
   loading.value = true
@@ -148,6 +177,15 @@ onMounted(async () => {
 }
 
 .err { margin-bottom: 16px; }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.hint { font-size: 12px; color: #909399; }
 
 .stat-card {
   margin-bottom: 16px;

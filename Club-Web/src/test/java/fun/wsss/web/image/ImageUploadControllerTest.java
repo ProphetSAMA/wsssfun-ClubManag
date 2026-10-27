@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -18,10 +20,16 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,6 +67,9 @@ class ImageUploadControllerTest {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @MockBean
+    private JdbcTemplate jdbcTemplate;
 
     private String adminToken() {
         return jwtUtils.generateToken(1L, "admin", 1);
@@ -113,6 +124,52 @@ class ImageUploadControllerTest {
                 .andExpect(jsonPath("$.msg").value("图片大小不能超过 5MB"));
 
         assertThat(uploadedFiles()).isEqualTo(before);
+    }
+
+    @Test
+    void adminCanDeleteUploadedFile() throws Exception {
+        File target = UPLOAD_DIR.resolve("to-delete.png").toFile();
+        Files.write(target.toPath(), pngBytes());
+        assertThat(target.exists()).isTrue();
+
+        mockMvc.perform(delete("/api/upload").param("filename", "to-delete.png").header("token", adminToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+
+        assertThat(target.exists()).isFalse();
+    }
+
+    @Test
+    void deleteRejectsPathTraversal() throws Exception {
+        mockMvc.perform(delete("/api/upload").param("filename", "../secret.txt").header("token", adminToken()))
+                .andExpect(jsonPath("$.code").value(500))
+                .andExpect(jsonPath("$.msg").value("文件名不合法"));
+    }
+
+    @Test
+    void cleanupOnlyRemovesUnreferencedOldFiles() throws Exception {
+        File referenced = UPLOAD_DIR.resolve("referenced.png").toFile();
+        File orphan = UPLOAD_DIR.resolve("orphan.png").toFile();
+        File fresh = UPLOAD_DIR.resolve("fresh.png").toFile();
+        Files.write(referenced.toPath(), pngBytes());
+        Files.write(orphan.toPath(), pngBytes());
+        Files.write(fresh.toPath(), pngBytes());
+        long twoDaysAgo = System.currentTimeMillis() - 2L * 24 * 60 * 60 * 1000;
+        assertThat(referenced.setLastModified(twoDaysAgo)).isTrue();
+        assertThat(orphan.setLastModified(twoDaysAgo)).isTrue();
+
+        given(jdbcTemplate.queryForList(anyString()))
+                .willReturn(List.of(Map.of("image", "/images/referenced.png")));
+
+        mockMvc.perform(post("/api/upload/cleanup").header("token", adminToken()))
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.deleted").value(1))
+                // 同一个临时目录里还有其它用例留下的新文件，所以这里是「至少 1 个」而不是精确值
+                .andExpect(jsonPath("$.data.skippedRecent").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)));
+
+        assertThat(referenced.exists()).isTrue();
+        assertThat(orphan.exists()).isFalse();
+        assertThat(fresh.exists()).isTrue();
     }
 
     private long uploadedFiles() throws IOException {
