@@ -31,13 +31,18 @@
         <el-form-item prop="username" label="登录账号">
           <el-input v-model="addModel.username"></el-input>
         </el-form-item>
-        <el-form-item prop="password" label="密码">
-          <el-input v-model="addModel.password"></el-input>
+        <el-form-item prop="password" :label="tags === EditType.EDIT ? '新密码' : '密码'">
+          <el-input
+            v-model="addModel.password"
+            type="password"
+            show-password
+            :placeholder="tags === EditType.EDIT ? '留空则不修改密码' : '请输入密码'"
+          ></el-input>
         </el-form-item>
         <el-form-item prop="status" label="状态">
           <el-radio-group v-model="addModel.status">
-            <el-radio :value="0">启用</el-radio>
-            <el-radio :value="1">停用</el-radio>
+            <el-radio :value="1">启用</el-radio>
+            <el-radio :value="0">停用</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -49,15 +54,15 @@
 import useDialog from "@/hooks/useDialog.ts";
 import SysDialog from "@/components/SysDialog.vue";
 import { User } from "@/api/user/UserModel.ts";
-import { nextTick, reactive, ref } from "vue";
-import { ElMessage, FormInstance } from "element-plus";
+import { reactive, ref } from "vue";
+import type { FormInstance } from "element-plus";
 import { addUserApi, editUserApi } from "@/api/user";
 import { EditType, Title } from "@/type/BaseType";
 
 // 表单ref属性
 const addFormRef = ref<FormInstance>();
 // 弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 
 // 表单绑定数据
 const addModel = reactive<User>({
@@ -67,9 +72,29 @@ const addModel = reactive<User>({
   nickname: "",
   phone: "",
   sex: 0, // 默认男
-  status: 0, // 默认启用
+  status: 1, // 默认启用
   isAdmin: 0, // 默认为普通用户
 });
+
+const validatePassword = (
+  _rule: unknown,
+  value: string,
+  callback: (error?: Error) => void,
+) => {
+  if (!value && tags.value === EditType.EDIT) {
+    callback();
+    return;
+  }
+  if (!value) {
+    callback(new Error("请输入密码"));
+    return;
+  }
+  if (value.length < 6 || value.length > 64) {
+    callback(new Error("长度在 6 到 64 个字符"));
+    return;
+  }
+  callback();
+};
 
 // 表单验证规则
 const rules = reactive({
@@ -90,10 +115,7 @@ const rules = reactive({
     { required: true, message: "请输入登录账号", trigger: "blur" },
     { min: 2, max: 10, message: "长度在 2 到 10 个字符", trigger: "blur" },
   ],
-  password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 6, max: 10, message: "长度在 6 到 10 个字符", trigger: "blur" },
-  ],
+  password: [{ validator: validatePassword, trigger: "blur" }],
   status: [{ required: true, message: "请选择状态", trigger: "change" }],
 });
 
@@ -101,22 +123,29 @@ const rules = reactive({
 const tags = ref("");
 
 // 显示弹框
-const show = (type: string, row: User) => {
+const show = (type: string, row?: User) => {
   dialog.height = 300;
   tags.value = type;
   // 设置弹框标题
   type == EditType.ADD
     ? (dialog.title = Title.ADD)
     : (dialog.title = Title.EDIT);
-  onShow();
-  // 编辑回显回显
   if (EditType.EDIT == type && row) {
-    nextTick(() => {
-      Object.assign(addModel, row);
+    Object.assign(addModel, row, { password: "" });
+  } else {
+    Object.assign(addModel, {
+      userId: 0,
+      username: "",
+      password: "",
+      nickname: "",
+      phone: "",
+      sex: 0,
+      status: 1,
+      isAdmin: 0,
     });
   }
-  // 清空表单
-  addFormRef.value?.resetFields();
+  addFormRef.value?.clearValidate();
+  onShow();
 };
 
 // 向外部组件暴露组件内部方法

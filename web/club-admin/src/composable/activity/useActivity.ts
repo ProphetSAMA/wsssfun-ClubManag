@@ -3,7 +3,6 @@ import { NewsType } from "@/api/news/NewsModel";
 import { EditType } from "@/type/BaseType";
 import useInstance from "@/hooks/useInstance";
 import { deleteNewsApi } from "@/api/news";
-import { ElMessage } from "element-plus";
 
 /**
  * 新闻活动

@@ -76,7 +76,7 @@ import useDialog from "@/hooks/useDialog";
 import SysDialog from "@/components/SysDialog.vue";
 import useSelectCategory from "@/composable/team/useSelectCategory";
 import UploadImage from "@/components/UploadImage.vue";
-import { ElMessage, FormInstance, UploadUserFile } from "element-plus";
+import type { FormInstance, UploadUserFile } from "element-plus";
 import { EditType, NewType } from "@/type/BaseType";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import useEditor from "@/composable/team/useEditor";
@@ -108,11 +108,11 @@ const oldUrl = ref<Array<{ url: string }>>([]);
 // 图片地址
 const imgUrl = ref<Array<{ url: string }>>([]);
 // 弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 // 定义新增、编辑标识
 const tags = ref("");
 // 显示弹框
-const show = (type: string, row: TeamType) => {
+const show = (type: string, row?: TeamType) => {
   valueHtml.value = "";
   // 清空图片数据
   fileList.value = [];

@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, type FormInstance } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import { loginApi } from '@/api/user'
 import { useUserStore } from '@/store/user'
 import type { LoginResult } from '@/api/user/UserModel'
@@ -72,6 +72,11 @@ const handleLogin = () => {
       const res = await loginApi(loginForm) as any
       if (res && res.code === 200) {
         const data = res.data as LoginResult
+        if (data.isAdmin !== 1) {
+          userStore.logout()
+          ElMessage.error('该账号没有管理后台权限')
+          return
+        }
         userStore.setLoginInfo(data)
         ElMessage.success('登录成功')
         router.push('/home')

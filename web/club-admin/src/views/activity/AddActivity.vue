@@ -8,7 +8,7 @@
                 size="default">
                 <el-row>
                     <el-col :span="12" :offset="0">
-                        <el-form-item type="title" label="标题">
+                        <el-form-item prop="title" label="标题">
                             <el-input v-model="addModel.title"> </el-input>
                         </el-form-item>
                     </el-col>
@@ -16,9 +16,9 @@
                     <el-col :span="12" :offset="0">
                         <el-form-item label="类型" prop="type">
                             <el-radio-group v-model="addModel.type">
-                                <el-radio :value="0">活动</el-radio>
-                                <el-radio :value="1">新闻</el-radio>
-                                <el-radio :value="2">公告</el-radio>
+                                <el-radio value="0">活动</el-radio>
+                                <el-radio value="1">新闻</el-radio>
+                                <el-radio value="2">公告</el-radio>
                             </el-radio-group>
                         </el-form-item>
                     </el-col>
@@ -27,8 +27,8 @@
                 <!-- 首页推荐 -->
                 <el-form-item label="首页推荐" prop="hasTop">
                     <el-radio-group v-model="addModel.hasTop">
-                        <el-radio :value="0">否</el-radio>
-                        <el-radio :value="1">是</el-radio>
+                        <el-radio value="0">否</el-radio>
+                        <el-radio value="1">是</el-radio>
                     </el-radio-group>
                 </el-form-item>
 
@@ -58,17 +58,13 @@ import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
 import UploadImage from "@/components/UploadImage.vue";
 import { EditType, NewType, Title } from "@/type/BaseType";
-import {
-    ElMessage,
-    FormInstance,
-    UploadFile,
-    UploadUserFile,
-} from "element-plus";
+import type { FormInstance, UploadUserFile } from "element-plus";
 
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import useEditor from "@/composable/team/useEditor";
 import "@wangeditor/editor/dist/css/style.css";
-import { addNewsApi, editNewsApi, deleteNewsApi, getNewsListApi } from "@/api/news";
+import { addNewsApi, editNewsApi } from "@/api/news";
+import type { NewsType } from "@/api/news/NewsModel";
 
 // 表单ref属性
 const addFormRef = ref<FormInstance>();
@@ -94,7 +90,7 @@ const oldUrl = ref<Array<{ url: string }>>([]);
 const imgUrl = ref<Array<{ url: string }>>([]);
 
 // 获取弹窗实例
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 
 // 显示弹框
 const show = (type: EditType, row?: NewsType) => {
@@ -146,7 +142,7 @@ defineExpose({
 });
 
 //表单绑定的对象
-const addModel = reactive({
+const addModel = reactive<NewsType>({
     id: "",
     type: "",
     createId: "",

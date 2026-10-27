@@ -3,7 +3,6 @@ import { TeamType } from "@/api/team/TeamModel";
 import { EditType } from "@/type/BaseType";
 import useInstance from "@/hooks/useInstance";
 import { deleteTeamApi } from "@/api/team";
-import { ElMessage, ElMessageBox } from "element-plus";
 
 export default function useTeam(getList: Function) {
     const { global } = useInstance()

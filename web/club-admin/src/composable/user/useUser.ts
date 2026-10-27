@@ -3,7 +3,6 @@ import { User } from "@/api/user/UserModel";
 import { EditType, FuncList } from "@/type/BaseType";
 import useInstance from "@/hooks/useInstance";
 import { deleteUserApi } from "@/api/user";
-import { ElMessage } from "element-plus";
 
 export default function useUser(getList: FuncList) {
     // 获取全局属性

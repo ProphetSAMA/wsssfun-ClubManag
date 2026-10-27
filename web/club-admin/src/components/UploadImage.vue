@@ -21,15 +21,11 @@
 
 <script setup lang="ts">
 import { UploadImageApi } from "@/api/img";
+import { apiUrl } from "@/http";
 import { Plus } from "@element-plus/icons-vue";
 import { ref } from "vue";
 import { NewType } from "@/type/BaseType";
-import {
-  ElMessage,
-  UploadFile,
-  UploadUserFile,
-  UploadFiles,
-} from "element-plus";
+import type { UploadFile, UploadUserFile } from "element-plus";
 
 // 注册事件
 const emits = defineEmits(["getImg"]);
@@ -38,7 +34,7 @@ const uploadRef = ref();
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 type PropType = {
-  fileList: UploadFile[];
+  fileList: UploadUserFile[];
   oldUrl: Array<{ url: string }>;
 };
 // 接收父组件传递的参数
@@ -68,16 +64,20 @@ const handleRemove = (file: UploadFile) => {
 };
 
 // 文件个数超出限制
-const moreLimit = (files: File[], uploadFiles: UploadFiles) => {
+const moreLimit = (_files: File[], uploadFiles: UploadUserFile[]) => {
   ElMessage.warning("最多只能上传" + uploadFiles.length + "张图片");
 };
 
 // 上传数据提交
-const uploadFile = async (file: any) => {
+const uploadFile = async (file: UploadFile) => {
+  if (!file.raw) {
+    ElMessage.error("无法读取上传文件");
+    return;
+  }
   // 判断选择的文件是否为图片类型
   const typeArr = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
   const isImg = typeArr.indexOf(file.raw.type) !== -1;
-  const isMore5M = file.size / 1024 / 1024 < 5;
+  const isMore5M = file.raw.size / 1024 / 1024 < 5;
 
   // 判断图片格式是否正确
   if (!isImg) {
@@ -98,10 +98,12 @@ const uploadFile = async (file: any) => {
   const res = await UploadImageApi(formData);
   if (res && res.code == 200 && res.data) {
     ElMessage.success("上传成功");
-    file.name = process.env.BASE_API + res.data;
+    const imageUrl = apiUrl(res.data);
+    file.name = imageUrl;
+    file.url = imageUrl;
     // 设置到返回子组件的数据中
     newImgRes.value.newImgUrl.push({
-      url: process.env.BASE_API + res.data,
+      url: imageUrl,
     });
     emits("getImg", newImgRes.value);
   }

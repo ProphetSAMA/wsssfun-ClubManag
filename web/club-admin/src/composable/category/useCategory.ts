@@ -3,7 +3,6 @@ import { CategoryModel } from "@/api/category/CategoryModel";
 import { EditType, FuncList } from "@/type/BaseType";
 import useInstance from "@/hooks/useInstance";
 import { deleteCategoryApi } from "@/api/category";
-import { ElMessage } from "element-plus";
 
 export default function useCategory(getList: FuncList) {
     const { global } = useInstance()
@@ -24,7 +23,12 @@ export default function useCategory(getList: FuncList) {
     const deleteBtn = async (row: CategoryModel) => {
         const confirm = await global.$myConfirm('阁下请三思！<br/> 确定要删除吗？');
         if (confirm) {
-            let res = await deleteCategoryApi(row);
+            if (row.id === undefined) {
+                ElMessage.error('分类编号缺失');
+                return;
+            }
+
+            let res = await deleteCategoryApi(row.id);
             if (res && res.code == 200) {
                 ElMessage.success('删除成功');
                 // 刷新列表

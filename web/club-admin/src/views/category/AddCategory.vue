@@ -24,10 +24,13 @@
         </el-form-item>
 
         <el-form-item prop="orderNum" label="分类序号">
-          <el-input
+          <el-input-number
             v-model="addModel.orderNum"
+            :min="0"
+            controls-position="right"
+            style="width: 100%"
             placeholder="请输入分类序号"
-          ></el-input>
+          />
         </el-form-item>
       </el-form>
     </template>
@@ -37,8 +40,8 @@
 <script setup lang="ts">
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
-import { nextTick, reactive, ref } from "vue";
-import { ElMessage, FormInstance } from "element-plus";
+import { reactive, ref } from "vue";
+import type { FormInstance } from "element-plus";
 import { addCategoryApi, editCategoryApi } from "@/api/category";
 import { CategoryModel } from "@/api/category/CategoryModel";
 import { EditType, Title } from "@/type/BaseType";
@@ -47,28 +50,25 @@ import { EditType, Title } from "@/type/BaseType";
 const formRef = ref<FormInstance>();
 
 // 获取弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 
 // 显示弹框
 const tags = ref("");
 
-const show = (type: string, row: CategoryModel) => {
+const show = (type: string, row?: CategoryModel) => {
   tags.value = type;
   // 设置弹框标题
   type == EditType.ADD
     ? (dialog.title = Title.ADD)
     : (dialog.title = Title.EDIT);
   dialog.height = 100;
-  onShow();
-
-  // 数据回显
   if (EditType.EDIT == type && row) {
-    nextTick(() => {
-      Object.assign(addModel, row);
-    });
+    Object.assign(addModel, row);
+  } else {
+    Object.assign(addModel, { id: undefined, name: "", orderNum: 0 });
   }
-  // 清空表单
-  formRef.value?.resetFields();
+  formRef.value?.clearValidate();
+  onShow();
 };
 // 暴露出去给外部组件使用
 defineExpose({
@@ -76,10 +76,10 @@ defineExpose({
 });
 
 // 弹框绑定的属性
-const addModel = reactive({
-  id: "",
+const addModel = reactive<CategoryModel>({
+  id: undefined,
   name: "",
-  orderNum: "",
+  orderNum: 0,
 });
 
 // 表单验证规则
