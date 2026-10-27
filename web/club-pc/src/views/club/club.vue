@@ -21,7 +21,7 @@
       </aside>
       <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon />
       <div class="card" v-loading="loading">
-        <div class="item" v-for="item in filteredTeams" :key="item.id" @click="openDetail(item)">
+        <div class="item" v-for="item in filteredTeams" :key="item.id" @click="goDetail(item)">
           <el-image
             class="item-img"
             :src="item.image ? imgUrl(item.image) : defaultImg"
@@ -53,7 +53,6 @@
     </div>
   </div>
 
-  <ContentDetail v-model="detailVisible" :item="current" type-label="社团" />
 </template>
 
 <script setup lang="ts">
@@ -64,7 +63,6 @@ import http from "@/http";
 import { imgUrl } from "@/utils/image";
 import { useUserStore } from "@/store/user";
 import { joinTeamApi, myTeamsApi } from "@/api/member";
-import ContentDetail from "@/components/ContentDetail.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -80,13 +78,8 @@ const filteredTeams = computed(() =>
 );
 /** 已加入的社团 id，用来把按钮置成"已加入" */
 const joinedIds = ref<number[]>([]);
-/** 详情弹框 */
-const detailVisible = ref(false);
-const current = ref<any>(null);
-
-const openDetail = (row: any) => {
-  current.value = row;
-  detailVisible.value = true;
+const goDetail = (row: any) => {
+  router.push(`/club/${row.id}`);
 };
 const joiningId = ref(0);
 const loading = ref(true);

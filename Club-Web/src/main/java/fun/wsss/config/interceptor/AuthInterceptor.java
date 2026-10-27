@@ -17,28 +17,35 @@ import java.util.List;
  *
  * <p>公开接口（首页、列表、详情等）允许游客访问，但**如果带了有效 token 仍会解析身份**，
  * 这样同一个接口对不同身份可以给出不同结果（例如管理员能看到草稿）。
- * 之前把公开接口写在 excludePathPatterns 里，拦截器完全不执行，拿不到 isAdmin。
+ *
+ * <p>公开规则按「方法 + 路径」匹配：同样是 /api/team/*，GET 是公开的详情，
+ * DELETE 仍然需要登录，不会被误放行。
  *
  * @author Wsssfun
  */
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
-    /** 游客可访问的接口 */
-    private static final List<String> PUBLIC_PATHS = List.of(
-            "/api/user/login",
-            "/api/user/register",
-            "/api/news/list",
-            "/api/news/detail/**",
-            "/api/news/getTopActivity",
-            "/api/news/getTopNotice",
-            "/api/news/getNewActivity",
-            "/api/news/getNewNotice",
-            "/api/team/list",
-            "/api/team/getTopTeam",
-            "/api/category/list",
-            "/api/category/getSelectList",
-            "/api/signup/count"
+    /** 公开接口：方法 + Ant 路径 */
+    private record Rule(String method, String pattern) {
+    }
+
+    private static final List<Rule> PUBLIC_RULES = List.of(
+            new Rule("POST", "/api/user/login"),
+            new Rule("POST", "/api/user/register"),
+            new Rule("GET", "/api/news/list"),
+            new Rule("GET", "/api/news/detail/**"),
+            new Rule("GET", "/api/news/getTopActivity"),
+            new Rule("GET", "/api/news/getTopNotice"),
+            new Rule("GET", "/api/news/getNewActivity"),
+            new Rule("GET", "/api/news/getNewNotice"),
+            new Rule("GET", "/api/team/list"),
+            new Rule("GET", "/api/team/getTopTeam"),
+            new Rule("GET", "/api/team/*"),
+            new Rule("GET", "/api/team/*/members"),
+            new Rule("GET", "/api/category/list"),
+            new Rule("GET", "/api/category/getSelectList"),
+            new Rule("GET", "/api/signup/count")
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -58,7 +65,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        boolean publicPath = isPublicPath(request.getRequestURI());
+        boolean publicPath = isPublic(request);
         String token = request.getHeader("token");
 
         if (token != null && !token.isEmpty()) {
@@ -85,9 +92,11 @@ public class AuthInterceptor implements HandlerInterceptor {
         return false;
     }
 
-    private boolean isPublicPath(String uri) {
-        for (String pattern : PUBLIC_PATHS) {
-            if (pathMatcher.match(pattern, uri)) {
+    private boolean isPublic(HttpServletRequest request) {
+        String method = request.getMethod().toUpperCase();
+        String uri = request.getRequestURI();
+        for (Rule rule : PUBLIC_RULES) {
+            if (rule.method().equals(method) && pathMatcher.match(rule.pattern(), uri)) {
                 return true;
             }
         }

@@ -41,6 +41,9 @@ const activeName = computed(() => {
   if (name && ['mycenter', 'myclub', 'myactivity'].includes(name)) {
     return 'mine';
   }
+  if (name === 'club-detail') {
+    return 'club';
+  }
   return name || 'home';
 });
 

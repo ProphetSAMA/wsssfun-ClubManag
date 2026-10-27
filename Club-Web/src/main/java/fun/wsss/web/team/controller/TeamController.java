@@ -7,11 +7,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import fun.wsss.web.team.entity.Team;
+import fun.wsss.web.team.entity.TeamMemberVo;
+import fun.wsss.web.team.mapper.TeamMapper;
 import fun.wsss.web.team.entity.TeamPage;
 import fun.wsss.web.team.service.TeamService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 社团控制器
@@ -24,9 +27,11 @@ import java.util.Date;
 public class TeamController {
 
     private final TeamService teamService;
+    private final TeamMapper teamMapper;
 
-    public TeamController(TeamService teamService) {
+    public TeamController(TeamService teamService, TeamMapper teamMapper) {
         this.teamService = teamService;
+        this.teamMapper = teamMapper;
     }
 
     /**
@@ -70,6 +75,33 @@ public class TeamController {
             return ResultUtils.success("删除成功");
         }
         return ResultUtils.error("删除失败");
+    }
+
+    /**
+     * 社团详情（门户/后台共用）
+     *
+     * @param id 社团ID
+     * @return 社团信息
+     */
+    @GetMapping("/{id}")
+    public ResultVo detail(@PathVariable("id") Long id) {
+        Team team = teamService.getById(id);
+        if (team == null) {
+            return ResultUtils.error("社团不存在");
+        }
+        return ResultUtils.success("查询成功", team);
+    }
+
+    /**
+     * 社团成员（门户展示，不返回手机号等隐私字段）
+     *
+     * @param id 社团ID
+     * @return 成员列表
+     */
+    @GetMapping("/{id}/members")
+    public ResultVo members(@PathVariable("id") Long id) {
+        List<TeamMemberVo> list = teamMapper.selectMembers(id);
+        return ResultUtils.success("查询成功", list);
     }
 
     /**

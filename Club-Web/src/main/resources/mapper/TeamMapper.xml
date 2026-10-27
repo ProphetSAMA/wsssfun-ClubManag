@@ -3,4 +3,17 @@
         "http://mybatis.org/mybatis-3-mapper.dtd">
 <mapper namespace="fun.wsss.web.team.mapper.TeamMapper">
 
+
+    <select id="selectMembers" resultType="fun.wsss.web.team.entity.TeamMemberVo">
+        SELECT
+            u.nick_name  AS userName,
+            m.role       AS role,
+            DATE_FORMAT(m.join_time, '%Y-%m-%d') AS joinTime
+        FROM member m
+        LEFT JOIN sys_user u ON m.user_id = u.user_id
+        WHERE m.team_id = #{teamId}
+          AND m.status = 1
+        ORDER BY m.role DESC, m.join_time ASC
+    </select>
+
 </mapper>

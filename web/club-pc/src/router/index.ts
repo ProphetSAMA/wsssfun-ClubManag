@@ -27,6 +27,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: "社团" },
       },
       {
+        path: "/club/:id",
+        name: "club-detail",
+        component: () => import("@/views/club/ClubDetail.vue"),
+        meta: { title: "社团详情" },
+      },
+      {
         path: "/activity",
         name: "activity",
         component: () => import("@/views/activity/activity.vue"),
