@@ -17,6 +17,8 @@ export default function useActivityTable() {
         pageSize: 10,
         title: '',
         type: '',
+        /** 发布状态：undefined-全部 1-已发布 0-草稿 */
+        status: undefined as number | undefined,
         total: 0,
     })
 
@@ -48,6 +50,7 @@ export default function useActivityTable() {
         searchParm.pageSize = 10;
         searchParm.title = '';
         searchParm.type = '';
+        searchParm.status = undefined;
         await getList();
     }
 

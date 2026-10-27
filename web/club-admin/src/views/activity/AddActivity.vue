@@ -32,6 +32,14 @@
                     </el-radio-group>
                 </el-form-item>
 
+                <!-- 发布状态 -->
+                <el-form-item label="发布状态" prop="status">
+                    <el-radio-group v-model="addModel.status">
+                        <el-radio :value="1">发布</el-radio>
+                        <el-radio :value="0">草稿</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+
                 <!-- 封面图 -->
                 <el-form-item prop="image" label="封面图">
                     <UploadImage ref="upImgRef" @getImg="getImg" :oldUrl="oldUrl" :fileList="fileList" />
@@ -110,6 +118,7 @@ const show = (type: EditType, row?: NewsType) => {
         addModel.title = "";
         addModel.details = "";
         addModel.hasTop = "";
+        addModel.status = 1;
         fileList.value = [];
         oldUrl.value = [];
         valueHtml.value = "";
@@ -150,6 +159,7 @@ const addModel = reactive<NewsType>({
     title: "",
     details: "",
     hasTop: "",
+    status: 1,
 });
 
 // 表单验证规则
@@ -157,6 +167,7 @@ const rules = reactive({
     title: [{ required: true, message: "请输入标题", trigger: "blur" }],
     type: [{ required: true, message: "请选择类型", trigger: "blur" }],
     hasTop: [{ required: true, message: "请选择首页推荐", trigger: "blur" }],
+    status: [{ required: true, message: "请选择发布状态", trigger: "blur" }],
     // image 由 UploadImage 自定义组件处理，不走 el-form 校验（见 commit 中手动校验）
     details: [{ required: true, message: "请输入社团详情", trigger: "blur" }],
 });

@@ -15,6 +15,14 @@
                 </el-select>
             </el-form-item>
 
+            <!-- 发布状态 -->
+            <el-form-item>
+                <el-select v-model="searchParm.status" clearable placeholder="发布状态" style="width: 130px">
+                    <el-option label="已发布" :value="1" />
+                    <el-option label="草稿" :value="0" />
+                </el-select>
+            </el-form-item>
+
             <!-- 搜索、重置、新增 -->
             <el-form-item>
                 <el-button icon="Search" @click="searchBtn">搜索</el-button>
@@ -47,6 +55,18 @@
                     </el-tag>
                 </template>
             </el-table-column>
+
+            <!-- 发布状态 -->
+            <el-table-column prop="status" label="状态" width="100">
+                <template #default="scope">
+                    <el-tag :type="scope.row.status === 0 ? 'info' : 'success'">
+                        {{ scope.row.status === 0 ? "草稿" : "已发布" }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+            <!-- 浏览量 -->
+            <el-table-column prop="viewCount" label="浏览量" width="90" align="center" />
 
             <!-- 创建时间 -->
             <el-table-column prop="createTime" label="创建时间" />
