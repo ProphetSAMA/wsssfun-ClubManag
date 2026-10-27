@@ -80,6 +80,17 @@ for (let i = 0; i < 27; i++) {
 }
 
 // 内容状态与浏览量（真实后端有这两列，这里补默认值）
+// XSS: 用来验证详情弹框是否会清洗富文本
+news.push({
+  id: 9001,
+  title: 'XSS 测试内容',
+  type: '1',
+  image: '',
+  createTime: '2026-06-01',
+  hasTop: '0',
+  details: '<p>正文</p><script>window.__xss = 1</script><img src=x onerror="window.__xss = 2"><a href="javascript:alert(1)">链接</a>',
+});
+
 news.forEach((n) => {
   n.status ??= 1;
   n.viewCount ??= 0;
@@ -413,6 +424,11 @@ function handle(req, res, url, path) {
     if (!row) return fail(res, '成员不存在');
     row.status = 0;
     return ok(res, null, '退出成功');
+  }
+
+  // 图片清理（假后端不真有文件，只返回个看起来合理的结果）
+  if (path === '/api/upload/cleanup' && req.method === 'POST') {
+    return ok(res, { scanned: 12, deleted: 3, skippedRecent: 9 }, '清理完成');
   }
 
   if (path === '/api/health') return ok(res, { status: 'up' });
