@@ -75,6 +75,12 @@ const routes: Array<RouteRecordRaw> = [
             component: () => import("@/views/mine/myactivity.vue"),
             meta: { title: "我的活动", requiresAuth: true }
           },
+          {
+            path: "/mine/manage",
+            name: "manage",
+            component: () => import("@/views/mine/manage.vue"),
+            meta: { title: "社团管理", requiresAuth: true }
+          },
         ]
       },
     ]
