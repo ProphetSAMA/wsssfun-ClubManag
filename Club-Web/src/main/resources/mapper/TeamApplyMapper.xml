@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fun.wsss.web.teamapply.mapper.TeamApplyMapper">
+
+    <select id="selectApplyPage" resultType="fun.wsss.web.teamapply.entity.TeamApplyVo">
+        SELECT
+            a.id,
+            a.name,
+            c.name   AS categoryName,
+            a.reason,
+            u.nick_name AS applicantName,
+            u.phone  AS phone,
+            a.status,
+            DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i') AS createTime,
+            DATE_FORMAT(a.review_time, '%Y-%m-%d %H:%i') AS reviewTime,
+            a.reject_reason AS rejectReason,
+            a.team_id AS teamId
+        FROM team_apply a
+        LEFT JOIN sys_user u ON a.applicant_id = u.user_id
+        LEFT JOIN team_category c ON a.category_id = c.id
+        <where>
+            <if test="status != null">
+                AND a.status = #{status}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (a.name LIKE CONCAT('%', #{keyword}, '%') OR u.nick_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY a.status ASC, a.create_time DESC
+    </select>
+
+</mapper>
