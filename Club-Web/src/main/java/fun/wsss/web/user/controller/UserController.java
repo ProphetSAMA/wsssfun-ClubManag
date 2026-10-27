@@ -9,7 +9,10 @@ import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import fun.wsss.web.user.entity.*;
 import fun.wsss.web.user.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.regex.Pattern;
 
 /**
  * 用户Controller控制器
@@ -21,12 +24,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class UserController {
 
+    /** BCrypt 哈希形如 $2a$10$... 共 60 位 */
+    private static final Pattern BCRYPT_PATTERN = Pattern.compile("^\\$2[aby]\\$\\d{2}\\$.{53}$");
+
     private final UserService userService;
     private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, JwtUtils jwtUtils) {
+    public UserController(UserService userService, JwtUtils jwtUtils, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.jwtUtils = jwtUtils;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    private static boolean isBcrypt(String password) {
+        return password != null && BCRYPT_PATTERN.matcher(password).matches();
     }
 
     /**
@@ -49,7 +61,18 @@ public class UserController {
             return ResultUtils.error("用户不存在");
         }
 
-        if (!loginDTO.getPassword().equals(user.getPassword())) {
+        boolean matched;
+        if (isBcrypt(user.getPassword())) {
+            matched = passwordEncoder.matches(loginDTO.getPassword(), user.getPassword());
+        } else {
+            // 兼容历史明文密码：校验通过后顺手升级为 BCrypt，用户无感知
+            matched = loginDTO.getPassword().equals(user.getPassword());
+            if (matched) {
+                user.setPassword(passwordEncoder.encode(loginDTO.getPassword()));
+                userService.updateById(user);
+            }
+        }
+        if (!matched) {
             return ResultUtils.error("密码错误");
         }
 
@@ -85,6 +108,10 @@ public class UserController {
      */
     @PostMapping
     public ResultVo add(@RequestBody User user) {
+        if (StringUtils.isEmpty(user.getPassword())) {
+            return ResultUtils.error("密码不能为空");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (userService.save(user)) {
             return ResultUtils.success("添加成功");
         }
@@ -99,6 +126,10 @@ public class UserController {
      */
     @PutMapping
     public ResultVo edit(@RequestBody User user) {
+        // 留空表示不修改密码；只有明文新密码才需要重新加密
+        if (StringUtils.isNotEmpty(user.getPassword()) && !isBcrypt(user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         if (userService.updateById(user)) {
             return ResultUtils.success("编辑成功");
         }
@@ -133,6 +164,8 @@ public class UserController {
             query.lambda().like(User::getNickname, parm.getNickName());
         }
         IPage<User> list = userService.page(page, query);
+        // 列表不需要密码，且不应该把哈希下发到前端
+        list.getRecords().forEach(item -> item.setPassword(null));
         return ResultUtils.success("查询成功", list);
     }
 }
