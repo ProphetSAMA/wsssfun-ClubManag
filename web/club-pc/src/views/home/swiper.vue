@@ -5,10 +5,10 @@
       :slides-per-view="4"
       :space-between="14"
       :autoplay="{ disableOnInteraction: false, delay: 3000 }"
-      loop
+      :loop="list.length >= 8"
     >
       <swiper-slide v-for="item in list" :key="item.id">
-        <div class="team-card">
+        <div class="team-card" @click="emit('select', item)">
           <el-image
             class="team-img"
             :src="item.image ? imgUrl(item.image) : defaultImg"
@@ -28,16 +28,9 @@ import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import http from "@/http";
-
-const BASE = "http://localhost:8888";
-const imgUrl = (image: string) => {
-  if (!image) return "";
-  let url = image.split(",")[0].trim();
-  if (url.startsWith("undefined")) url = url.replace("undefined", "");
-  if (url.startsWith("/")) url = BASE + url;
-  return url;
-};
+import { imgUrl } from "@/utils/image";
 const modules = [Autoplay];
+const emit = defineEmits<{ select: [item: any] }>();
 const list = ref<any[]>([]);
 
 onMounted(async () => {

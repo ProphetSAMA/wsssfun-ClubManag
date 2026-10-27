@@ -1,5 +1,6 @@
 <template>
-  <div class="home-page">
+  <div class="home-page" v-loading="loading">
+    <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon />
     <!-- 顶部 banner -->
     <section class="banner">
       <div class="banner-text">
@@ -15,7 +16,7 @@
         <h2>推荐社团</h2>
         <span class="more" @click="$router.push('/club')">更多</span>
       </div>
-      <swiper />
+      <swiper @select="openDetail" />
     </section>
 
     <!-- 推荐活动 + 公告 -->
@@ -35,7 +36,7 @@
           <span class="more" @click="$router.push('/notice')">更多</span>
         </div>
         <div class="card">
-          <div class="list-item" v-for="(item, i) in noticeList" :key="item.id">
+          <div class="list-item" v-for="(item, i) in noticeList" :key="item.id" @click="openDetail(item)">
             <span class="idx" :class="{ hot: i < 3 }">{{ i + 1 }}</span>
             <span class="title">{{ item.title }}</span>
             <span class="date">{{ item.createTime }}</span>
@@ -52,7 +53,7 @@
         <span class="more" @click="$router.push('/activity')">更多</span>
       </div>
       <div class="card">
-        <div class="list-item" v-for="(item, i) in activityList" :key="item.id">
+        <div class="list-item" v-for="(item, i) in activityList" :key="item.id" @click="openDetail(item)">
           <span class="idx" :class="{ hot: i < 3 }">{{ i + 1 }}</span>
           <span class="title">{{ item.title }}</span>
           <span class="date">{{ item.createTime }}</span>
@@ -69,7 +70,7 @@
       </div>
       <div class="card">
         <div class="news-row">
-          <div class="news-card" v-for="item in newsList" :key="item.id">
+          <div class="news-card" v-for="item in newsList" :key="item.id" @click="openDetail(item)">
             <el-image
               v-if="item.image"
               class="news-img"
@@ -87,6 +88,8 @@
       </div>
     </section>
   </div>
+
+  <ContentDetail v-model="detailVisible" :item="current" />
 </template>
 
 <script setup lang="ts">
@@ -94,19 +97,20 @@ import { ref, onMounted } from "vue";
 import swiper from "./swiper.vue";
 import swiperActivity from "./swiperActivity.vue";
 import http from "@/http";
+import { imgUrl } from "@/utils/image";
+import ContentDetail from "@/components/ContentDetail.vue";
 
-const BASE = "http://localhost:8888";
+/** 详情弹框 */
+const detailVisible = ref(false);
+const current = ref<any>(null);
 
-/** 从可能包含多图、脏前缀的 image 字段中取第一张有效 URL */
-const imgUrl = (image: string) => {
-  if (!image) return "";
-  let url = image.split(",")[0].trim();
-  // 兼容旧数据: "undefined/images/xxx.jpg" → "/images/xxx.jpg"
-  if (url.startsWith("undefined")) url = url.replace("undefined", "");
-  // 相对路径补全
-  if (url.startsWith("/")) url = BASE + url;
-  return url;
+const openDetail = (row: any) => {
+  current.value = row;
+  detailVisible.value = true;
 };
+
+const loading = ref(true);
+const error = ref("");
 
 const noticeList = ref<any[]>([]);
 const activityList = ref<any[]>([]);
@@ -124,6 +128,9 @@ onMounted(async () => {
     if (ne?.code === 200) newsList.value = ne.data || [];
   } catch (e) {
     console.error(e);
+    error.value = "首页内容加载失败，请稍后重试";
+  } finally {
+    loading.value = false;
   }
 });
 </script>

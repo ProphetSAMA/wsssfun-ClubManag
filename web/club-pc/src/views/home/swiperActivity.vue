@@ -14,15 +14,7 @@
 import { ref, onMounted } from "vue";
 import defaultImg from "@/assets/jitashe.jpg";
 import http from "@/http";
-
-const BASE = "http://localhost:8888";
-const imgUrl = (image: string) => {
-  if (!image) return "";
-  let url = image.split(",")[0].trim();
-  if (url.startsWith("undefined")) url = url.replace("undefined", "");
-  if (url.startsWith("/")) url = BASE + url;
-  return url;
-};
+import { imgUrl } from "@/utils/image";
 const list = ref<any[]>([]);
 
 onMounted(async () => {

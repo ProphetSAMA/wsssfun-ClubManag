@@ -29,7 +29,6 @@
           </el-button>
         </el-form-item>
       </el-form>
-      <p class="hint">默认账号: admin / admin123</p>
     </div>
   </div>
 </template>
@@ -37,7 +36,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, type FormInstance } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import { loginApi } from '@/api'
 import { useUserStore } from '@/store/user'
 
@@ -120,10 +119,4 @@ const handleLogin = () => {
   }
 }
 
-.hint {
-  text-align: center;
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 16px;
-}
 </style>
