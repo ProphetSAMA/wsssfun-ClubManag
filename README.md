@@ -58,14 +58,37 @@ mysql -u root -p club < db/seed-mock-data.sql
 
 ### 2. 后端
 
-改 `Club-Web/src/main/resources/application.yml` 里的数据库账号密码，然后：
+**数据库密码和 JWT 密钥不再写在仓库里**，通过环境变量注入。先准备一份本地 `.env`：
 
 ```bash
-cd Club-Web
-./mvnw spring-boot:run          # Windows: mvnw.cmd spring-boot:run
+cp Club-Web/.env.example Club-Web/.env     # 然后填写 JWT_SECRET 与 DB_PASSWORD
 ```
 
-上传的图片会存到 `web.uploadpath`（默认 `D:/images/`），通过 `/images/**` 对外访问。
+`JWT_SECRET` 必须提供且不短于 32 字节，否则启动会直接失败（避免带着默认弱密钥上线）。
+生成一个随机串：
+
+```powershell
+[Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Max 256 }))
+```
+
+然后启动（脚本会读取 `.env` 再拉起 Spring Boot）：
+
+```powershell
+.\scripts\run-backend.ps1
+```
+
+用 IDE 启动的话，需要自己在运行配置里设置同样的环境变量。
+上传的图片会存到 `UPLOAD_PATH`（默认 `D:/images/`），通过 `/images/**` 对外访问。
+
+可用的环境变量：
+
+| 变量 | 说明 | 默认值 |
+| --- | --- | --- |
+| `JWT_SECRET` | 签发 token 的密钥，**必填**，≥32 字节 | 无（不配启动失败） |
+| `JWT_EXPIRATION` | token 有效期（毫秒） | 86400000（24 小时） |
+| `DB_USERNAME` / `DB_PASSWORD` / `DB_URL` | 数据库连接 | root / 空 / 本地 club 库 |
+| `CORS_ORIGINS` | 允许跨域的前端地址，逗号分隔 | `http://localhost:8080,http://localhost:8081` |
+| `UPLOAD_PATH` | 图片上传目录 | `D:/images/` |
 
 ### 3. 前端
 
@@ -129,6 +152,14 @@ node tools/mock-api/server.mjs     # http://localhost:8888，两个前端的 .en
 - 密码用 BCrypt 存储（`spring-security-crypto`）；老库里遗留的明文密码在**登录成功时自动升级**为哈希，管理员新增/改密也会自动加密，登录接口不再做字符串比较。
 - 成员模块的权限在服务端判定：普通用户的 `userId` 一律取自 token（忽略请求体），只能退出自己的记录、不能改角色；`GET /api/member/list` 不再允许匿名访问。见 `MemberController` 与 `MemberAuthTest`。
 - 除成员模块外，`POST/PUT/DELETE` 一律要求管理员身份（`AdminInterceptor`），普通用户 token 只能读。见 `AdminWriteAuthTest`。
+
+## 安全说明
+
+- 密钥/密码只通过环境变量提供，`Club-Web/.env` 已被 `.gitignore` 忽略
+- **如果你的仓库是公开的，历史上 `application.yml` 里出现过的数据库密码已经泄露，请务必修改 MySQL 密码**
+- JWT 使用 `jti` 支持登出：`POST /api/user/logout` 会把当前 token 加入内存黑名单（单实例有效，多实例需换 Redis）
+- 同一账号连续登录失败 5 次会锁定 15 分钟（`security.login.max-attempts` / `lock-minutes` 可调）
+- CORS 只放行 `CORS_ORIGINS` 里的地址，且不使用 Cookie（鉴权走请求头 `token`）
 
 ## 已知问题 / 待办
 
