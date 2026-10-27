@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import DOMPurify from "dompurify";
 import { imgUrl } from "@/utils/image";
 
 /**
@@ -39,9 +40,9 @@ const visible = computed({
 
 const bodyHtml = computed(() => {
   const details = props.item?.details;
-  return details && String(details).trim()
-    ? details
-    : '<p class="empty">暂无详细内容</p>';
+  const raw = details && String(details).trim() ? details : '<p class="empty">暂无详细内容</p>';
+  // 后台富文本是"可信来源"，但仍然清洗一遍：管理员账号一旦被盗就是存储型 XSS
+  return DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
 });
 </script>
 

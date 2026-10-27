@@ -54,6 +54,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import DOMPurify from "dompurify";
 import defaultImg from "@/assets/jitashe.jpg";
 import http from "@/http";
 import { imgUrl } from "@/utils/image";
@@ -73,9 +74,10 @@ const joined = ref(false);
 
 const teamId = computed(() => Number(route.params.id));
 
-const detailsHtml = computed(() =>
-  team.value && team.value.details ? team.value.details : "<p>暂无简介</p>"
-);
+const detailsHtml = computed(() => {
+  const raw = team.value && team.value.details ? team.value.details : "<p>暂无简介</p>";
+  return DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
+});
 
 const load = async () => {
   loading.value = true;
