@@ -40,21 +40,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 公开接口由 AuthInterceptor 内部判断（这样公开接口也能解析登录身份）
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/api/**")
-                .excludePathPatterns(
-                        "/api/user/login",
-                        "/api/user/register",
-                        "/api/news/getTopActivity",
-                        "/api/news/getTopNotice",
-                        "/api/news/getNewActivity",
-                        "/api/news/getNewNotice",
-                        "/api/news/list",
-                        "/api/team/list",
-                        "/api/team/getTopTeam",
-                        "/api/category/list",
-                        "/api/category/getSelectList"
-                );
+                .addPathPatterns("/api/**");
 
         // 管理接口的写操作必须是管理员；成员模块除外（按记录归属判定）
         registry.addInterceptor(adminInterceptor)
