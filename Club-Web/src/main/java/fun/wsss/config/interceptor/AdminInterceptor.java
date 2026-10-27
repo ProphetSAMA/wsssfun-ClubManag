@@ -31,7 +31,10 @@ public class AdminInterceptor implements HandlerInterceptor {
     /**
      * 只读但同样只给管理员看的接口（会暴露全员手机号等隐私信息）
      */
-    private static final Set<String> ADMIN_ONLY_READ_PATHS = Set.of("/api/user/list");
+    private static final Set<String> ADMIN_ONLY_READ_PATHS = Set.of(
+            "/api/user/list",
+            "/api/stats/overview"
+    );
 
     /**
      * 自助接口：登录用户操作自己的数据，不属于管理操作
