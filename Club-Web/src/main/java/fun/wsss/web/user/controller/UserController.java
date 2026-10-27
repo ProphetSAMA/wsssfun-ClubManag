@@ -119,6 +119,69 @@ public class UserController {
     }
 
     /**
+     * 修改自己的资料
+     *
+     * <p>只允许改昵称、手机号、性别。用户名、密码、管理员标识都不在这里改，
+     * 免得普通用户顺手把自己提成管理员。
+     *
+     * @param parm   前端提交的资料
+     * @param userId 当前登录用户（来自 token）
+     * @return 状态
+     */
+    @PutMapping("/profile")
+    public ResultVo updateProfile(@RequestBody User parm, @RequestAttribute("userId") Long userId) {
+        User exist = userService.getById(userId);
+        if (exist == null) {
+            return ResultUtils.error("用户不存在");
+        }
+        if (StringUtils.isEmpty(parm.getNickname())) {
+            return ResultUtils.error("昵称不能为空");
+        }
+        exist.setNickname(parm.getNickname());
+        exist.setPhone(parm.getPhone());
+        exist.setSex(parm.getSex());
+        if (userService.updateById(exist)) {
+            return ResultUtils.success("保存成功");
+        }
+        return ResultUtils.error("保存失败");
+    }
+
+    /**
+     * 修改自己的密码
+     *
+     * <p>必须校验原密码；新密码由服务端加密后存储。
+     * 历史明文密码同样可以正常修改。
+     *
+     * @param parm   原密码 + 新密码
+     * @param userId 当前登录用户（来自 token）
+     * @return 状态
+     */
+    @PutMapping("/password")
+    public ResultVo changePassword(@RequestBody PasswordParm parm, @RequestAttribute("userId") Long userId) {
+        if (StringUtils.isEmpty(parm.getOldPassword()) || StringUtils.isEmpty(parm.getNewPassword())) {
+            return ResultUtils.error("原密码和新密码不能为空");
+        }
+        if (parm.getNewPassword().length() < 6) {
+            return ResultUtils.error("新密码至少 6 位");
+        }
+        User exist = userService.getById(userId);
+        if (exist == null) {
+            return ResultUtils.error("用户不存在");
+        }
+        boolean matched = isBcrypt(exist.getPassword())
+                ? passwordEncoder.matches(parm.getOldPassword(), exist.getPassword())
+                : parm.getOldPassword().equals(exist.getPassword());
+        if (!matched) {
+            return ResultUtils.error("原密码不正确");
+        }
+        exist.setPassword(passwordEncoder.encode(parm.getNewPassword()));
+        if (userService.updateById(exist)) {
+            return ResultUtils.success("密码修改成功");
+        }
+        return ResultUtils.error("密码修改失败");
+    }
+
+    /**
      * 编辑用户
      *
      * @param user 用户信息

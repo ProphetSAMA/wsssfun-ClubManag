@@ -72,6 +72,9 @@ const users = [
   { userId: 15, username: 'lihao', nickname: '李昊', phone: '13822223333', sex: 0, status: 1, isAdmin: 0 },
 ];
 
+/** 当前登录用户（改资料会改它，重启重置；密码初始为 123456） */
+const currentUser = { ...users[0], password: '123456' };
+
 /** 成员关系：加入/退出会改它，重启重置 */
 let nextMemberId = 1;
 const memberships = [];
@@ -103,6 +106,21 @@ function send(res, body, type = 'application/json;charset=UTF-8') {
 }
 
 const ok = (res, data, msg = '查询成功') => send(res, JSON.stringify({ msg, code: 200, data }));
+
+/** 读请求体 JSON 后交给回调处理 */
+function readJson(req, res, fn) {
+  let raw = '';
+  req.on('data', (chunk) => { raw += chunk; });
+  req.on('end', () => {
+    let body = {};
+    try {
+      body = JSON.parse(raw || '{}');
+    } catch (e) {
+      return fail(res, '参数错误');
+    }
+    fn(body);
+  });
+}
 const fail = (res, msg) => send(res, JSON.stringify({ msg, code: 500, data: null }));
 
 /** MyBatis-Plus 风格的分页结构 */
@@ -134,7 +152,28 @@ function handle(req, res, url, path) {
   if (path === '/api/user/login' && req.method === 'POST') {
     return ok(res, { token: 'mock-token', userId: 1, username: 'admin', nickname: '系统管理员', isAdmin: 1 }, '登录成功');
   }
-  if (path === '/api/user/info') return ok(res, { ...users[0], password: null });
+  if (path === '/api/user/info') {
+    const { password, ...safe } = currentUser;
+    return ok(res, safe);
+  }
+  if (path === '/api/user/profile' && req.method === 'PUT') {
+    return readJson(req, res, (body) => {
+      if (!body.nickname) return fail(res, '昵称不能为空');
+      currentUser.nickname = body.nickname;
+      currentUser.phone = body.phone;
+      currentUser.sex = body.sex;
+      return ok(res, null, '保存成功');
+    });
+  }
+  if (path === '/api/user/password' && req.method === 'PUT') {
+    return readJson(req, res, (body) => {
+      if (!body.oldPassword || !body.newPassword) return fail(res, '原密码和新密码不能为空');
+      if (body.newPassword.length < 6) return fail(res, '新密码至少 6 位');
+      if (body.oldPassword !== currentUser.password) return fail(res, '原密码不正确');
+      currentUser.password = body.newPassword;
+      return ok(res, null, '密码修改成功');
+    });
+  }
   if (path === '/api/user/list') {
     const page = Number(url.searchParams.get('currentPage') || 1);
     const size = Number(url.searchParams.get('pageSize') || 10);

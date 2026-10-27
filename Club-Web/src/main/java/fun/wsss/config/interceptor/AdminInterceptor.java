@@ -33,6 +33,14 @@ public class AdminInterceptor implements HandlerInterceptor {
      */
     private static final Set<String> ADMIN_ONLY_READ_PATHS = Set.of("/api/user/list");
 
+    /**
+     * 自助接口：登录用户操作自己的数据，不属于管理操作
+     */
+    private static final Set<String> SELF_SERVICE_PATHS = Set.of(
+            "/api/user/profile",
+            "/api/user/password"
+    );
+
     private final ObjectMapper objectMapper;
 
     public AdminInterceptor(ObjectMapper objectMapper) {
@@ -55,6 +63,11 @@ public class AdminInterceptor implements HandlerInterceptor {
         // isAdmin 由 AuthInterceptor 从 token 解析后放进 request
         Object isAdmin = request.getAttribute("isAdmin");
         if (isAdmin instanceof Integer && (Integer) isAdmin == 1) {
+            return true;
+        }
+
+        // 改自己的资料/密码不需要管理员，token 已在 AuthInterceptor 校验过
+        if (SELF_SERVICE_PATHS.contains(request.getRequestURI())) {
             return true;
         }
 
