@@ -79,11 +79,20 @@ for (let i = 0; i < 27; i++) {
   });
 }
 
+// 内容状态与浏览量（真实后端有这两列，这里补默认值）
+news.forEach((n) => {
+  n.status ??= 1;
+  n.viewCount ??= 0;
+});
+
 const users = [
   { userId: 1, username: 'admin', nickname: '系统管理员', phone: '13800000000', sex: 0, status: 1, isAdmin: 1 },
   { userId: 12, username: 'chenyu', nickname: '陈雨', phone: '13811112222', sex: 1, status: 1, isAdmin: 0 },
   { userId: 15, username: 'lihao', nickname: '李昊', phone: '13822223333', sex: 0, status: 1, isAdmin: 0 },
 ];
+
+/** 活动报名（内存）：{ newsId, userId, status } */
+const signups = [];
 
 /** 当前登录用户（改资料会改它，重启重置；密码初始为 123456） */
 const currentUser = { ...users[0], password: '123456' };
@@ -230,6 +239,14 @@ function handle(req, res, url, path) {
   if (path === '/api/team/getTopTeam') return ok(res, teams.filter((t) => t.hasTop === '1'));
 
   // 活动 / 新闻 / 公告
+  const detailMatch = path.match(/^\/api\/news\/detail\/(\d+)$/);
+  if (detailMatch) {
+    const newsId = Number(detailMatch[1]);
+    const item = news.find((n) => n.id === newsId);
+    if (!item) return fail(res, '内容不存在');
+    item.viewCount = (item.viewCount || 0) + 1;
+    return ok(res, item);
+  }
   if (path === '/api/news/list') {
     const type = url.searchParams.get('type');
     const title = (url.searchParams.get('title') || '').trim();
@@ -244,6 +261,52 @@ function handle(req, res, url, path) {
     '/api/news/getNewNotice': (n) => n.type === '1',
   };
   if (topMap[path]) return ok(res, news.filter(topMap[path]).slice(0, 8));
+
+  // 活动报名
+  if (path === '/api/signup' && req.method === 'POST') {
+    return readJson(req, res, (body) => {
+      const newsId = Number(body.newsId);
+      if (!newsId) return fail(res, '请选择要报名的活动');
+      const exist = signups.find((x) => x.newsId === newsId && x.userId === currentUser.userId);
+      if (exist && exist.status === 1) return fail(res, '已经报过名了');
+      if (exist) {
+        exist.status = 1;
+        exist.signupTime = '2026-10-27 15:00';
+        return ok(res, null, '报名成功');
+      }
+      signups.push({ newsId, userId: currentUser.userId, status: 1, signupTime: '2026-10-27 15:00' });
+      return ok(res, null, '报名成功');
+    });
+  }
+  const cancelMatch = path.match(/^\/api\/signup\/(\d+)$/);
+  if (cancelMatch && req.method === 'DELETE') {
+    const newsId = Number(cancelMatch[1]);
+    const exist = signups.find((x) => x.newsId === newsId && x.userId === currentUser.userId && x.status === 1);
+    if (!exist) return fail(res, '还没有报名这个活动');
+    exist.status = 0;
+    return ok(res, null, '已取消报名');
+  }
+  if (path === '/api/signup/my') {
+    const rows = signups
+      .filter((x) => x.userId === currentUser.userId && x.status === 1)
+      .map((x) => {
+        const n = news.find((item) => item.id === x.newsId) || {};
+        return {
+          id: x.newsId,
+          newsId: x.newsId,
+          title: n.title,
+          image: n.image,
+          activityTime: n.createTime,
+          signupTime: x.signupTime,
+          status: x.status,
+        };
+      });
+    return ok(res, { records: rows, total: rows.length });
+  }
+  if (path === '/api/signup/count') {
+    const newsId = Number(url.searchParams.get('newsId'));
+    return ok(res, signups.filter((x) => x.newsId === newsId && x.status === 1).length);
+  }
 
   // 成员
   if (path === '/api/member/list') {

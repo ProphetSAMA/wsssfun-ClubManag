@@ -28,6 +28,13 @@
           <h3>{{ item.title }}</h3>
           <span class="date">{{ item.createTime }}</span>
         </div>
+        <el-button
+          size="small"
+          :type="signedIds.includes(item.id) ? 'success' : 'primary'"
+          :plain="signedIds.includes(item.id)"
+          :loading="pendingId === item.id"
+          @click.stop="toggleSignup(item)"
+        >{{ signedIds.includes(item.id) ? '已报名' : '报名' }}</el-button>
       </div>
       <el-empty
         v-if="list.length === 0"
@@ -52,6 +59,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import { useUserStore } from "@/store/user";
+import { signupApi, cancelSignupApi, mySignupsApi, newsDetailApi } from "@/api/signup";
 import { imgUrl } from "@/utils/image";
 import ContentDetail from "@/components/ContentDetail.vue";
 import { useContentList } from "@/composables/useContentList";
@@ -59,15 +70,69 @@ import { useContentList } from "@/composables/useContentList";
 const { list, total, currentPage, size, keyword, loading, error, fetchList, search, reset, pageChange } =
   useContentList("0");
 
-/** 详情弹框 */
+const router = useRouter();
+const userStore = useUserStore();
+
+/** 已报名的活动 id */
+const signedIds = ref<number[]>([]);
+const pendingId = ref(0);
+
+/** 详情弹框；打开时顺带取一次详情，让后端把浏览量 +1 */
 const detailVisible = ref(false);
 const current = ref<any>(null);
-const openDetail = (row: any) => {
+const openDetail = async (row: any) => {
   current.value = row;
   detailVisible.value = true;
+  try {
+    const res = (await newsDetailApi(row.id)) as any;
+    if (res && res.code === 200) current.value = res.data;
+  } catch (e) {
+    console.error(e);
+  }
 };
 
-onMounted(fetchList);
+const loadMySignups = async () => {
+  if (!userStore.isLoggedIn) return;
+  try {
+    const res = (await mySignupsApi(1, 200)) as any;
+    if (res && res.code === 200) {
+      signedIds.value = (res.data.records || []).map((r: any) => r.newsId);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const toggleSignup = async (row: any) => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning("请先登录后再报名");
+    router.push("/login");
+    return;
+  }
+  pendingId.value = row.id;
+  try {
+    if (signedIds.value.includes(row.id)) {
+      const res = (await cancelSignupApi(row.id)) as any;
+      if (res && res.code === 200) {
+        signedIds.value = signedIds.value.filter((id) => id !== row.id);
+        ElMessage.success(res.msg || "已取消报名");
+      }
+    } else {
+      const res = (await signupApi(row.id)) as any;
+      if (res && res.code === 200) {
+        signedIds.value = [...signedIds.value, row.id];
+        ElMessage.success(res.msg || "报名成功");
+      }
+    }
+  } finally {
+    pendingId.value = 0;
+  }
+};
+
+onMounted(async () => {
+  await fetchList();
+  await loadMySignups();
+});
 </script>
 
 <style scoped lang="scss">

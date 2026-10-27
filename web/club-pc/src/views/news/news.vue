@@ -55,6 +55,7 @@ import { ref, onMounted } from "vue";
 import { imgUrl } from "@/utils/image";
 import ContentDetail from "@/components/ContentDetail.vue";
 import { useContentList } from "@/composables/useContentList";
+import { newsDetailApi } from "@/api/signup";
 
 const { list, total, currentPage, size, keyword, loading, error, fetchList, search, reset, pageChange } =
   useContentList("1");
@@ -62,9 +63,15 @@ const { list, total, currentPage, size, keyword, loading, error, fetchList, sear
 /** 详情弹框 */
 const detailVisible = ref(false);
 const current = ref<any>(null);
-const openDetail = (row: any) => {
+const openDetail = async (row: any) => {
   current.value = row;
   detailVisible.value = true;
+  try {
+    const res = (await newsDetailApi(row.id)) as any;
+    if (res && res.code === 200) current.value = res.data;
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 onMounted(fetchList);
