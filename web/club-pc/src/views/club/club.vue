@@ -21,7 +21,7 @@
       </aside>
       <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon />
       <div class="card" v-loading="loading">
-        <div class="item" v-for="item in teamList" :key="item.id" @click="openDetail(item)">
+        <div class="item" v-for="item in filteredTeams" :key="item.id" @click="openDetail(item)">
           <el-image
             class="item-img"
             :src="item.image ? imgUrl(item.image) : defaultImg"
@@ -45,7 +45,10 @@
             @click.stop="joinTeam(item)"
           >加入</el-button>
         </div>
-        <el-empty v-if="teamList.length === 0" description="暂无社团" />
+        <el-empty
+          v-if="filteredTeams.length === 0"
+          :description="selectedCategory === null ? '暂无社团' : '该分类下暂无社团'"
+        />
       </div>
     </div>
   </div>
@@ -54,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import defaultImg from "@/assets/jitashe.jpg";
 import http from "@/http";
@@ -69,6 +72,12 @@ const userStore = useUserStore();
 const categoryList = ref<any[]>([]);
 const teamList = ref<any[]>([]);
 const selectedCategory = ref<number | null>(null);
+/** 分类筛选：数据量不大，直接在前端过滤，点一下立刻生效 */
+const filteredTeams = computed(() =>
+  selectedCategory.value === null
+    ? teamList.value
+    : teamList.value.filter((t: any) => t.categoryId === selectedCategory.value)
+);
 /** 已加入的社团 id，用来把按钮置成"已加入" */
 const joinedIds = ref<number[]>([]);
 /** 详情弹框 */
