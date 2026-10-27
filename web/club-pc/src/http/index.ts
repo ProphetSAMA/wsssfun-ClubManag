@@ -18,6 +18,30 @@ const config: AxiosRequestConfig = {
     timeout: 10000,
 };
 
+/**
+ * 登录过期时先续签再重试原请求。用原生 axios，避免走进下面的拦截器递归。
+ */
+let refreshing: Promise<string | null> | null = null;
+
+export async function refreshToken(): Promise<string | null> {
+    const userStore = useUserStore();
+    if (!userStore.token) return null;
+    try {
+        const res = await axios.post(apiUrl("/api/user/refresh"), null, {
+            headers: { token: userStore.token },
+            timeout: 10000,
+        });
+        const token = res.data?.data?.token;
+        if (res.data?.code === 200 && token) {
+            userStore.token = token;
+            return token;
+        }
+    } catch (e) {
+        console.error("token 续签失败", e);
+    }
+    return null;
+}
+
 class Http {
     private instance: AxiosInstance;
 
@@ -41,10 +65,21 @@ class Http {
         );
 
         this.instance.interceptors.response.use(
-            (res: any) => {
+            async (res: any) => {
                 if (res.data.code !== 200) {
-                    // token 过期或未登录
+                    // token 过期：先续签并重试一次
                     if (res.data.code === 401) {
+                        const original = res.config;
+                        if (original && !original.__retried) {
+                            refreshing = refreshing ?? refreshToken();
+                            const token = await refreshing;
+                            refreshing = null;
+                            if (token) {
+                                original.__retried = true;
+                                original.headers = { ...original.headers, token };
+                                return this.instance.request(original);
+                            }
+                        }
                         const userStore = useUserStore();
                         userStore.logout();
                         router.push('/login');

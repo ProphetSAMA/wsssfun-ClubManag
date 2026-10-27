@@ -12,6 +12,8 @@ import fun.wsss.web.user.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -159,6 +161,27 @@ public class UserController {
             return ResultUtils.success("添加成功");
         }
         return ResultUtils.error("添加失败");
+    }
+
+    /**
+     * 续签 token
+     *
+     * <p>前端在业务码 401（登录过期）时先调这里换一个新 token 再重试原请求，
+     * 避免用户填表到一半被踢回登录页。这里要求当前 token 仍然有效。
+     *
+     * @param userId  当前登录用户（来自 token）
+     * @param username 用户名（来自 token）
+     * @param isAdmin 是否管理员（来自 token）
+     * @return 新 token
+     */
+    @PostMapping("/refresh")
+    public ResultVo refresh(@RequestAttribute("userId") Long userId,
+                            @RequestAttribute("username") String username,
+                            @RequestAttribute(value = "isAdmin", required = false) Integer isAdmin) {
+        String token = jwtUtils.generateToken(userId, username, isAdmin);
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", token);
+        return ResultUtils.success("续签成功", data);
     }
 
     /**
