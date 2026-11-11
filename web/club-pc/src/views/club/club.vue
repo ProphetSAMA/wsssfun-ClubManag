@@ -30,7 +30,9 @@
             class="item-img"
             :src="item.image ? imgUrl(item.image) : defaultImg"
             fit="cover"
-          />
+          >
+            <template #error><div class="img-error">暂无图片</div></template>
+          </el-image>
           <div class="item-body">
             <div class="item-name">{{ item.name }}</div>
             <span class="date">{{ item.createTime }}</span>

@@ -98,3 +98,18 @@ img {
 ::-webkit-scrollbar-thumb:hover {
   background: #aaa;
 }
+
+/* ========== 图片加载失败的占位 ========== */
+/* 历史数据里有图片路径指向已删除的文件，el-image 默认会显示"加载失败"，
+   这里统一换成中性占位，避免列表里出现一堆报错文案 */
+.img-error {
+  width: 100%;
+  height: 100%;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-hover);
+  color: var(--text-3);
+  font-size: 12px;
+}

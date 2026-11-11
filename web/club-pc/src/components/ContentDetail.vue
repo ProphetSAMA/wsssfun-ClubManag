@@ -11,7 +11,9 @@
       <span class="date">{{ item?.createTime }}</span>
       <span v-if="item?.maxParticipants" class="date">名额 {{ item.maxParticipants }}</span>
     </div>
-    <el-image v-if="item?.image" class="cover" :src="imgUrl(item.image)" fit="cover" />
+    <el-image v-if="item?.image" class="cover" :src="imgUrl(item.image)" fit="cover">
+      <template #error><div class="img-error cover">暂无图片</div></template>
+    </el-image>
     <div class="body" v-html="bodyHtml"></div>
   </el-dialog>
 </template>

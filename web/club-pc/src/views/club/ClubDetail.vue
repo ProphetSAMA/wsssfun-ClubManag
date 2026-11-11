@@ -8,7 +8,9 @@
 
     <div class="card" v-if="team">
       <div class="head">
-        <el-image class="cover" :src="team.image ? imgUrl(team.image) : defaultImg" fit="cover" />
+        <el-image class="cover" :src="team.image ? imgUrl(team.image) : defaultImg" fit="cover">
+          <template #error><img :src="defaultImg" class="cover" /></template>
+        </el-image>
         <div class="head-info">
           <h1>{{ team.name }}</h1>
           <p class="meta">成立时间 {{ team.createTime || '—' }} · 成员 {{ members.length }} 人</p>

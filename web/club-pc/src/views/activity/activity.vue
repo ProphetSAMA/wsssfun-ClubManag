@@ -23,7 +23,9 @@
           class="item-img"
           :src="imgUrl(item.image)"
           fit="cover"
-        />
+        >
+          <template #error><div class="img-error">暂无图片</div></template>
+        </el-image>
         <div class="item-body">
           <h3>{{ item.title }}</h3>
           <span class="date">
