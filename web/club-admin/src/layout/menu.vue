@@ -8,6 +8,7 @@ import {
   DocumentChecked,
   HomeFilled,
   Operation,
+  Tickets,
   User,
 } from "@element-plus/icons-vue";
 import { useMenuStore } from "@/store/menu";
@@ -44,6 +45,10 @@ const IsCollapse = computed(() => {
     <el-menu-item index="/club">
       <el-icon><Histogram /></el-icon>
       <template #title>社团管理</template>
+    </el-menu-item>
+    <el-menu-item index="/audit">
+      <el-icon><Tickets /></el-icon>
+      <template #title>操作日志</template>
     </el-menu-item>
     <el-menu-item index="/teamapply">
       <el-icon><DocumentChecked /></el-icon>

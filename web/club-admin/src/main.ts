@@ -9,7 +9,7 @@ import piniaPersistedstate from 'pinia-plugin-persistedstate';
 // 只需要把模板里真正用到的图标注册成全局组件（<User /> 和 icon="search" 这类字符串都靠它解析）。
 import {
   ArrowDown, Avatar, Close, DataAnalysis, Delete, DocumentChecked, Histogram,
-  HomeFilled, Lock, Operation, Plus, Search, User,
+  HomeFilled, Lock, Operation, Plus, Search, Tickets, User,
 } from '@element-plus/icons-vue'
 
 import myConfirm from "@/utils/myConfirm";
@@ -28,7 +28,7 @@ app.use(router)
 // 全局注册用到的小图标
 for (const [name, component] of Object.entries({
   ArrowDown, Avatar, Close, DataAnalysis, Delete, DocumentChecked, Histogram,
-  HomeFilled, Lock, Operation, Plus, Search, User,
+  HomeFilled, Lock, Operation, Plus, Search, Tickets, User,
 })) {
   app.component(name, component)
 }

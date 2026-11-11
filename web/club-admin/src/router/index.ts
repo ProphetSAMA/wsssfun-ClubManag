@@ -40,6 +40,12 @@ const routes: Array<RouteRecordRaw> = [
                 meta: { title: '社团管理' }
             },
             {
+                path: '/audit',
+                name: 'audit',
+                component: () => import('@/views/audit/index.vue'),
+                meta: { title: '操作日志' }
+            },
+            {
                 path: '/teamapply',
                 name: 'teamapply',
                 component: () => import('@/views/teamapply/index.vue'),
