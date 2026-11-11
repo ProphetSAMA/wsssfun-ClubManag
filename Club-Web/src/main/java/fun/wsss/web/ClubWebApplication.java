@@ -2,12 +2,14 @@ package fun.wsss.web;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author Wsssfun
  * @date 2024年10月21日 01点10分
  */
 @SpringBootApplication(scanBasePackages = "fun.wsss")
+@EnableScheduling
 public class ClubWebApplication {
 
 	public static void main(String[] args) {

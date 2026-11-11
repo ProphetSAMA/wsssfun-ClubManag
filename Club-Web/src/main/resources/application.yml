@@ -34,6 +34,12 @@ web:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:8080,http://localhost:8081}
 
+# 安全相关
+security:
+  # 操作日志保留天数，0 表示不自动清理
+  audit:
+    retention-days: ${AUDIT_RETENTION_DAYS:90}
+
 logging:
   pattern:
     console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n'
