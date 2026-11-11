@@ -26,7 +26,10 @@
         />
         <div class="item-body">
           <h3>{{ item.title }}</h3>
-          <span class="date">{{ item.createTime }}</span>
+          <span class="date">
+            {{ item.createTime }}
+            <template v-if="item.maxParticipants"> · 名额 {{ item.maxParticipants }}</template>
+          </span>
         </div>
         <el-button
           size="small"

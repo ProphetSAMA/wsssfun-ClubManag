@@ -16,6 +16,7 @@
           <span class="meta">
             活动时间 {{ item.activityTime || '—' }}
             <template v-if="item.signupTime"> · 报名于 {{ item.signupTime }}</template>
+        <el-tag v-if="item.checkedIn === 1" type="success" size="small" class="checked">已签到</el-tag>
           </span>
         </div>
         <el-button
@@ -75,6 +76,7 @@ onMounted(getList)
 </script>
 
 <style scoped lang="scss">
+.checked { margin-left: 8px; }
 .card {
   background: var(--bg-white);
   border-radius: var(--radius);

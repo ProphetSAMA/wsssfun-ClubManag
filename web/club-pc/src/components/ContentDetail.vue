@@ -9,6 +9,7 @@
     <div class="meta">
       <el-tag v-if="typeLabel" size="small" type="info">{{ typeLabel }}</el-tag>
       <span class="date">{{ item?.createTime }}</span>
+      <span v-if="item?.maxParticipants" class="date">名额 {{ item.maxParticipants }}</span>
     </div>
     <el-image v-if="item?.image" class="cover" :src="imgUrl(item.image)" fit="cover" />
     <div class="body" v-html="bodyHtml"></div>

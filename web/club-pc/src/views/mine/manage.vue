@@ -62,6 +62,11 @@
                 </el-tag>
               </template>
             </el-table-column>
+            <el-table-column label="名额" width="110" align="center">
+              <template #default="scope">
+                {{ scope.row.maxParticipants ? scope.row.maxParticipants + ' 人' : '不限' }}
+              </template>
+            </el-table-column>
             <el-table-column prop="viewCount" label="浏览" width="80" align="center" />
             <el-table-column prop="createTime" label="发布时间" width="120" />
             <el-table-column label="操作" width="260" align="center">
@@ -96,6 +101,10 @@
         <el-form-item label="详情" prop="details">
           <el-input v-model="newsForm.details" type="textarea" :rows="6" placeholder="支持纯文本，换行会保留" />
         </el-form-item>
+        <el-form-item label="名额">
+          <el-input-number v-model="newsForm.maxParticipants" :min="0" :max="9999" />
+          <span class="tip">0 表示不限人数</span>
+        </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="newsForm.status">
             <el-radio :value="1">发布</el-radio>
@@ -110,11 +119,22 @@
     </el-dialog>
 
     <!-- 报名名单 -->
-    <el-dialog v-model="signupDialog" title="报名名单" width="560px">
+    <el-dialog v-model="signupDialog" :title="'报名名单（' + signupMeta + '）'" width="640px">
       <el-table :data="signups" border size="small">
         <el-table-column prop="userName" label="姓名" />
-        <el-table-column prop="phone" label="手机号" />
-        <el-table-column prop="signupTime" label="报名时间" />
+        <el-table-column prop="phone" label="手机号" width="130" />
+        <el-table-column prop="signupTime" label="报名时间" width="130" />
+        <el-table-column label="签到" width="150" align="center">
+          <template #default="scope">
+            <el-tag v-if="scope.row.checkedIn === 1" type="success" size="small">已签到</el-tag>
+            <el-button v-else size="small" type="primary" plain @click="toggleCheckin(scope.row)">签到</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="110" align="center">
+          <template #default="scope">
+            <el-button v-if="scope.row.checkedIn === 1" size="small" @click="toggleCheckin(scope.row)">取消签到</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-empty v-if="signups.length === 0" description="还没有人报名" :image-size="60" />
     </el-dialog>
@@ -127,7 +147,7 @@ import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import { useUserStore } from '@/store/user'
 import {
   myTeamsApi, clubMembersApi, setMemberRoleApi, removeMemberApi,
-  clubNewsApi, addClubNewsApi, editClubNewsApi, deleteClubNewsApi, clubSignupsApi,
+  clubNewsApi, addClubNewsApi, editClubNewsApi, deleteClubNewsApi, clubSignupsApi, checkinApi,
   type ClubMember, type ClubTeam
 } from '@/api/club'
 
@@ -151,7 +171,7 @@ const pageSize = ref(10)
 
 const newsDialog = ref(false)
 const newsRef = ref<FormInstance>()
-const newsForm = reactive({ id: 0, title: '', details: '', status: 1 })
+const newsForm = reactive({ id: 0, title: '', details: '', status: 1, maxParticipants: 0 })
 const newsRules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
   details: [{ required: true, message: '请输入活动详情', trigger: 'blur' }]
@@ -159,6 +179,11 @@ const newsRules = {
 
 const signupDialog = ref(false)
 const signups = ref<any[]>([])
+const signupRows = ref<any[]>([])
+const signupMeta = computed(() => {
+  const max = signupRows.value[0]?.maxParticipants
+  return `${signups.value.length} 人` + (max ? ` / 名额 ${max}` : '')
+})
 
 const loadTeams = async () => {
   const res = (await myTeamsApi()) as any
@@ -244,6 +269,7 @@ const openAdd = () => {
   newsForm.title = ''
   newsForm.details = ''
   newsForm.status = 1
+  newsForm.maxParticipants = 0
   newsDialog.value = true
   newsRef.value?.clearValidate()
 }
@@ -253,6 +279,7 @@ const openEdit = (row: any) => {
   newsForm.title = row.title
   newsForm.details = row.details
   newsForm.status = row.status ?? 1
+  newsForm.maxParticipants = row.maxParticipants ?? 0
   newsDialog.value = true
   newsRef.value?.clearValidate()
 }
@@ -289,11 +316,23 @@ const removeNews = async (row: any) => {
   }
 }
 
+const signupDialogNewsId = ref(0)
 const openSignups = async (row: any) => {
+  signupDialogNewsId.value = row.id
   const res = (await clubSignupsApi(currentTeamId.value!, row.id)) as any
   if (res?.code === 200) {
-    signups.value = res.data || []
+    signups.value = res.data.list || []
+    signupRows.value = [{ maxParticipants: res.data.maxParticipants }]
     signupDialog.value = true
+  }
+}
+
+const toggleCheckin = async (row: any) => {
+  const next = row.checkedIn !== 1
+  const res = (await checkinApi(currentTeamId.value!, signupDialogNewsId.value, row.id, next)) as any
+  if (res?.code === 200) {
+    ElMessage.success(res.msg || '操作成功')
+    openSignups({ id: signupDialogNewsId.value })
   }
 }
 

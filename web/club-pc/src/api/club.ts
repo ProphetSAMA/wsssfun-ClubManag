@@ -22,6 +22,7 @@ export type ClubNews = {
   details: string;
   image: string;
   status: number;
+  maxParticipants: number;
   hasTop: string;
   viewCount: number;
   createTime: string;
@@ -60,3 +61,7 @@ export const deleteClubNewsApi = (teamId: number, id: number) =>
 /** 活动报名名单 */
 export const clubSignupsApi = (teamId: number, newsId: number) =>
   http.get(`/api/club/${teamId}/news/${newsId}/signups`);
+
+/** 核销签到 */
+export const checkinApi = (teamId: number, newsId: number, signupId: number, checkedIn: boolean) =>
+  http.put(`/api/club/${teamId}/news/${newsId}/signup/${signupId}/checkin`, { checkedIn });
