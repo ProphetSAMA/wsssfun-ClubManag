@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `phone`     varchar(20)  DEFAULT NULL,
   `status`    int          DEFAULT '1' COMMENT '0-禁用 1-启用',
   `is_admin`  int          DEFAULT '0' COMMENT '0-普通用户 1-管理员',
+  `avatar`              varchar(255) DEFAULT NULL COMMENT '头像相对路径',
+  `security_question`   varchar(100) DEFAULT NULL COMMENT '密保问题',
+  `security_answer_hash` varchar(100) DEFAULT NULL COMMENT '密保答案（BCrypt）',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `uk_sys_user_username` (`username`)
 ) ENGINE = InnoDB
