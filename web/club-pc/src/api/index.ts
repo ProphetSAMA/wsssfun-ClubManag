@@ -29,3 +29,33 @@ export const updateProfileApi = (parm: { nickname: string, phone: string, sex: s
 export const changePasswordApi = (parm: { oldPassword: string, newPassword: string }) => {
     return http.put('/api/user/password', parm)
 }
+
+/** 上传头像文件（登录用户可用，2MB 内） */
+export const uploadAvatarApi = (form: FormData) => {
+    return http.post('/api/upload/avatar', form)
+}
+
+/** 保存头像路径，空字符串表示恢复默认 */
+export const updateAvatarApi = (avatar: string) => {
+    return http.put('/api/user/avatar', { avatar })
+}
+
+/** 查看自己的密保问题 */
+export const securityQuestionApi = () => {
+    return http.get('/api/user/security-question')
+}
+
+/** 设置 / 修改密保问题 */
+export const updateSecurityQuestionApi = (parm: { password: string, question: string, answer: string }) => {
+    return http.put('/api/user/security-question', parm)
+}
+
+/** 忘记密码：查询密保问题（未登录） */
+export const forgotQueryApi = (username: string) => {
+    return http.post('/api/user/forgot/query', { username })
+}
+
+/** 忘记密码：回答密保问题重置密码（未登录） */
+export const forgotResetApi = (parm: { username: string, answer: string, newPassword: string }) => {
+    return http.post('/api/user/forgot/reset', parm)
+}

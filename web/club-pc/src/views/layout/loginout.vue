@@ -2,7 +2,8 @@
   <div class="user-area">
     <el-dropdown v-if="userStore.isLoggedIn" trigger="click" @command="handleCommand">
       <span class="user-btn">
-        <span class="avatar">{{ initial }}</span>
+        <el-avatar v-if="userStore.avatar" :size="26" :src="imgUrl(userStore.avatar)" />
+        <span v-else class="avatar">{{ initial }}</span>
         <span class="name">{{ userStore.nickname || userStore.username }}</span>
       </span>
       <template #dropdown>
@@ -21,6 +22,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { logoutApi } from '@/api'
+import { imgUrl } from '@/utils/image'
 
 const router = useRouter()
 const userStore = useUserStore()

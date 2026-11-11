@@ -7,6 +7,7 @@ export const useUserStore = defineStore('user', () => {
     const username = ref('')
     const nickname = ref('')
     const isAdmin = ref(0)
+    const avatar = ref('')
 
     const isLoggedIn = computed(() => !!token.value)
 
@@ -18,15 +19,20 @@ export const useUserStore = defineStore('user', () => {
         isAdmin.value = data.isAdmin
     }
 
+    function setAvatar(value: string) {
+        avatar.value = value || ''
+    }
+
     function logout() {
         token.value = ''
         userId.value = 0
         username.value = ''
         nickname.value = ''
         isAdmin.value = 0
+        avatar.value = ''
     }
 
-    return { token, userId, username, nickname, isAdmin, isLoggedIn, setLoginInfo, logout }
+    return { token, userId, username, nickname, isAdmin, avatar, isLoggedIn, setLoginInfo, setAvatar, logout }
 }, {
     persist: true
 })

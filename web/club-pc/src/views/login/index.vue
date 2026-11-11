@@ -30,10 +30,36 @@
         </el-form-item>
       </el-form>
       <p class="switch">
+        <span class="link" @click="openForgot">忘记密码？</span>
+      </p>
+      <p class="switch">
         还没有账号？
         <span class="link" @click="openRegister">立即注册</span>
       </p>
     </div>
+
+    <!-- 忘记密码 -->
+    <el-dialog v-model="forgotVisible" title="找回密码" width="440px">
+      <el-form ref="forgotRef" :model="forgotForm" :rules="forgotRules" label-width="80px">
+        <el-form-item label="账号" prop="username">
+          <el-input v-model="forgotForm.username" placeholder="注册时的登录账号" :disabled="questionLoaded" />
+        </el-form-item>
+        <el-form-item v-if="questionLoaded" label="密保问题">
+          <span class="question">{{ question }}</span>
+        </el-form-item>
+        <el-form-item v-if="questionLoaded" label="答案" prop="answer">
+          <el-input v-model="forgotForm.answer" placeholder="回答设置密保时填的答案" />
+        </el-form-item>
+        <el-form-item v-if="questionLoaded" label="新密码" prop="newPassword">
+          <el-input v-model="forgotForm.newPassword" type="password" show-password placeholder="至少 8 位" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="forgotVisible = false">取消</el-button>
+        <el-button v-if="!questionLoaded" type="primary" :loading="forgotLoading" @click="queryQuestion">下一步</el-button>
+        <el-button v-else type="primary" :loading="forgotLoading" @click="resetPassword">重置密码</el-button>
+      </template>
+    </el-dialog>
 
     <!-- 注册 -->
     <el-dialog v-model="registerVisible" title="注册账号" width="420px">
@@ -63,7 +89,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { loginApi, registerApi } from '@/api'
+import { loginApi, registerApi, forgotQueryApi, forgotResetApi } from '@/api'
 import { useUserStore } from '@/store/user'
 
 const router = useRouter()
@@ -72,6 +98,67 @@ const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
 
 const loginForm = reactive({ username: '', password: '' })
+
+// 忘记密码
+const forgotVisible = ref(false)
+const forgotRef = ref<FormInstance>()
+const forgotLoading = ref(false)
+const questionLoaded = ref(false)
+const question = ref('')
+const forgotForm = reactive({ username: '', answer: '', newPassword: '' })
+const forgotRules: FormRules = {
+  username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+  answer: [{ required: true, message: '请输入密保答案', trigger: 'blur' }],
+  newPassword: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 8, message: '密码至少 8 位', trigger: 'blur' }
+  ]
+}
+
+const openForgot = () => {
+  forgotForm.username = loginForm.username
+  forgotForm.answer = ''
+  forgotForm.newPassword = ''
+  questionLoaded.value = false
+  question.value = ''
+  forgotVisible.value = true
+  forgotRef.value?.clearValidate()
+}
+
+const queryQuestion = async () => {
+  if (!forgotForm.username) {
+    ElMessage.warning('请输入账号')
+    return
+  }
+  forgotLoading.value = true
+  try {
+    const res = (await forgotQueryApi(forgotForm.username)) as any
+    if (res?.code === 200) {
+      question.value = res.data.question
+      questionLoaded.value = true
+    }
+  } finally {
+    forgotLoading.value = false
+  }
+}
+
+const resetPassword = () => {
+  forgotRef.value?.validate(async (valid) => {
+    if (!valid) return
+    forgotLoading.value = true
+    try {
+      const res = (await forgotResetApi({ ...forgotForm })) as any
+      if (res?.code === 200) {
+        ElMessage.success(res.msg || '密码已重置')
+        forgotVisible.value = false
+        loginForm.username = forgotForm.username
+        loginForm.password = ''
+      }
+    } finally {
+      forgotLoading.value = false
+    }
+  })
+}
 const rules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
