@@ -9,6 +9,8 @@ export type NewsType = {
   hasTop: string;
   /** 0-草稿 1-已发布 */
   status?: number;
+  /** 活动名额，0 表示不限 */
+  maxParticipants?: number;
   /** 浏览量 */
   viewCount?: number;
 };

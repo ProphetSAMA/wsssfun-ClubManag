@@ -32,6 +32,12 @@
                     </el-radio-group>
                 </el-form-item>
 
+                <!-- 活动名额 -->
+                <el-form-item v-if="addModel.type === '0'" label="活动名额">
+                    <el-input-number v-model="addModel.maxParticipants" :min="0" :max="9999" />
+                    <span class="tip">0 表示不限人数</span>
+                </el-form-item>
+
                 <!-- 发布状态 -->
                 <el-form-item label="发布状态" prop="status">
                     <el-radio-group v-model="addModel.status">
