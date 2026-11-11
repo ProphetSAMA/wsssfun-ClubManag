@@ -84,8 +84,9 @@
             <el-table-column prop="createTime" label="创建时间" />
 
             <!-- 操作 -->
-            <el-table-column align="center" width="200px" label="操作">
+            <el-table-column align="center" width="280px" label="操作">
                 <template #default="scope">
+                    <el-button v-if="scope.row.type === '0'" size="small" @click="openSignups(scope.row)">报名名单</el-button>
                     <el-button type="primary" size="small" @click="editBtn(scope.row)">编辑</el-button>
                     <el-button type="danger" size="small" @click="deleteBtn(scope.row)">删除</el-button>
                 </template>
@@ -99,6 +100,22 @@
             :page-size="searchParm.pageSize" layout="total, sizes, prev, pager, next, jumper"
             :total="searchParm.total" background />
 
+        <!-- 报名名单 -->
+        <el-dialog v-model="signupVisible" :title="signupTitle" width="620px">
+            <el-table v-loading="signupLoading" :data="signupList" border size="small">
+                <el-table-column prop="userName" label="姓名" />
+                <el-table-column prop="phone" label="手机号" width="140" />
+                <el-table-column prop="signupTime" label="报名时间" width="150" />
+                <el-table-column label="签到" width="100" align="center">
+                    <template #default="scope">
+                        <el-tag v-if="scope.row.checkedIn === 1" type="success" size="small">已签到</el-tag>
+                        <span v-else class="tip">未签到</span>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-empty v-if="!signupLoading && signupList.length === 0" description="还没有人报名" :image-size="60" />
+        </el-dialog>
+
         <!-- 新增弹窗 -->
         <AddActivity ref="addActivityRef" @onRefresh="getList" />
     </el-main>
@@ -108,6 +125,7 @@
 import { ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { deleteNewsApi } from "@/api/news";
+import { getSignupListApi } from "@/api/signup";
 import AddActivity from "./AddActivity.vue";
 import useActivityTable from "@/composable/activity/useActivityTable";
 import useActivity from "@/composable/activity/useActivity";
@@ -125,6 +143,27 @@ const {
     tableHeight,
 } = useActivityTable();
 const { addBtn, editBtn, deleteBtn, addActivityRef } = useActivity(getList);
+
+/** 报名名单 */
+const signupVisible = ref(false);
+const signupLoading = ref(false);
+const signupList = ref<any[]>([]);
+const signupTitle = ref("报名名单");
+
+const openSignups = async (row: any) => {
+    signupTitle.value = "报名名单 · " + row.title;
+    signupVisible.value = true;
+    signupLoading.value = true;
+    signupList.value = [];
+    try {
+        const res = (await getSignupListApi(row.id)) as any;
+        if (res && res.code === 200) {
+            signupList.value = res.data.records || [];
+        }
+    } finally {
+        signupLoading.value = false;
+    }
+};
 
 /** 表格选中行 */
 const selectedRows = ref<any[]>([]);

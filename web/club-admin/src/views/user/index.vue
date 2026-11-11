@@ -46,6 +46,12 @@
     </el-form>
     <!-- 表格-->
     <el-table v-loading="loading" :data="tableList" border style="width: 100%" stripe>
+      <el-table-column label="头像" width="80" align="center">
+        <template #default="scope">
+          <el-avatar v-if="scope.row.avatar" :size="32" :src="imgUrl(scope.row.avatar)" />
+          <el-avatar v-else :size="32">{{ (scope.row.nickname || scope.row.username || '?').charAt(0) }}</el-avatar>
+        </template>
+      </el-table-column>
       <el-table-column prop="nickname" label="姓名"></el-table-column>
       <el-table-column prop="sex" label="性别">
         <template #default="scope">
@@ -89,6 +95,7 @@
 import useUser from "@/composable/user/useUser.ts";
 import useUserTable from "@/composable/user/useUserTable.ts";
 import AddUser from "@/views/user/AddUser.vue";
+import { imgUrl } from "@/utils/image";
 
 // 表格相关操作
 const {
