@@ -17,6 +17,11 @@ Club-Web/                 Spring Boot 3 后端（端口 8888）
       team_category/      社团分类
       news/               活动 / 新闻 / 公告（同一张表，用 type 区分）
       member/             社团成员
+      club/               社团管理员视角（成员、社团活动、报名名单、签到）
+      teamapply/          社团成立申请与审核
+      signup/             活动报名
+      notification/       站内通知
+      audit/              操作审计日志
       image/              图片上传
   src/main/resources/
     application.yml       数据源、JWT、上传路径
@@ -32,8 +37,11 @@ Jenkinsfile               构建流水线
 
 ## 功能
 
-- **用户门户**：注册与登录、首页（推荐社团 / 活动 / 公告 + 最新内容）、社团列表（分类筛选）、社团详情（简介 + 成员 + 加入）、活动 / 新闻 / 公告列表（搜索 + 分页 + 图文详情 + 浏览量）、活动报名与取消、个人中心（改资料 / 改密码 / 我的社团 / 我报名的活动）。
-- **管理后台**：看板（数量 + 近 7 天报名趋势 + 内容类型分布）、用户 / 分类 / 社团 / 成员 / 内容管理，内容支持草稿与发布、批量删除与导出 CSV，富文本编辑 + 图片上传与孤儿图片清理。
+- **用户门户**：注册与登录、首页（推荐社团 / 活动 / 公告 + 最新内容）、社团列表（分类筛选 + 申请成立社团）、社团详情（简介 + 成员 + 加入）、活动 / 新闻 / 公告列表（搜索 + 分页 + 图文详情 + 浏览量 + 名额）、活动报名与取消、顶部通知铃铛与「我的通知」、
+  个人中心（头像、资料、密码、密保找回、我的社团、我报名的活动、**社团管理**）。
+- **社团管理员（社长 / 社团管理员）**：在门户「个人中心 → 社团管理」里管理自己社团的成员（设为管理员 / 移出）、发布与编辑社团活动、查看活动报名名单并核销签到。
+- **管理后台**：看板（数量 + 近 7 天报名趋势 + 内容类型分布）、用户 / 分类 / 社团 / 成员 / 内容管理、社团成立申请审批、操作日志，
+  内容支持草稿与发布、名额设置、批量删除与导出 CSV、报名名单，富文本编辑 + 图片上传与孤儿图片清理。
 
 ## 快速开始
 
@@ -43,7 +51,7 @@ Jenkinsfile               构建流水线
 mysql -u root -p < db/schema.sql
 ```
 
-建出 `club` 库和 6 张表（`sys_user`、`team`、`team_category`、`news`、`member`、`activity_signup`），并写入 5 条默认分类。
+建出 `club` 库和 9 张表（`sys_user`、`team`、`team_category`、`news`、`member`、`activity_signup`、`team_apply`、`notification`、`audit_log`），并写入 5 条默认分类。
 管理员账号需要自己插一条（见 `db/schema.sql` 末尾的注释），`is_admin = 1` 才能登录后台。
 
 想直接看到有内容的页面，可以再导一份演示数据（可重复执行）：
@@ -89,6 +97,7 @@ cp Club-Web/.env.example Club-Web/.env     # 然后填写 JWT_SECRET 与 DB_PASS
 | `DB_USERNAME` / `DB_PASSWORD` / `DB_URL` | 数据库连接 | root / 空 / 本地 club 库 |
 | `CORS_ORIGINS` | 允许跨域的前端地址，逗号分隔 | `http://localhost:8080,http://localhost:8081` |
 | `UPLOAD_PATH` | 图片上传目录 | `D:/images/` |
+| `AUDIT_RETENTION_DAYS` | 操作日志保留天数，0 表示不清理 | 90 |
 
 ### 3. 前端
 
@@ -138,14 +147,22 @@ node tools/mock-api/server.mjs     # http://localhost:8888，两个前端的 .en
 | 成员 | `/api/member` 增改、`DELETE /api/member/{id}`（逻辑退团）、`GET /api/member/list` |
 | 报名 | `POST /api/signup`、`DELETE /api/signup/{newsId}`、`GET /api/signup/my`、`GET /api/signup/count`、`GET /api/signup/list`（管理员） |
 | 统计 | `GET /api/stats/overview`（仅管理员） |
-| 上传 | `POST /api/upload/uploadImage` → 返回 `/images/xxx.jpg`；`DELETE /api/upload?filename=`；`POST /api/upload/cleanup`（清理孤儿图片） |
+| 上传 | `POST /api/upload/uploadImage` → 返回 `/images/xxx.jpg`；`POST /api/upload/avatar`（登录用户，2MB）；`DELETE /api/upload?filename=`；`POST /api/upload/cleanup`（清理孤儿图片） |
+| 社团申请 | `POST /api/team-apply`、`GET /api/team-apply/my`、`GET /api/team-apply/list`（管理员）、`PUT /api/team-apply/{id}/approve`、`PUT /api/team-apply/{id}/reject` |
+| 社团管理 | `GET /api/club/my`、`/{teamId}/members`、`PUT/DELETE /{teamId}/member/{id}`、`/{teamId}/news` 增改删、`/{teamId}/news/{newsId}/signups`、`.../signup/{id}/checkin` |
+| 通知 | `GET /api/notification/my`、`GET /api/notification/unread`、`PUT /api/notification/{id}/read`、`PUT /api/notification/read-all` |
+| 账号安全 | `PUT /api/user/avatar`、`GET/PUT /api/user/security-question`、`POST /api/user/forgot/query`、`POST /api/user/forgot/reset` |
+| 审计 | `GET /api/audit/list`（仅管理员） |
 
 ## 数据约定
 
 - `news.type`：`0` 活动 / `1` 新闻 / `2` 公告；`has_top = '1'` 表示首页推荐。
 - `member.role`：`0` 普通成员 / `1` 管理员 / `2` 社长；`status = 0` 表示已退出（逻辑删除，记录保留）。
 - `news.status`：`0` 草稿（仅管理员可见）/ `1` 已发布；`news.view_count` 由详情接口自增。
-- `activity_signup`：同一用户对同一活动只有一行（`news_id + user_id` 唯一），取消报名把 `status` 置 0。
+- `activity_signup`：同一用户对同一活动只有一行（`news_id + user_id` 唯一），取消报名把 `status` 置 0；`checked_in` 是签到标记。
+- `news.team_id`：社团自建活动所属社团，平台内容为空；`news.max_participants`：活动名额，0 表示不限。
+- `team_apply.status`：0 待审 / 1 通过 / 2 驳回；通过时会建社团并把申请人写成 `member.role = 2`。
+- `notification`：报名、审核结果、新成员等事件的通知；`audit_log` 只记写操作，不含请求体。
 - `image` 字段存相对路径（`/images/xxx.jpg`），前端用 `src/utils/image.ts` 的 `imgUrl()` 拼完整地址。
 - 上传接口只信任文件头（`ImageTypeUtils`）：扩展名由 magic bytes 决定（jpg/png/gif/webp），客户端文件名和 content-type 都不参与，单张上限 5MB。
 - `image` 字段历史上被写脏过（`undefined/images/xxx.png`、`http://localhost:8888/images/xxx.png`），前端 `imgUrl()` 会兜底；要彻底清干净见 `db/cleanup-image-paths.sql`（附带备份和回滚 SQL，不自动执行）。
@@ -160,12 +177,19 @@ node tools/mock-api/server.mjs     # http://localhost:8888，两个前端的 .en
 - JWT 使用 `jti` 支持登出：`POST /api/user/logout` 会把当前 token 加入内存黑名单（单实例有效，多实例需换 Redis）
 - 同一账号连续登录失败 5 次会锁定 15 分钟（`security.login.max-attempts` / `lock-minutes` 可调）
 - CORS 只放行 `CORS_ORIGINS` 里的地址，且不使用 Cookie（鉴权走请求头 `token`）
+- 接口限流按「IP + 分组」每分钟计数：登录/注册/找回 20 次、写操作 60 次、读 300 次，超出返回业务码 429；可用 `security.rate-limit.enabled=false` 关闭
+- 操作审计：所有写请求记录方法、路径、账号、IP、状态码与耗时（不记请求体），每天 03:30 清理超过 `AUDIT_RETENTION_DAYS` 的记录
+- 忘记密码走密保问题（答案 BCrypt 存储，连续答错同样触发锁定），查不到账号与未设密保返回同一句提示，避免账号枚举
 
 ## 已知问题 / 待办
 
-- 管理接口的写操作（非 GET）由 `AdminInterceptor` 统一校验 `is_admin`；只读接口保持开放，但 `GET /api/user/list` 与 `/api/stats/**` 例外，仅管理员可用。
+- 管理接口的写操作（非 GET）由 `AdminInterceptor` 统一校验 `is_admin`；只读接口保持开放，但 `GET /api/user/list`、`/api/stats/**`、`/api/audit/list` 例外，仅管理员可用。
 - 接口文档：启动后访问 `/swagger-ui/index.html`（JSON 见 `/v3/api-docs`）。
 - 富文本编辑器（`@wangeditor`）810KB 的 chunk 已改成弹框打开时才加载，但单次打开仍要下载 810KB，后续可考虑换更轻的编辑器或裁剪菜单。
+- 限流与 token 黑名单都是单实例内存实现，多实例部署需要换成 Redis。
+- 没有邮件 / 短信通道，找回密码只支持密保问题；忘记密保仍需管理员在后台改密码。
+- 活动签到目前由社团管理员手动核销，没有扫码 / 定位签到。
+- 前端没有单元测试和 E2E，验证依赖脚本化浏览器测试（未入库）。
 
 ## 构建
 
