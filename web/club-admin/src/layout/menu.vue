@@ -5,6 +5,7 @@ import {
   Avatar,
   DataAnalysis,
   Histogram,
+  DocumentChecked,
   HomeFilled,
   Operation,
   User,
@@ -43,6 +44,10 @@ const IsCollapse = computed(() => {
     <el-menu-item index="/club">
       <el-icon><Histogram /></el-icon>
       <template #title>社团管理</template>
+    </el-menu-item>
+    <el-menu-item index="/teamapply">
+      <el-icon><DocumentChecked /></el-icon>
+      <template #title>社团申请</template>
     </el-menu-item>
     <el-menu-item index="/member">
       <el-icon><Avatar /></el-icon>

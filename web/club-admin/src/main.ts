@@ -8,7 +8,7 @@ import piniaPersistedstate from 'pinia-plugin-persistedstate';
 // Element Plus 的组件和样式由 unplugin 按需注入，这里不再整体注册，
 // 只需要把模板里真正用到的图标注册成全局组件（<User /> 和 icon="search" 这类字符串都靠它解析）。
 import {
-  ArrowDown, Avatar, Close, DataAnalysis, Delete, Histogram,
+  ArrowDown, Avatar, Close, DataAnalysis, Delete, DocumentChecked, Histogram,
   HomeFilled, Lock, Operation, Plus, Search, User,
 } from '@element-plus/icons-vue'
 
@@ -27,7 +27,7 @@ app.use(router)
 
 // 全局注册用到的小图标
 for (const [name, component] of Object.entries({
-  ArrowDown, Avatar, Close, DataAnalysis, Delete, Histogram,
+  ArrowDown, Avatar, Close, DataAnalysis, Delete, DocumentChecked, Histogram,
   HomeFilled, Lock, Operation, Plus, Search, User,
 })) {
   app.component(name, component)
