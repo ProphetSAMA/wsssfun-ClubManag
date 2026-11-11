@@ -127,6 +127,23 @@ CREATE TABLE IF NOT EXISTS `team_apply` (
   COLLATE = utf8mb4_0900_ai_ci
   COMMENT = '社团成立申请';
 
+-- 站内通知：报名、审核结果、新成员等事件
+CREATE TABLE IF NOT EXISTS `notification` (
+  `id`          bigint      NOT NULL AUTO_INCREMENT,
+  `user_id`     bigint      NOT NULL COMMENT '接收人',
+  `type`        varchar(20) NOT NULL DEFAULT 'system' COMMENT 'signup/apply/member/system',
+  `title`       varchar(100) NOT NULL,
+  `content`     varchar(500) DEFAULT NULL,
+  `link`        varchar(200) DEFAULT NULL COMMENT '前端路由',
+  `is_read`     tinyint     NOT NULL DEFAULT 0,
+  `create_time` datetime    DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_notification_user` (`user_id`, `is_read`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci
+  COMMENT = '站内通知';
+
 -- 活动报名：同一用户对同一活动只留一行，取消报名把 status 置 0
 CREATE TABLE IF NOT EXISTS `activity_signup` (
   `id`          bigint  NOT NULL AUTO_INCREMENT,
