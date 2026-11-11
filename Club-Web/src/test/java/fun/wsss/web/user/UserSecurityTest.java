@@ -70,7 +70,7 @@ class UserSecurityTest {
 
     @Test
     void avatarSavesRelativePath() throws Exception {
-        given(userService.updateById(any(User.class))).willReturn(true);
+        given(userService.update(any())).willReturn(true);
 
         mockMvc.perform(put("/api/user/avatar")
                         .header("token", token())

@@ -16,6 +16,8 @@ public class StatusCode {
     public static final int UNAUTHORIZED = 401;
     // 未授权
     public static final int FORBIDDEN = 403;
+    // 请求过于频繁
+    public static final int TOO_MANY_REQUESTS = 429;
     // 未找到
     public static final int NOT_FOUND = 404;
     // 请求超时

@@ -16,6 +16,11 @@ jwt:
   secret: club-manag-test-secret-key-at-least-32bytes-long
   expiration: 3600000
 
+# 用例会连着打很多请求，默认关掉限流；专门测限流的用例自己用 properties 打开
+security:
+  rate-limit:
+    enabled: false
+
 web:
   uploadpath: ./target/test-uploads/
   load-path: file:./target/test-uploads/

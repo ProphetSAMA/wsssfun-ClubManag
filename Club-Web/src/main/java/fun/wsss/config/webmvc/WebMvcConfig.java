@@ -1,7 +1,9 @@
 package fun.wsss.config.webmvc;
 
 import fun.wsss.config.interceptor.AdminInterceptor;
+import fun.wsss.config.interceptor.AuditInterceptor;
 import fun.wsss.config.interceptor.AuthInterceptor;
+import fun.wsss.config.interceptor.RateLimitInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -26,10 +28,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
     private final AdminInterceptor adminInterceptor;
+    private final RateLimitInterceptor rateLimitInterceptor;
+    private final AuditInterceptor auditInterceptor;
 
-    public WebMvcConfig(AuthInterceptor authInterceptor, AdminInterceptor adminInterceptor) {
+    public WebMvcConfig(AuthInterceptor authInterceptor,
+                        AdminInterceptor adminInterceptor,
+                        RateLimitInterceptor rateLimitInterceptor,
+                        AuditInterceptor auditInterceptor) {
         this.authInterceptor = authInterceptor;
         this.adminInterceptor = adminInterceptor;
+        this.rateLimitInterceptor = rateLimitInterceptor;
+        this.auditInterceptor = auditInterceptor;
     }
 
     @Override
@@ -49,6 +58,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 限流最外层：先挡住刷接口的请求，后面的解析和查库都不用做了
+        registry.addInterceptor(rateLimitInterceptor)
+                .addPathPatterns("/api/**")
+                .order(0);
+
+        // 审计放在最外层：连被限流/鉴权拒绝的写请求也记下来，事后能查到"谁试过什么"
+        registry.addInterceptor(auditInterceptor)
+                .addPathPatterns("/api/**")
+                .order(-1);
+
         // 公开接口由 AuthInterceptor 内部判断（这样公开接口也能解析登录身份）
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/api/**");

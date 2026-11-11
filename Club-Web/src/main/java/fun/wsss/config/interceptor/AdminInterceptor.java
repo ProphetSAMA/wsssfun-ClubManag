@@ -33,7 +33,8 @@ public class AdminInterceptor implements HandlerInterceptor {
      */
     private static final Set<String> ADMIN_ONLY_READ_PATHS = Set.of(
             "/api/user/list",
-            "/api/stats/overview"
+            "/api/stats/overview",
+            "/api/audit/list"
     );
 
     /**
