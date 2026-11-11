@@ -72,8 +72,10 @@ public class UserController {
             return ResultUtils.error("登录失败次数过多，请 " + minutes + " 分钟后再试");
         }
 
+        // 用 LIMIT 1 取一条：库里如果存在历史重复账号（没有唯一索引时可能出现），
+        // getOne 会抛 TooManyResultsException，导致整个登录接口 500
         QueryWrapper<User> query = new QueryWrapper<>();
-        query.lambda().eq(User::getUsername, loginDTO.getUsername());
+        query.lambda().eq(User::getUsername, loginDTO.getUsername()).last("LIMIT 1");
         User user = userService.getOne(query);
 
         if (user == null) {
@@ -301,7 +303,7 @@ public class UserController {
             return ResultUtils.error("请输入账号");
         }
         QueryWrapper<User> query = new QueryWrapper<>();
-        query.lambda().eq(User::getUsername, username.trim());
+        query.lambda().eq(User::getUsername, username.trim()).last("LIMIT 1");
         User user = userService.getOne(query);
         // 不区分"账号不存在"和"没设置密保"，减少账号枚举
         if (user == null || user.getSecurityQuestion() == null) {
@@ -336,7 +338,7 @@ public class UserController {
             return ResultUtils.error("尝试次数过多，请 " + minutes + " 分钟后再试");
         }
         QueryWrapper<User> query = new QueryWrapper<>();
-        query.lambda().eq(User::getUsername, username.trim());
+        query.lambda().eq(User::getUsername, username.trim()).last("LIMIT 1");
         User user = userService.getOne(query);
         if (user == null || user.getSecurityAnswerHash() == null) {
             return ResultUtils.error("密保信息不匹配");
