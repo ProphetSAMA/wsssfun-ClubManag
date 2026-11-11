@@ -12,11 +12,14 @@ import fun.wsss.web.member.mapper.MemberMapper;
 import fun.wsss.web.member.service.MemberService;
 import fun.wsss.web.news.entity.News;
 import fun.wsss.web.news.service.NewsService;
+import fun.wsss.web.signup.entity.Signup;
 import fun.wsss.web.signup.entity.SignupVo;
 import fun.wsss.web.signup.mapper.SignupMapper;
+import fun.wsss.web.signup.service.SignupService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,17 +41,20 @@ public class ClubController {
     private final MemberMapper memberMapper;
     private final NewsService newsService;
     private final SignupMapper signupMapper;
+    private final SignupService signupService;
 
     public ClubController(ClubAuthService clubAuthService,
                           MemberService memberService,
                           MemberMapper memberMapper,
                           NewsService newsService,
-                          SignupMapper signupMapper) {
+                          SignupMapper signupMapper,
+                          SignupService signupService) {
         this.clubAuthService = clubAuthService;
         this.memberService = memberService;
         this.memberMapper = memberMapper;
         this.newsService = newsService;
         this.signupMapper = signupMapper;
+        this.signupService = signupService;
     }
 
     private static ResultVo forbidden(String msg) {
@@ -235,6 +241,9 @@ public class ClubController {
         if (news.getStatus() == null) {
             news.setStatus(1);
         }
+        if (news.getMaxParticipants() == null || news.getMaxParticipants() < 0) {
+            news.setMaxParticipants(0);
+        }
         return newsService.save(news)
                 ? ResultUtils.success("发布成功")
                 : ResultUtils.error("发布失败");
@@ -273,6 +282,9 @@ public class ClubController {
         }
         if (news.getHasTop() != null) {
             exist.setHasTop(news.getHasTop());
+        }
+        if (news.getMaxParticipants() != null && news.getMaxParticipants() >= 0) {
+            exist.setMaxParticipants(news.getMaxParticipants());
         }
         return newsService.updateById(exist)
                 ? ResultUtils.success("保存成功")
@@ -331,6 +343,52 @@ public class ClubController {
             return ResultUtils.error("活动不存在");
         }
         List<SignupVo> list = signupMapper.selectSignupsByNews(new Page<>(1, 500), newsId).getRecords();
-        return ResultUtils.success("查询成功", list);
+        Map<String, Object> data = new HashMap<>();
+        data.put("list", list);
+        data.put("signed", list.size());
+        data.put("maxParticipants", news.getMaxParticipants() == null ? 0 : news.getMaxParticipants());
+        return ResultUtils.success("查询成功", data);
+    }
+
+    /**
+     * 核销签到
+     *
+     * <p>社团管理员在报名名单里给到场的人打勾；重复点击就是改回未签到。
+     *
+     * @param teamId   社团ID
+     * @param newsId   活动ID
+     * @param signupId 报名记录ID
+     * @param body     { checkedIn: true/false }
+     * @param userId   当前用户
+     * @return 结果
+     */
+    @PutMapping("/{teamId}/news/{newsId}/signup/{signupId}/checkin")
+    public ResultVo checkin(@PathVariable("teamId") Long teamId,
+                            @PathVariable("newsId") Long newsId,
+                            @PathVariable("signupId") Long signupId,
+                            @RequestBody(required = false) Map<String, Boolean> body,
+                            @RequestAttribute(value = "userId", required = false) Long userId) {
+        ResultVo unauthorized = checkLogin(userId);
+        if (unauthorized != null) {
+            return unauthorized;
+        }
+        if (!clubAuthService.isManager(userId, teamId)) {
+            return forbidden("没有该社团的管理权限");
+        }
+        News news = newsService.getById(newsId);
+        if (news == null || !Objects.equals(news.getTeamId(), teamId)) {
+            return ResultUtils.error("活动不存在");
+        }
+        Signup signup = signupService.getById(signupId);
+        if (signup == null || !Objects.equals(signup.getNewsId(), newsId)
+                || signup.getStatus() == null || signup.getStatus() != 1) {
+            return ResultUtils.error("报名记录不存在");
+        }
+        boolean checked = body != null && Boolean.TRUE.equals(body.get("checkedIn"));
+        signup.setCheckedIn(checked ? 1 : 0);
+        signup.setCheckinTime(checked ? new Date() : null);
+        return signupService.updateById(signup)
+                ? ResultUtils.success(checked ? "已签到" : "已取消签到")
+                : ResultUtils.error("操作失败");
     }
 }

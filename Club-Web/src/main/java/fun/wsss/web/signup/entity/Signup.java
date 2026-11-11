@@ -31,6 +31,12 @@ public class Signup {
     /** 1-已报名 0-已取消 */
     private Integer status;
 
+    /** 0-未签到 1-已签到 */
+    private Integer checkedIn;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date checkinTime;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 }

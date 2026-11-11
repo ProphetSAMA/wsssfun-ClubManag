@@ -32,4 +32,7 @@ public class News {
     private Integer status;
     /** 浏览量 */
     private Integer viewCount;
+
+    /** 活动名额，0 表示不限 */
+    private Integer maxParticipants;
 }

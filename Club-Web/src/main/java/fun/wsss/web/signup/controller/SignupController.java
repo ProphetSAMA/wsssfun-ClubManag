@@ -38,6 +38,13 @@ public class SignupController {
         this.newsService = newsService;
     }
 
+    /** 已报名人数（status = 1） */
+    private long countSigned(Long newsId) {
+        QueryWrapper<Signup> query = new QueryWrapper<>();
+        query.lambda().eq(Signup::getNewsId, newsId).eq(Signup::getStatus, 1);
+        return signupService.count(query);
+    }
+
     private static boolean isAdmin(Integer isAdmin) {
         return isAdmin != null && isAdmin == 1;
     }
@@ -70,6 +77,14 @@ public class SignupController {
         QueryWrapper<Signup> query = new QueryWrapper<>();
         query.lambda().eq(Signup::getNewsId, newsId).eq(Signup::getUserId, userId);
         Signup exist = signupService.getOne(query);
+
+        // 名额上限：0 表示不限
+        if (news.getMaxParticipants() != null && news.getMaxParticipants() > 0) {
+            long signed = countSigned(newsId);
+            if (signed >= news.getMaxParticipants()) {
+                return ResultUtils.error("名额已满（" + signed + "/" + news.getMaxParticipants() + "）");
+            }
+        }
         if (exist != null && exist.getStatus() != null && exist.getStatus() == 1) {
             return ResultUtils.error("已经报过名了");
         }

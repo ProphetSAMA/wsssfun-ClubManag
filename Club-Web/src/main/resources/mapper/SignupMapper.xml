@@ -12,7 +12,9 @@
             n.title,
             n.image,
             DATE_FORMAT(n.create_time, '%Y-%m-%d')     AS activityTime,
-            DATE_FORMAT(s.create_time, '%Y-%m-%d %H:%i') AS signupTime
+            DATE_FORMAT(s.create_time, '%Y-%m-%d %H:%i') AS signupTime,
+            s.checked_in AS checkedIn,
+            DATE_FORMAT(s.checkin_time, '%Y-%m-%d %H:%i') AS checkinTime
         FROM activity_signup s
         INNER JOIN news n ON s.news_id = n.id
         WHERE s.user_id = #{userId}
@@ -28,6 +30,8 @@
             s.user_id   AS userId,
             s.status,
             DATE_FORMAT(s.create_time, '%Y-%m-%d %H:%i') AS signupTime,
+            s.checked_in AS checkedIn,
+            DATE_FORMAT(s.checkin_time, '%Y-%m-%d %H:%i') AS checkinTime,
             u.nick_name AS userName,
             u.phone
         FROM activity_signup s

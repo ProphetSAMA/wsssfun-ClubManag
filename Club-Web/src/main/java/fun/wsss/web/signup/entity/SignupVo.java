@@ -26,4 +26,9 @@ public class SignupVo {
     /** 报名用户（管理员查看名单时用） */
     private String userName;
     private String phone;
+
+    /** 0-未签到 1-已签到 */
+    private Integer checkedIn;
+    /** 签到时间 */
+    private String checkinTime;
 }
