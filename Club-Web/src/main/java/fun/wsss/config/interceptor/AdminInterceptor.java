@@ -49,7 +49,8 @@ public class AdminInterceptor implements HandlerInterceptor {
             "/api/user/security-question",
             "/api/user/forgot/query",
             "/api/user/forgot/reset",
-            "/api/upload/avatar"
+            "/api/upload/avatar",
+            "/api/upload/club"
     );
 
     private final ObjectMapper objectMapper;

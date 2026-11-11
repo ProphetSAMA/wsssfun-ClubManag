@@ -12,6 +12,8 @@ import fun.wsss.web.member.mapper.MemberMapper;
 import fun.wsss.web.member.service.MemberService;
 import fun.wsss.web.news.entity.News;
 import fun.wsss.web.news.service.NewsService;
+import fun.wsss.web.team.entity.Team;
+import fun.wsss.web.team.service.TeamService;
 import fun.wsss.web.signup.entity.Signup;
 import fun.wsss.web.signup.entity.SignupVo;
 import fun.wsss.web.signup.mapper.SignupMapper;
@@ -42,19 +44,22 @@ public class ClubController {
     private final NewsService newsService;
     private final SignupMapper signupMapper;
     private final SignupService signupService;
+    private final TeamService teamService;
 
     public ClubController(ClubAuthService clubAuthService,
                           MemberService memberService,
                           MemberMapper memberMapper,
                           NewsService newsService,
                           SignupMapper signupMapper,
-                          SignupService signupService) {
+                          SignupService signupService,
+                          TeamService teamService) {
         this.clubAuthService = clubAuthService;
         this.memberService = memberService;
         this.memberMapper = memberMapper;
         this.newsService = newsService;
         this.signupMapper = signupMapper;
         this.signupService = signupService;
+        this.teamService = teamService;
     }
 
     private static ResultVo forbidden(String msg) {
@@ -78,6 +83,47 @@ public class ClubController {
             return unauthorized;
         }
         return ResultUtils.success("查询成功", clubAuthService.managedTeams(userId));
+    }
+
+    /**
+     * 修改社团资料（简介、封面）
+     *
+     * <p>名称和分类属于敏感信息，仍然只允许平台管理员改。
+     *
+     * @param teamId 社团ID
+     * @param body   { details, image }
+     * @param userId 当前用户
+     * @return 结果
+     */
+    @PutMapping("/{teamId}")
+    public ResultVo updateTeam(@PathVariable("teamId") Long teamId,
+                               @RequestBody Map<String, String> body,
+                               @RequestAttribute(value = "userId", required = false) Long userId) {
+        ResultVo unauthorized = checkLogin(userId);
+        if (unauthorized != null) {
+            return unauthorized;
+        }
+        if (!clubAuthService.isManager(userId, teamId)) {
+            return forbidden("没有该社团的管理权限");
+        }
+        Team team = teamService.getById(teamId);
+        if (team == null) {
+            return ResultUtils.error("社团不存在");
+        }
+        if (body.containsKey("details")) {
+            team.setDetails(body.get("details"));
+        }
+        if (body.containsKey("image")) {
+            String image = body.get("image");
+            if (image != null && !image.isBlank()
+                    && (!image.startsWith("/images/") || image.contains(".."))) {
+                return ResultUtils.error("封面路径不合法");
+            }
+            team.setImage(image);
+        }
+        return teamService.updateById(team)
+                ? ResultUtils.success("社团资料已保存")
+                : ResultUtils.error("保存失败");
     }
 
     /**

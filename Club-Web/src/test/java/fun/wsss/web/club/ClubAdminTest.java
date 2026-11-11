@@ -9,6 +9,8 @@ import fun.wsss.web.member.service.MemberService;
 import fun.wsss.web.news.entity.News;
 import fun.wsss.web.news.service.NewsService;
 import fun.wsss.web.signup.mapper.SignupMapper;
+import fun.wsss.web.team.entity.Team;
+import fun.wsss.web.team.service.TeamService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,9 @@ class ClubAdminTest {
 
     @MockBean
     private SignupMapper signupMapper;
+
+    @MockBean
+    private TeamService teamService;
 
     private String token(long userId) {
         return jwtUtils.generateToken(userId, "u" + userId, 0);
@@ -206,6 +211,41 @@ class ClubAdminTest {
 
         mockMvc.perform(get("/api/club/" + TEAM_ID + "/news/30/signups").header("token", token(MANAGER)))
                 .andExpect(jsonPath("$.code").value(200));
+    }
+
+    @Test
+    void presidentCanUpdateClubProfile() throws Exception {
+        givenRole(PRESIDENT, 2);
+        Team team = new Team();
+        team.setId(TEAM_ID);
+        team.setName("吉他社");
+        given(teamService.getById(TEAM_ID)).willReturn(team);
+        given(teamService.updateById(any(Team.class))).willReturn(true);
+
+        mockMvc.perform(put("/api/club/" + TEAM_ID)
+                        .header("token", token(PRESIDENT))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"details\":\"新的简介\",\"image\":\"/images/a.png\"}"))
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.msg").value("社团资料已保存"));
+
+        ArgumentCaptor<Team> captor = ArgumentCaptor.forClass(Team.class);
+        verify(teamService).updateById(captor.capture());
+        assertThat(captor.getValue().getDetails()).isEqualTo("新的简介");
+        assertThat(captor.getValue().getImage()).isEqualTo("/images/a.png");
+    }
+
+    @Test
+    void normalMemberCanNotUpdateClubProfile() throws Exception {
+        givenRole(NORMAL, 0);
+
+        mockMvc.perform(put("/api/club/" + TEAM_ID)
+                        .header("token", token(NORMAL))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"details\":\"x\"}"))
+                .andExpect(jsonPath("$.code").value(403));
+
+        verify(teamService, never()).updateById(any(Team.class));
     }
 
     @Test

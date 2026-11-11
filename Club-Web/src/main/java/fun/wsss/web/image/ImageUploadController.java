@@ -70,6 +70,19 @@ public class ImageUploadController {
     }
 
     /**
+     * 上传社团封面
+     *
+     * <p>社长需要能换自己社团的封面，所以和头像一样对登录用户开放，上限 3MB。
+     *
+     * @param file 图片文件
+     * @return 图片访问路径
+     */
+    @PostMapping("/club")
+    public ResultVo uploadClubCover(@RequestParam("file") MultipartFile file) {
+        return save(file, 3 * 1024 * 1024L, "封面不能超过 3MB");
+    }
+
+    /**
      * 保存上传的图片
      *
      * @param file     文件
