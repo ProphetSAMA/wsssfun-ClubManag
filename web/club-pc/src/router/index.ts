@@ -76,6 +76,12 @@ const routes: Array<RouteRecordRaw> = [
             meta: { title: "我的活动", requiresAuth: true }
           },
           {
+            path: "/mine/message",
+            name: "message",
+            component: () => import("@/views/mine/message.vue"),
+            meta: { title: "我的通知", requiresAuth: true }
+          },
+          {
             path: "/mine/manage",
             name: "manage",
             component: () => import("@/views/mine/manage.vue"),

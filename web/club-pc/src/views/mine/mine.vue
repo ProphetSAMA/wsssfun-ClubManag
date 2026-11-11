@@ -36,6 +36,7 @@ const menu = ref([
   { name: "个人信息", id: "/mine/mycenter" },
   { name: "我的社团", id: "/mine/myclub" },
   { name: "我的活动", id: "/mine/myactivity" },
+  { name: "我的通知", id: "/mine/message" },
   { name: "社团管理", id: "/mine/manage" },
 ]);
 </script>

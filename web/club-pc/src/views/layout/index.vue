@@ -4,6 +4,7 @@
       <div class="header-inner">
         <logo />
         <tabs />
+        <bell v-if="userStore.token" />
         <loginout />
       </div>
     </el-header>
@@ -25,6 +26,10 @@
 import logo from '@/views/layout/logo.vue'
 import tabs from '@/views/layout/tabs.vue'
 import loginout from '@/views/layout/loginout.vue'
+import bell from '@/views/layout/bell.vue'
+import { useUserStore } from '@/store/user'
+
+const userStore = useUserStore()
 </script>
 
 <style scoped lang="scss">
