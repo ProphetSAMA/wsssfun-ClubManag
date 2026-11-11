@@ -53,11 +53,36 @@ public class ImageUploadController {
      */
     @PostMapping("/uploadImage")
     public ResultVo uploadImage(@RequestParam("file") MultipartFile file) {
+        return save(file, MAX_SIZE, "图片大小不能超过 5MB");
+    }
+
+    /**
+     * 上传头像
+     *
+     * <p>普通用户也能调用（不需要管理员），所以单独开一个入口并把上限收紧到 2MB。
+     *
+     * @param file 头像文件
+     * @return 图片访问路径
+     */
+    @PostMapping("/avatar")
+    public ResultVo uploadAvatar(@RequestParam("file") MultipartFile file) {
+        return save(file, 2 * 1024 * 1024L, "头像不能超过 2MB");
+    }
+
+    /**
+     * 保存上传的图片
+     *
+     * @param file     文件
+     * @param maxSize  大小上限
+     * @param sizeTip  超限提示
+     * @return 结果
+     */
+    private ResultVo save(MultipartFile file, long maxSize, String sizeTip) {
         if (file == null || file.isEmpty()) {
             return ResultUtils.error("请选择要上传的图片");
         }
-        if (file.getSize() > MAX_SIZE) {
-            return ResultUtils.error("图片大小不能超过 5MB");
+        if (file.getSize() > maxSize) {
+            return ResultUtils.error(sizeTip);
         }
 
         String extension = ImageTypeUtils.extensionOf(readHeader(file));

@@ -34,6 +34,8 @@ public class AuthInterceptor implements HandlerInterceptor {
     private static final List<Rule> PUBLIC_RULES = List.of(
             new Rule("POST", "/api/user/login"),
             new Rule("POST", "/api/user/register"),
+            new Rule("POST", "/api/user/forgot/query"),
+            new Rule("POST", "/api/user/forgot/reset"),
             new Rule("GET", "/api/news/list"),
             new Rule("GET", "/api/news/detail/**"),
             new Rule("GET", "/api/news/getTopActivity"),

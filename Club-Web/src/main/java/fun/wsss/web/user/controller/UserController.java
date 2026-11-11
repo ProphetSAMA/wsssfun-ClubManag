@@ -1,6 +1,7 @@
 package fun.wsss.web.user.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -205,6 +206,151 @@ public class UserController {
         return ResultUtils.success("已退出登录");
     }
 
+
+    /**
+     * 设置头像
+     *
+     * <p>前端先调 /api/upload/avatar 拿到路径，再调这里保存；只接受 /images/ 下的相对路径。
+     *
+     * @param body   { avatar: "/images/xxx.png" }
+     * @param userId 当前用户
+     * @return 结果
+     */
+    @PutMapping("/avatar")
+    public ResultVo updateAvatar(@RequestBody Map<String, String> body,
+                                 @RequestAttribute("userId") Long userId) {
+        String avatar = body == null ? null : body.get("avatar");
+        if (avatar != null && !avatar.isBlank()) {
+            avatar = avatar.trim();
+            if (!avatar.startsWith("/images/") || avatar.contains("..")) {
+                return ResultUtils.error("头像路径不合法");
+            }
+        }
+        // 用 UpdateWrapper 显式 set：全局 update-strategy 是 not_empty，
+        // 走实体更新时空字符串会被跳过，导致"恢复默认头像"拼出没有 SET 的 SQL
+        boolean clear = avatar == null || avatar.isBlank();
+        UpdateWrapper<User> update = new UpdateWrapper<>();
+        update.lambda().eq(User::getUserId, userId).set(User::getAvatar, clear ? null : avatar);
+        return userService.update(update)
+                ? ResultUtils.success(clear ? "已恢复默认头像" : "头像已更新")
+                : ResultUtils.error("保存失败");
+    }
+
+    /**
+     * 查看自己的密保问题
+     *
+     * @param userId 当前用户
+     * @return 问题（未设置时为空）
+     */
+    @GetMapping("/security-question")
+    public ResultVo getSecurityQuestion(@RequestAttribute("userId") Long userId) {
+        User user = userService.getById(userId);
+        Map<String, Object> data = new HashMap<>();
+        data.put("question", user == null ? null : user.getSecurityQuestion());
+        return ResultUtils.success("查询成功", data);
+    }
+
+    /**
+     * 设置 / 修改密保问题
+     *
+     * <p>需要校验当前密码，避免别人拿到登录态后顺手把找回方式改掉。
+     *
+     * @param parm   { password, question, answer }
+     * @param userId 当前用户
+     * @return 结果
+     */
+    @PutMapping("/security-question")
+    public ResultVo setSecurityQuestion(@RequestBody Map<String, String> parm,
+                                        @RequestAttribute("userId") Long userId) {
+        String password = parm.get("password");
+        String question = parm.get("question");
+        String answer = parm.get("answer");
+        if (password == null || password.isEmpty()) {
+            return ResultUtils.error("请输入当前密码");
+        }
+        if (question == null || question.isBlank() || question.length() > 100) {
+            return ResultUtils.error("请填写密保问题（100 字以内）");
+        }
+        if (answer == null || answer.isBlank() || answer.length() > 50) {
+            return ResultUtils.error("请填写密保答案（50 字以内）");
+        }
+        User user = userService.getById(userId);
+        if (user == null) {
+            return ResultUtils.error("用户不存在");
+        }
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            return ResultUtils.error("当前密码不正确");
+        }
+        user.setSecurityQuestion(question.trim());
+        user.setSecurityAnswerHash(passwordEncoder.encode(answer.trim()));
+        return userService.updateById(user)
+                ? ResultUtils.success("密保问题已保存")
+                : ResultUtils.error("保存失败");
+    }
+
+    /**
+     * 忘记密码：查询密保问题（未登录可调用）
+     *
+     * @param body { username }
+     * @return 密保问题
+     */
+    @PostMapping("/forgot/query")
+    public ResultVo forgotQuery(@RequestBody Map<String, String> body) {
+        String username = body == null ? null : body.get("username");
+        if (username == null || username.isBlank()) {
+            return ResultUtils.error("请输入账号");
+        }
+        QueryWrapper<User> query = new QueryWrapper<>();
+        query.lambda().eq(User::getUsername, username.trim());
+        User user = userService.getOne(query);
+        // 不区分"账号不存在"和"没设置密保"，减少账号枚举
+        if (user == null || user.getSecurityQuestion() == null) {
+            return ResultUtils.error("该账号没有设置密保问题，请联系管理员重置密码");
+        }
+        Map<String, String> data = new HashMap<>();
+        data.put("question", user.getSecurityQuestion());
+        return ResultUtils.success("查询成功", data);
+    }
+
+    /**
+     * 忘记密码：回答密保问题并重置密码（未登录可调用）
+     *
+     * @param body { username, answer, newPassword }
+     * @return 结果
+     */
+    @PostMapping("/forgot/reset")
+    public ResultVo forgotReset(@RequestBody Map<String, String> body) {
+        String username = body == null ? null : body.get("username");
+        String answer = body == null ? null : body.get("answer");
+        String newPassword = body == null ? null : body.get("newPassword");
+        if (username == null || username.isBlank() || answer == null || newPassword == null) {
+            return ResultUtils.error("参数不完整");
+        }
+        if (newPassword.length() < 8) {
+            return ResultUtils.error("密码至少 8 位");
+        }
+        String key = "forgot:" + username.trim();
+        long locked = loginAttemptService.lockedSeconds(key);
+        if (locked > 0) {
+            long minutes = Math.max(1, (locked + 59) / 60);
+            return ResultUtils.error("尝试次数过多，请 " + minutes + " 分钟后再试");
+        }
+        QueryWrapper<User> query = new QueryWrapper<>();
+        query.lambda().eq(User::getUsername, username.trim());
+        User user = userService.getOne(query);
+        if (user == null || user.getSecurityAnswerHash() == null) {
+            return ResultUtils.error("密保信息不匹配");
+        }
+        if (!passwordEncoder.matches(answer.trim(), user.getSecurityAnswerHash())) {
+            loginAttemptService.onFailure(key);
+            return ResultUtils.error("密保答案不正确");
+        }
+        loginAttemptService.onSuccess(key);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        return userService.updateById(user)
+                ? ResultUtils.success("密码已重置，请用新密码登录")
+                : ResultUtils.error("重置失败");
+    }
     /**
      * 续签 token
      *

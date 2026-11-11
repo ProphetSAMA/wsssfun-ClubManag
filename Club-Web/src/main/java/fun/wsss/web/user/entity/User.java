@@ -62,4 +62,23 @@ public class User {
      */
     @TableField("is_admin")
     private Integer isAdmin;
+
+    /**
+     * 头像相对路径
+     */
+    @TableField("avatar")
+    private String avatar;
+
+    /**
+     * 密保问题
+     */
+    @TableField("security_question")
+    private String securityQuestion;
+
+    /**
+     * 密保答案（BCrypt），只用于校验，不返回给前端
+     */
+    @TableField("security_answer_hash")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String securityAnswerHash;
 }

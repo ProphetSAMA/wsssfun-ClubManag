@@ -43,7 +43,12 @@ public class AdminInterceptor implements HandlerInterceptor {
             "/api/user/profile",
             "/api/user/password",
             "/api/user/refresh",
-            "/api/user/logout"
+            "/api/user/logout",
+            "/api/user/avatar",
+            "/api/user/security-question",
+            "/api/user/forgot/query",
+            "/api/user/forgot/reset",
+            "/api/upload/avatar"
     );
 
     private final ObjectMapper objectMapper;
