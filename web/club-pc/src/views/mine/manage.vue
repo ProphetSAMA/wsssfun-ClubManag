@@ -48,6 +48,30 @@
           </el-table>
         </el-tab-pane>
 
+        <!-- 社团资料 -->
+        <el-tab-pane label="社团资料" name="profile">
+          <el-form label-width="80px" style="max-width: 560px">
+            <el-form-item label="封面">
+              <div class="cover-box">
+                <el-image v-if="profileForm.image" class="cover" :src="imgUrl(profileForm.image)" fit="cover" />
+                <div v-else class="cover cover-empty">暂无封面</div>
+                <div class="cover-actions">
+                  <el-button size="small" :loading="uploadingCover" @click="pickCover">上传封面</el-button>
+                  <el-button v-if="profileForm.image" size="small" plain @click="clearCover">移除</el-button>
+                  <div class="tip">jpg / png / gif / webp，不超过 3MB</div>
+                </div>
+              </div>
+            </el-form-item>
+            <el-form-item label="简介">
+              <el-input v-model="profileForm.details" type="textarea" :rows="6" maxlength="500" show-word-limit
+                placeholder="介绍一下你的社团，会显示在门户的社团详情页" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" :loading="savingProfile" @click="saveProfile">保存资料</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+
         <!-- 活动 -->
         <el-tab-pane label="活动管理" name="news">
           <div class="toolbar">
@@ -118,6 +142,8 @@
       </template>
     </el-dialog>
 
+    <input ref="coverInput" type="file" accept="image/*" class="hidden-file" @change="onCoverChange" />
+
     <!-- 报名名单 -->
     <el-dialog v-model="signupDialog" :title="'报名名单（' + signupMeta + '）'" width="640px">
       <el-table :data="signups" border size="small">
@@ -143,11 +169,13 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import { imgUrl } from '@/utils/image'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import { useUserStore } from '@/store/user'
 import {
   myTeamsApi, clubMembersApi, setMemberRoleApi, removeMemberApi,
   clubNewsApi, addClubNewsApi, editClubNewsApi, deleteClubNewsApi, clubSignupsApi, checkinApi,
+  updateClubApi, uploadClubCoverApi, getClubDetailApi,
   type ClubMember, type ClubTeam
 } from '@/api/club'
 
@@ -175,6 +203,63 @@ const newsForm = reactive({ id: 0, title: '', details: '', status: 1, maxPartici
 const newsRules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
   details: [{ required: true, message: '请输入活动详情', trigger: 'blur' }]
+}
+
+// ---------- 社团资料 ----------
+const profileForm = reactive({ details: '', image: '' })
+const savingProfile = ref(false)
+const uploadingCover = ref(false)
+const coverInput = ref<HTMLInputElement>()
+
+const loadProfile = async () => {
+  if (!currentTeamId.value) return
+  const res = (await getClubDetailApi(currentTeamId.value)) as any
+  if (res?.code === 200 && res.data) {
+    profileForm.details = res.data.details || ''
+    profileForm.image = res.data.image || ''
+  }
+}
+
+const pickCover = () => coverInput.value?.click()
+
+const clearCover = () => {
+  profileForm.image = ''
+}
+
+const onCoverChange = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files && input.files[0]
+  if (!file) return
+  if (file.size > 3 * 1024 * 1024) {
+    ElMessage.warning('封面不能超过 3MB')
+    input.value = ''
+    return
+  }
+  uploadingCover.value = true
+  try {
+    const form = new FormData()
+    form.append('file', file)
+    const res = (await uploadClubCoverApi(form)) as any
+    if (res?.code === 200 && res.data) {
+      profileForm.image = res.data
+      ElMessage.success('封面已上传，记得点保存')
+    }
+  } finally {
+    uploadingCover.value = false
+    input.value = ''
+  }
+}
+
+const saveProfile = async () => {
+  savingProfile.value = true
+  try {
+    const res = (await updateClubApi(currentTeamId.value!, { ...profileForm })) as any
+    if (res?.code === 200) {
+      ElMessage.success(res.msg || '已保存')
+    }
+  } finally {
+    savingProfile.value = false
+  }
 }
 
 const signupDialog = ref(false)
@@ -216,7 +301,7 @@ const refresh = async () => {
   try {
     await loadTeams()
     if (currentTeamId.value) {
-      await Promise.all([loadMembers(), loadNews()])
+      await Promise.all([loadMembers(), loadNews(), loadProfile()])
     }
   } catch (e) {
     console.error(e)
@@ -228,7 +313,7 @@ const refresh = async () => {
 
 const onTeamChange = async () => {
   currentPage.value = 1
-  await Promise.all([loadMembers(), loadNews()])
+  await Promise.all([loadMembers(), loadNews(), loadProfile()])
 }
 
 const onPageChange = (page: number) => {
@@ -371,5 +456,33 @@ onMounted(refresh)
 .tip {
   font-size: 12px;
   color: #909399;
+}
+
+.cover-box {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.cover {
+  width: 160px;
+  height: 100px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-hover);
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.cover-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 </style>

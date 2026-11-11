@@ -65,3 +65,13 @@ export const clubSignupsApi = (teamId: number, newsId: number) =>
 /** 核销签到 */
 export const checkinApi = (teamId: number, newsId: number, signupId: number, checkedIn: boolean) =>
   http.put(`/api/club/${teamId}/news/${newsId}/signup/${signupId}/checkin`, { checkedIn });
+
+/** 修改社团简介 / 封面（社长或社团管理员） */
+export const updateClubApi = (teamId: number, parm: { details?: string; image?: string }) =>
+  http.put(`/api/club/${teamId}`, parm);
+
+/** 上传社团封面（登录用户，3MB 内） */
+export const uploadClubCoverApi = (form: FormData) => http.post("/api/upload/club", form);
+
+/** 社团详情（游客可读） */
+export const getClubDetailApi = (teamId: number) => http.get(`/api/team/${teamId}`);
