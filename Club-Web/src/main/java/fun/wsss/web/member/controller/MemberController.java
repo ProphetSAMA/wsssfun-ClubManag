@@ -11,9 +11,13 @@ import fun.wsss.web.member.entity.MemberParm;
 import fun.wsss.web.member.entity.MemberVo;
 import fun.wsss.web.member.mapper.MemberMapper;
 import fun.wsss.web.member.service.MemberService;
+import fun.wsss.web.notification.service.NotificationService;
+import fun.wsss.web.team.entity.Team;
+import fun.wsss.web.team.service.TeamService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,10 +34,46 @@ public class MemberController {
 
     private final MemberService memberService;
     private final MemberMapper memberMapper;
+    private final TeamService teamService;
+    private final NotificationService notificationService;
 
-    public MemberController(MemberService memberService, MemberMapper memberMapper) {
+    public MemberController(MemberService memberService,
+                            MemberMapper memberMapper,
+                            TeamService teamService,
+                            NotificationService notificationService) {
         this.memberService = memberService;
         this.memberMapper = memberMapper;
+        this.teamService = teamService;
+        this.notificationService = notificationService;
+    }
+
+    /** 新人加入后通知社长 */
+    private void notifyPresident(Member member) {
+        try {
+            QueryWrapper<Member> query = new QueryWrapper<>();
+            query.lambda()
+                    .eq(Member::getTeamId, member.getTeamId())
+                    .eq(Member::getRole, 2)
+                    .eq(Member::getStatus, 1);
+            // 用 list 而不是 getOne：历史上可能出现多个社长，getOne 会直接抛异常；
+            // 有多位社长时每个人都通知到
+            List<Member> presidents = memberService.list(query);
+            Team team = teamService.getById(member.getTeamId());
+            String teamName = team == null ? "你的社团" : "「" + team.getName() + "」";
+            for (Member president : presidents) {
+                if (Objects.equals(president.getUserId(), member.getUserId())) {
+                    continue;
+                }
+                notificationService.push(president.getUserId(), "member",
+                        "有新人加入社团",
+                        teamName + "加入了 1 位新成员",
+                        "/mine/manage");
+            }
+        } catch (Exception e) {
+            // 通知失败不影响入团，但要留下日志方便排查
+            org.slf4j.LoggerFactory.getLogger(MemberController.class)
+                    .warn("入团通知发送失败 teamId={} userId={}", member.getTeamId(), member.getUserId(), e);
+        }
     }
 
     private static boolean isAdmin(Integer isAdmin) {
@@ -82,6 +122,7 @@ public class MemberController {
             member.setRole(0);
         }
         if (memberService.save(member)) {
+            notifyPresident(member);
             return ResultUtils.success("加入成功");
         }
         return ResultUtils.error("加入失败");

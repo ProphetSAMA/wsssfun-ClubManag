@@ -8,6 +8,7 @@ import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import fun.wsss.web.member.entity.Member;
 import fun.wsss.web.member.service.MemberService;
+import fun.wsss.web.notification.service.NotificationService;
 import fun.wsss.web.team.entity.Team;
 import fun.wsss.web.team.service.TeamService;
 import fun.wsss.web.teamapply.entity.TeamApply;
@@ -36,15 +37,18 @@ public class TeamApplyController {
     private final TeamApplyMapper teamApplyMapper;
     private final TeamService teamService;
     private final MemberService memberService;
+    private final NotificationService notificationService;
 
     public TeamApplyController(TeamApplyService teamApplyService,
                                TeamApplyMapper teamApplyMapper,
                                TeamService teamService,
-                               MemberService memberService) {
+                               MemberService memberService,
+                               NotificationService notificationService) {
         this.teamApplyService = teamApplyService;
         this.teamApplyMapper = teamApplyMapper;
         this.teamService = teamService;
         this.memberService = memberService;
+        this.notificationService = notificationService;
     }
 
     private static ResultVo forbidden(String msg) {
@@ -101,7 +105,12 @@ public class TeamApplyController {
         apply.setApplicantId(userId);
         apply.setStatus(0);
         apply.setCreateTime(new Date());
-        return teamApplyService.save(apply)
+        boolean ok = teamApplyService.save(apply);
+        if (ok) {
+            notificationService.pushToAdmins("apply", "有新的社团成立申请",
+                    "「" + name + "」等待审核", "/teamapply");
+        }
+        return ok
                 ? ResultUtils.success("申请已提交，等待管理员审核")
                 : ResultUtils.error("提交失败");
     }
@@ -200,6 +209,11 @@ public class TeamApplyController {
         apply.setReviewTime(new Date());
         teamApplyService.updateById(apply);
 
+        notificationService.push(apply.getApplicantId(), "apply",
+                "社团申请已通过",
+                "「" + apply.getName() + "」已成立，你现在是社长",
+                "/mine/manage");
+
         return ResultUtils.success("已通过，社团已创建");
     }
 
@@ -233,8 +247,15 @@ public class TeamApplyController {
         apply.setRejectReason(body == null || body.get("reason") == null
                 ? null
                 : String.valueOf(body.get("reason")));
-        return teamApplyService.updateById(apply)
-                ? ResultUtils.success("已驳回")
-                : ResultUtils.error("操作失败");
+        boolean ok = teamApplyService.updateById(apply);
+        if (ok) {
+            notificationService.push(apply.getApplicantId(), "apply",
+                    "社团申请被驳回",
+                    apply.getRejectReason() == null || apply.getRejectReason().isBlank()
+                            ? "「" + apply.getName() + "」的申请未通过"
+                            : "「" + apply.getName() + "」未通过：" + apply.getRejectReason(),
+                    "/club");
+        }
+        return ok ? ResultUtils.success("已驳回") : ResultUtils.error("操作失败");
     }
 }

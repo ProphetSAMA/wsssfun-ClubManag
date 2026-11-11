@@ -7,6 +7,7 @@ import fun.wsss.status.StatusCode;
 import fun.wsss.utils.ResultUtils;
 import fun.wsss.utils.ResultVo;
 import fun.wsss.web.news.entity.News;
+import fun.wsss.web.notification.service.NotificationService;
 import fun.wsss.web.news.service.NewsService;
 import fun.wsss.web.signup.entity.Signup;
 import fun.wsss.web.signup.entity.SignupVo;
@@ -31,11 +32,27 @@ public class SignupController {
     private final SignupService signupService;
     private final SignupMapper signupMapper;
     private final NewsService newsService;
+    private final NotificationService notificationService;
 
-    public SignupController(SignupService signupService, SignupMapper signupMapper, NewsService newsService) {
+    public SignupController(SignupService signupService,
+                            SignupMapper signupMapper,
+                            NewsService newsService,
+                            NotificationService notificationService) {
         this.signupService = signupService;
         this.signupMapper = signupMapper;
         this.newsService = newsService;
+        this.notificationService = notificationService;
+    }
+
+    /** 报名成功后通知活动发布者（自己报自己的不提醒） */
+    private void notifyOwner(News news, Long userId) {
+        if (news.getCreateId() == null || news.getCreateId().equals(userId)) {
+            return;
+        }
+        notificationService.push(news.getCreateId(), "signup",
+                "有人报名了你的活动",
+                "活动「" + news.getTitle() + "」有新的报名",
+                "/mine/manage");
     }
 
     /** 已报名人数（status = 1） */
@@ -92,9 +109,11 @@ public class SignupController {
             // 取消过再报名：复用原来的行，表上有 (news_id, user_id) 唯一索引
             exist.setStatus(1);
             exist.setCreateTime(new Date());
-            return signupService.updateById(exist)
-                    ? ResultUtils.success("报名成功")
-                    : ResultUtils.error("报名失败");
+            boolean ok = signupService.updateById(exist);
+            if (ok) {
+                notifyOwner(news, userId);
+            }
+            return ok ? ResultUtils.success("报名成功") : ResultUtils.error("报名失败");
         }
 
         Signup record = new Signup();
@@ -102,9 +121,11 @@ public class SignupController {
         record.setUserId(userId);
         record.setStatus(1);
         record.setCreateTime(new Date());
-        return signupService.save(record)
-                ? ResultUtils.success("报名成功")
-                : ResultUtils.error("报名失败");
+        boolean ok = signupService.save(record);
+        if (ok) {
+            notifyOwner(news, userId);
+        }
+        return ok ? ResultUtils.success("报名成功") : ResultUtils.error("报名失败");
     }
 
     /**
