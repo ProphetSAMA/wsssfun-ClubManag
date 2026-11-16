@@ -87,8 +87,8 @@
             <el-table-column align="center" width="280px" label="操作">
                 <template #default="scope">
                     <el-button v-if="scope.row.type === '0'" size="small" @click="openSignups(scope.row)">报名名单</el-button>
-                    <el-button type="primary" size="small" @click="editBtn(scope.row)">编辑</el-button>
-                    <el-button type="danger" size="small" @click="deleteBtn(scope.row)">删除</el-button>
+                    <el-button type="primary" size="small" @click="editBtn(scope.row as any)">编辑</el-button>
+                    <el-button type="danger" size="small" @click="deleteBtn(scope.row as any)">删除</el-button>
                 </template>
             </el-table-column>
 
@@ -142,7 +142,11 @@ const {
     currentChange,
     tableHeight,
 } = useActivityTable();
-const { addBtn, editBtn, deleteBtn, addActivityRef } = useActivity(getList);
+const activity = useActivity(getList);
+const { addBtn, editBtn, deleteBtn } = activity;
+const addActivityRef = activity.addActivityRef;
+// 供模板 ref="addActivityRef" 绑定；实际调用在 useActivity 内部（vue-tsc 3 会误报为未读取）
+void addActivityRef;
 
 /** 报名名单 */
 const signupVisible = ref(false);

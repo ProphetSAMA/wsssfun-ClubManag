@@ -47,10 +47,10 @@
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column align="center" width="200px" label="操作">
         <template #default="scope">
-          <el-button type="primary" size="small" @click="editBtn(scope.row)"
+          <el-button type="primary" size="small" @click="editBtn(scope.row as any)"
             >编辑</el-button
           >
-          <el-button type="danger" size="small" @click="deleteBtn(scope.row)"
+          <el-button type="danger" size="small" @click="deleteBtn(scope.row as any)"
             >删除</el-button
           >
         </template>
@@ -93,7 +93,11 @@ const {
   getList,
 } = useTeamTable();
 // CURD
-const { addBtn, editBtn, deleteBtn, addTeamRef } = useTeam(getList);
+const team = useTeam(getList);
+const { addBtn, editBtn, deleteBtn } = team;
+const addTeamRef = team.addTeamRef;
+// 供模板 ref="addTeamRef" 绑定；实际调用在 useTeam 内部（vue-tsc 3 会误报为未读取）
+void addTeamRef;
 
 const imageUrl = (image: string) => apiUrl(image.includes(',') ? image.split(',')[0] : image);
 </script>

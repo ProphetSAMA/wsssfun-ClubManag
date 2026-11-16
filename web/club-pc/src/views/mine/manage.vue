@@ -32,7 +32,7 @@
                   v-if="scope.row.role !== 2"
                   size="small"
                   :disabled="scope.row.userId === myUserId"
-                  @click="toggleRole(scope.row)"
+                  @click="toggleRole(scope.row as any)"
                 >{{ scope.row.role === 1 ? '设为成员' : '设为管理员' }}</el-button>
                 <el-button
                   v-if="scope.row.role !== 2"
@@ -40,7 +40,7 @@
                   type="danger"
                   plain
                   :disabled="scope.row.userId === myUserId"
-                  @click="remove(scope.row)"
+                  @click="remove(scope.row as any)"
                 >移出</el-button>
                 <span v-if="scope.row.role === 2" class="tip">社长</span>
               </template>

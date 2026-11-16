@@ -23,10 +23,10 @@
       <el-table-column prop="name" label="分类名称"></el-table-column>
       <el-table-column label="操作" width="220" align="center">
         <template #default="scope">
-          <el-button type="primary" size="small" @click="editBtn(scope.row)"
+          <el-button type="primary" size="small" @click="editBtn(scope.row as any)"
             >编辑</el-button
           >
-          <el-button type="danger" size="small" @click="deleteBtn(scope.row)"
+          <el-button type="danger" size="small" @click="deleteBtn(scope.row as any)"
             >删除</el-button
           >
         </template>
@@ -65,7 +65,11 @@ const {
   resetBtn,
   getList,
 } = useTableCategory();
-const { addBtn, deleteBtn, editBtn, addFormRef } = useCategory(getList);
+const category = useCategory(getList);
+const { addBtn, deleteBtn, editBtn } = category;
+const addFormRef = category.addFormRef;
+// 供模板 ref="addFormRef" 绑定；实际调用在 useCategory 内部（vue-tsc 3 会误报为未读取）
+void addFormRef;
 </script>
 
 <style lang="scss" scoped></style>

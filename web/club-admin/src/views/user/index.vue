@@ -66,10 +66,10 @@
       <el-table-column prop="phone" label="联系方式"></el-table-column>
       <el-table-column label="操作" width="220" align="center">
         <template #default="scope">
-          <el-button type="primary" size="small" @click="editBtn(scope.row)"
+          <el-button type="primary" size="small" @click="editBtn(scope.row as any)"
             >编辑</el-button
           >
-          <el-button type="danger" size="small" @click="deleteBtn(scope.row)"
+          <el-button type="danger" size="small" @click="deleteBtn(scope.row as any)"
             >删除</el-button
           >
         </template>
@@ -110,7 +110,11 @@ const {
 } = useUserTable();
 
 // 新增、编辑、删除
-const { addBtn, editBtn, deleteBtn, addUserRef } = useUser(getList);
+const user = useUser(getList);
+const { addBtn, editBtn, deleteBtn } = user;
+const addUserRef = user.addUserRef;
+// 供模板 ref="addUserRef" 绑定；实际调用在 useUser 内部（vue-tsc 3 会误报为未读取）
+void addUserRef;
 </script>
 
 <style lang="scss" scoped></style>

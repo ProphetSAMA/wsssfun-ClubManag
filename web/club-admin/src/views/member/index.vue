@@ -46,8 +46,8 @@
       <el-table-column prop="joinTime" label="加入时间" />
       <el-table-column label="操作" width="220" align="center">
         <template #default="scope">
-          <el-button type="primary" size="small" @click="editBtn(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="deleteBtn(scope.row)">移除</el-button>
+          <el-button type="primary" size="small" @click="editBtn(scope.row as any)">编辑</el-button>
+          <el-button type="danger" size="small" @click="deleteBtn(scope.row as any)">移除</el-button>
         </template>
       </el-table-column>
     </el-table>

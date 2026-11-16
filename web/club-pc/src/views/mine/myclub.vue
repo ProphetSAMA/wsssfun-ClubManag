@@ -18,7 +18,7 @@
       <el-table-column prop="joinTime" label="加入时间" width="140" />
       <el-table-column label="操作" width="110" align="center">
         <template #default="scope">
-          <el-button type="danger" size="small" plain @click="quit(scope.row)">退出</el-button>
+          <el-button type="danger" size="small" plain @click="quit(scope.row as any)">退出</el-button>
         </template>
       </el-table-column>
     </el-table>
