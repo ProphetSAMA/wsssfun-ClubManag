@@ -289,7 +289,6 @@ curl -X POST http://localhost:8888/api/user/login \
 ## 10. 安全说明
 
 - 密钥与密码只通过环境变量提供，`Club-Web/.env` 已被 `.gitignore` 忽略
-- **若仓库是公开的，历史上提交过的数据库密码已泄露，请务必更换 MySQL 密码**
 - JWT 通过 `jti` 支持登出（`POST /api/user/logout` 将 token 加入内存黑名单，单实例有效，多实例需换 Redis）
 - 同一账号连续登录失败 5 次锁定 15 分钟
 - CORS 只放行 `CORS_ORIGINS` 中的地址，且不使用 Cookie（鉴权走请求头 `token`）
